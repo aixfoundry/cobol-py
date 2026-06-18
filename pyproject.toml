@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cobol-py"
+version = "0.1.0"
+description = "Single-pass COBOL 85 parser for Python, built on a merged ANTLR4 grammar"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+keywords = ["cobol", "antlr4", "parser", "cobol85", "ast"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    # Runtime for the generated ANTLR4 Python target. Pinned exactly because the
+    # generated parser embeds an ATN that must match the runtime minor version.
+    "antlr4-python3-runtime==4.13.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[project.urls]
+Homepage = "https://github.com/aixfoundry/cobol-py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cobol_py"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/examples",
+    "/scripts",
+    "/Cobol85.g4",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
