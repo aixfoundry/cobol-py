@@ -13,6 +13,9 @@ from pathlib import Path
 from typing import Optional, Union
 
 from antlr4 import CommonTokenStream, InputStream
+from antlr4.atn.PredictionMode import PredictionMode
+from antlr4.error.ErrorStrategy import BailErrorStrategy, DefaultErrorStrategy
+from antlr4.error.Errors import ParseCancellationException
 
 from .error_listener import ThrowingErrorListener
 from .exceptions import CobolParserException
@@ -96,12 +99,41 @@ class CobolParserRunner:
         # get a list of matched tokens
         tokens = CommonTokenStream(lexer)
 
-        # pass the tokens to the parser
+        # pass the tokens to the parser. The throwing error listener is attached
+        # inside the two-stage parse (LL stage only) — see _start_rule_two_stage.
         parser = CobolParser(tokens)
 
-        if not params.ignore_syntax_errors:
-            parser.removeErrorListeners()
-            parser.addErrorListener(ThrowingErrorListener())
-
         # specify our entry point -> the AST
+        return self._start_rule_two_stage(parser, params.ignore_syntax_errors)
+
+    @staticmethod
+    def _start_rule_two_stage(parser, ignore_syntax_errors: bool):
+        """Parse with the ANTLR SLL -> LL two-stage strategy.
+
+        Stage 1 runs SLL prediction with a bail strategy and **no** error
+        listeners attached: SLL is approximate and can flag false-positive
+        errors on this large, ambiguous grammar, so a throwing listener here
+        would raise on those and defeat the LL fallback. If SLL bails (a real
+        syntax error or a false positive), stage 2 rewinds and re-parses with
+        full LL, re-arming the error listeners so genuine syntax errors are
+        reported exactly as a plain LL parse would. The parse tree is identical
+        to a plain LL parse.
+        """
+        # Stage 1: fast SLL.
+        parser.removeErrorListeners()
+        parser._interp.predictionMode = PredictionMode.SLL
+        parser._errHandler = BailErrorStrategy()
+        try:
+            return parser.startRule()
+        except ParseCancellationException:
+            pass
+
+        # Stage 2: full LL.
+        parser.getTokenStream().seek(0)
+        parser.reset()
+        parser._interp.predictionMode = PredictionMode.LL
+        parser._errHandler = DefaultErrorStrategy()
+        if not ignore_syntax_errors:
+            parser.addErrorListener(ThrowingErrorListener())
         return parser.startRule()
+

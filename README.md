@@ -96,6 +96,32 @@ class MyListener(CobolListener):
         print("found MOVE:", ctx.getText())
 ```
 
+## Testing
+
+```bash
+uv run pytest                      # fast unit + AST golden tests (~130 tests)
+COBOL_PY_NIST_FULL=1 uv run pytest tests/test_nist.py   # full NIST suite (slow)
+```
+
+| Module | What it checks |
+|--------|----------------|
+| `tests/test_phase1_leaf.py` | leaf types, params, format enum |
+| `tests/test_phase2_line.py` | line sub-pipeline (reader / indicator / writer) |
+| `tests/test_parse.py` | full pipeline on small FIXED/TANDEM/VARIABLE fixtures |
+| `tests/test_ast_tree.py` | parse-tree **golden** comparison vs proleap's `.cbl.tree` files |
+| `tests/test_nist.py` | NIST COBOL-85 conformance (a stride by default; full is opt-in) |
+
+`tests/test_ast_tree.py` is the strongest fidelity check: it parses every program
+under `testdata/io/proleap/cobol/ast` and asserts the cleaned `toStringTree` output
+matches proleap's committed `.cbl.tree` golden byte-for-byte.
+
+`tests/test_nist.py` mirrors proleap's `gov/nist/*Test.java` — it runs each NIST
+program through `parse_file(file, FIXED)` and asserts a clean parse. The Python
+ANTLR runtime simulates the ATN in pure Python, so prediction on this grammar is
+~2-4 s per medium NIST file (vs. milliseconds on the JVM); the full 459-file
+suite is therefore opt-in via `COBOL_PY_NIST_FULL=1`, while a representative
+stride runs in the default suite.
+
 ## Regenerate the parser
 
 The generated modules under `src/cobol_py/` are committed, but you can
@@ -142,6 +168,11 @@ examples/example.cbl           # self-contained FIXED example
   terminator.
 - `compilerOptions` is recognised tolerantly (the option stream is captured up to
   `IDENTIFICATION`).
+- **Parse speed**: the runner uses ANTLR's SLL→LL two-stage strategy. SLL is
+  exact and fast for most input; when it bails (ambiguity or a real syntax
+  error), the runner falls back to full LL with the error listeners re-armed, so
+  the parse tree and error behaviour are identical to a plain LL parse. This is a
+  Python-specific optimisation — proleap on the JVM does not need it.
 - The ASG / semantic-analysis layer of proleap is intentionally out of scope;
   the deliverable ends at the `startRule` AST.
 
