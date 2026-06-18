@@ -8,7 +8,7 @@ callers read attributes directly (``params.format``) instead of getters.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional
@@ -34,9 +34,12 @@ class CobolParserParams:
     """
 
     charset: str = "utf-8"
-    copy_book_directories: List[Path] = field(default_factory=list)
-    copy_book_extensions: List[str] = field(default_factory=list)
-    copy_book_files: List[Path] = field(default_factory=list)
+    # Copy-book lookup fields default to ``None`` (matching the Java bean's null
+    # defaults), not empty lists: the finders branch on ``is not None``, so an
+    # empty list would wrongly take the extension-matching path and never match.
+    copy_book_directories: Optional[List[Path]] = None
+    copy_book_extensions: Optional[List[str]] = None
+    copy_book_files: Optional[List[Path]] = None
     dialect: Optional[CobolDialect] = None
     format: Optional[CobolSourceFormatEnum] = None
     ignore_syntax_errors: bool = False

@@ -49,22 +49,26 @@ def test_dialect_members_match_java_enum():
 
 
 def test_params_defaults():
+    # The copy-book lookup fields default to None (matching the Java bean's
+    # null defaults) — the finders branch on `is not None`, so an empty list
+    # would wrongly take the extension-matching path and never match.
     params = CobolParserParams()
     assert params.charset == "utf-8"
-    assert params.copy_book_directories == []
-    assert params.copy_book_extensions == []
-    assert params.copy_book_files == []
+    assert params.copy_book_directories is None
+    assert params.copy_book_extensions is None
+    assert params.copy_book_files is None
     assert params.dialect is None
     assert params.format is None
     assert params.ignore_syntax_errors is False
 
 
-def test_params_default_lists_are_not_shared():
-    # mutable default must be per-instance
+def test_params_copy_book_fields_are_independent():
+    # defaults are None, but assigned lists must not leak across instances.
     a = CobolParserParams()
     b = CobolParserParams()
-    a.copy_book_extensions.append(".cbl")
-    assert b.copy_book_extensions == []
+    a.copy_book_extensions = [".cbl"]
+    assert a.copy_book_extensions == [".cbl"]
+    assert b.copy_book_extensions is None
 
 
 # --- source format enum ------------------------------------------------------

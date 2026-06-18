@@ -58,7 +58,7 @@ class CobolSourceFormatEnum(Enum):
 
     FIXED = (r"(.{0,6})(?:" + INDICATOR_FIELD + r"(.{0,4})(.{0,61})(.*))?", True)
     TANDEM = (r"()(?:" + INDICATOR_FIELD + r"(.{0,4})(.*)())?", False)
-    VARIABLE = (r"()(?:" + INDICATOR_FIELD + r"(.{0,4})(.*)())?", True)
+    VARIABLE = (r"(.{0,6})(?:" + INDICATOR_FIELD + r"(.{0,4})(.*)())?", True)
 
     def __init__(self, regex: str, comment_entry_multi_line: bool) -> None:
         self.regex: str = regex

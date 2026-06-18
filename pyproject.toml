@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "cobol-py"
 version = "0.1.0"
-description = "Single-pass COBOL 85 parser for Python, built on a merged ANTLR4 grammar"
+description = "COBOL parser for Python, porting the proleap-cobol-parser preprocessor + Cobol.g4 pipeline to a startRule AST"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
-keywords = ["cobol", "antlr4", "parser", "cobol85", "ast"]
+keywords = ["cobol", "antlr4", "parser", "cobol85", "proleap", "preprocessor", "ast"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -43,7 +43,8 @@ include = [
     "/tests",
     "/examples",
     "/scripts",
-    "/Cobol85.g4",
+    "/Cobol.g4",
+    "/CobolPreprocessor.g4",
     "/README.md",
     "/LICENSE",
     "/pyproject.toml",

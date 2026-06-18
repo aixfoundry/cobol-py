@@ -1,0 +1,12 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CICTEST.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-MAP PIC X(10).
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           EXEC CICS
+             SEND MAP('MYMAP') FROM(WS-MAP)
+           END-EXEC.
+           DISPLAY WS-MAP.
+           STOP RUN.

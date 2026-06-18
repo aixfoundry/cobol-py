@@ -1,0 +1,1 @@
+       01 WS-COPY PIC 9(4) VALUE 1.

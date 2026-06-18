@@ -1,0 +1,6 @@
+000100 IDENTIFICATION DIVISION.
+000200 PROGRAM-ID. VARIABLE.
+000300 PROCEDURE DIVISION.
+000400 MAIN-PARA.
+000500     DISPLAY "variable format with a long area B run past column 72 to show VARIABLE format does not truncate".
+000600     STOP RUN.
