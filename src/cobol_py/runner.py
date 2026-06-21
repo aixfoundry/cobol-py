@@ -150,18 +150,24 @@ class CobolParserRunner:
         Phases D/E the data/environment passes.
         """
         from .asg.visitor import (
+            CobolDataDivisionVisitor,
             CobolProcedureDivisionVisitor,
             CobolProcedureStatementVisitor,
             CobolProgramUnitVisitor,
         )
 
         # Pass 1: program units + the four divisions (must precede pass 2, so
-        # that ProcedureDivision is registered before scopes are located).
+        # that ProcedureDivision/DataDivision are registered before located).
         for compilation_unit in program.compilation_units:
             CobolProgramUnitVisitor(compilation_unit).visit(compilation_unit.ctx)
 
-        # Pass 2: procedure-division structure (sections, paragraphs, clauses).
-        # Must precede pass 3 so PERFORM/GOTO calls can resolve to paragraphs.
+        # Pass 2: data-division sections + data-description hierarchy. Must
+        # precede the statement pass so data references can resolve to entries.
+        for compilation_unit in program.compilation_units:
+            CobolDataDivisionVisitor(program).visit(compilation_unit.ctx)
+
+        # Pass 3: procedure-division structure (sections, paragraphs, clauses).
+        # Must precede pass 4 so PERFORM/GOTO calls can resolve to paragraphs.
         for compilation_unit in program.compilation_units:
             CobolProcedureDivisionVisitor(program).visit(compilation_unit.ctx)
 

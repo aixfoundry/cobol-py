@@ -98,3 +98,13 @@ class CallDelegate(Call):
 
     def unwrap(self) -> "Call":
         return self.delegate.unwrap() if self.delegate is not None else self
+
+
+class FileControlEntryCall(_NamedCall):
+    """A call to a file-control entry (a SELECT file name)."""
+
+    call_type = CallTypeEnum.FILE_CONTROL_ENTRY_CALL
+
+    def __init__(self, name, file_control_entry, program_unit, ctx) -> None:
+        super().__init__(name, program_unit, ctx)
+        self.file_control_entry = file_control_entry

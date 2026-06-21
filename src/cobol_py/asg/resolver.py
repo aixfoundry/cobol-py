@@ -1,11 +1,7 @@
-"""Name resolver.
+"""Name resolver (ports ``asg/resolver/impl/NameResolverImpl``).
 
-Ports ``asg/resolver/impl/NameResolverImpl``. The Java resolver is a set of
-``determineName(XxxContext)`` overloads; Python cannot overload by static type,
-so :func:`determine_name` dispatches on the runtime ctx type. The cases that
-need to descend into a child (paragraph -> paragraphName, section -> section
-name, program-id -> programName) are handled explicitly; everything else falls
-back to ``ctx.getText()``.
+Dispatches on the runtime ctx type; cases that descend into a child are
+explicit, everything else falls back to ``ctx.getText()``.
 """
 
 from __future__ import annotations
@@ -22,10 +18,8 @@ def _text(ctx) -> Optional[str]:
 
 
 def determine_name(ctx: Optional[ParserRuleContext]) -> Optional[str]:
-    """Return a display name for ``ctx`` (None if ``ctx`` is None)."""
     if ctx is None:
         return None
-
     CP = CobolParser
 
     if isinstance(ctx, CP.ProgramIdParagraphContext):
@@ -34,10 +28,19 @@ def determine_name(ctx: Optional[ParserRuleContext]) -> Optional[str]:
         return determine_name(ctx.paragraphName())
     if isinstance(ctx, CP.ProcedureSectionContext):
         header = ctx.procedureSectionHeader()
-        if header is not None:
-            return _text(header.sectionName())
+        return _text(header.sectionName()) if header is not None else ctx.getText()
+    if isinstance(ctx, CP.DataDescriptionEntryFormat1Context):
+        return _text(ctx.dataName())
+    if isinstance(ctx, CP.DataDescriptionEntryFormat2Context):
+        return _text(ctx.dataName())
+    if isinstance(ctx, CP.DataDescriptionEntryFormat3Context):
+        return _text(ctx.conditionName())
+    if isinstance(ctx, CP.FileControlEntryContext):
+        select = ctx.selectClause() if hasattr(ctx, "selectClause") else None
+        if select is not None:
+            file_name = select.fileName() if hasattr(select, "fileName") else None
+            if file_name is not None:
+                return file_name.getText()
         return ctx.getText()
 
-    # ParagraphNameContext, SectionNameContext, ProgramNameContext, DataNameContext,
-    # CobolWordContext and all other name-like contexts: their text IS the name.
     return ctx.getText()

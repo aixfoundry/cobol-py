@@ -14,6 +14,8 @@ from antlr4.CommonTokenStream import CommonTokenStream
 from antlr4.ParserRuleContext import ParserRuleContext
 
 from .base import ASGElement, CobolDivisionElement, CompilationUnitElement, NamedElement
+from .data import DataDivision
+from .environment import EnvironmentDivision
 from .identification import IdentificationDivision
 from .procedure.division import ProcedureDivision
 from .registry import ASGElementRegistry
@@ -120,9 +122,20 @@ class ProgramUnit(CompilationUnitElement):
         self.identification_division = result
         return result
 
-    def add_environment_division(self, ctx) -> "EnvironmentDivision":
-        self.environment_division = self._add_division(EnvironmentDivision, ctx)
-        return self.environment_division
+    def add_environment_division(self, ctx) -> EnvironmentDivision:
+        result = self._add_division(EnvironmentDivision, ctx)
+        # Parse the body inline (configuration / input-output / special-names),
+        # mirroring EnvironmentDivisionImpl. File-control entries are built here,
+        # in pass 1, so file-name references resolve during the statement pass.
+        for body_ctx in ctx.environmentDivisionBody():
+            if body_ctx.configurationSection() is not None:
+                result.add_configuration_section(body_ctx.configurationSection())
+            elif body_ctx.inputOutputSection() is not None:
+                result.add_input_output_section(body_ctx.inputOutputSection())
+            elif body_ctx.specialNamesParagraph() is not None:
+                result.add_special_names_paragraph(body_ctx.specialNamesParagraph())
+        self.environment_division = result
+        return result
 
     def add_data_division(self, ctx) -> "DataDivision":
         self.data_division = self._add_division(DataDivision, ctx)
@@ -132,12 +145,5 @@ class ProgramUnit(CompilationUnitElement):
         self.procedure_division = self._add_division(ProcedureDivision, ctx)
         return self.procedure_division
 
-
-# --- Phase D/E stubs --------------------------------------------------------
-
-class EnvironmentDivision(CobolDivisionElement):
-    """ENVIRONMENT DIVISION. Configuration / I-O / special-names: Phase E."""
-
-
-class DataDivision(CobolDivisionElement):
-    """DATA DIVISION. Data-description hierarchy: Phase D."""
+# All four divisions (Identification, Environment, Data, Procedure) are now
+# real implementations imported above; no stubs remain.

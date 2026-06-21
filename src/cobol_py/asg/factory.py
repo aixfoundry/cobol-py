@@ -37,8 +37,37 @@ class ProcedureUnitFactory:
         return pd.get_section(name) if pd is not None else None
 
     def find_data_description_entries(self, name: Optional[str]) -> List:
-        """Data items are not built until Phase D, so this is empty for now."""
-        return []
+        """Search the data-division sections for entries named ``name``.
+
+        Mirrors ``ProgramUnitElementImpl.findDataDescriptionEntries``: scans
+        working-storage, file (FD records), communication, linkage and local
+        storage sections. (Report/screen sections are deferred.)
+        """
+        dd = self.program_unit.data_division
+        if dd is None:
+            return []
+        result: List = []
+        for section in (
+            dd.working_storage_section,
+            dd.communication_section,
+            dd.linkage_section,
+            dd.local_storage_section,
+        ):
+            if section is not None:
+                result.extend(section.get_data_description_entries(name))
+        if dd.file_section is not None:
+            for fd in dd.file_section.file_description_entries:
+                result.extend(fd.get_data_description_entries(name))
+        return result
+
+    def find_file_control_paragraph(self):
+        ed = self.program_unit.environment_division
+        ios = ed.input_output_section if ed is not None else None
+        return ios.file_control_paragraph if ios is not None else None
+
+    def find_file_control_entry(self, name: Optional[str]):
+        fcp = self.find_file_control_paragraph()
+        return fcp.get_file_control_entry(name) if fcp is not None else None
 
     # -- calls ---------------------------------------------------------------
 
@@ -61,6 +90,8 @@ class ProcedureUnitFactory:
 
         if isinstance(ctx, CP.ProcedureNameContext):
             return self._create_procedure_name_call(ctx)
+        if isinstance(ctx, CP.FileNameContext):
+            return self._create_file_control_call(ctx)
         if isinstance(ctx, CP.IdentifierContext):
             inner = None
             if ctx.qualifiedDataName() is not None:
@@ -78,15 +109,48 @@ class ProcedureUnitFactory:
             return self._create_data_call(ctx)
         return self._create_data_call(ctx)
 
+    def _create_file_control_call(self, ctx):
+        """Resolve a file-name reference to a :class:`FileControlEntryCall`.
+
+        Mirrors ``ProgramUnitElementImpl.createCall(FileNameContext)``: if the
+        name matches a SELECT entry, link a FileControlEntryCall; otherwise fall
+        back to a data-description call (as proleap does).
+        """
+        existing = self._get_element(ctx)
+        if existing is not None:
+            return existing
+        name = self.determine_name(ctx)
+        fce = self.find_file_control_entry(name)
+        if fce is not None:
+            from .call import FileControlEntryCall
+
+            result = FileControlEntryCall(name, fce, self.program_unit, ctx)
+            fce.add_call(result)
+            self._register(result)
+            return result
+        return self._create_data_call(ctx)
+
     def _create_data_call(self, ctx: ParserRuleContext):
-        """A data reference: undefined until Phase D builds data descriptions."""
-        from .call import UndefinedCall
+        """Resolve a data reference to a :class:`DataDescriptionEntryCall`.
+
+        Mirrors ``ProgramUnitElementImpl.createDataDescriptionEntryCall``: looks
+        up the name across the data-division sections; if found, links a
+        :class:`DataDescriptionEntryCall` back to the entry, otherwise falls
+        back to :class:`UndefinedCall`.
+        """
+        from .call import DataDescriptionEntryCall, UndefinedCall
 
         existing = self._get_element(ctx)
         if existing is not None:
             return existing
         name = self.determine_name(ctx)
-        result = UndefinedCall(name, self.program_unit, ctx)
+        entries = self.find_data_description_entries(name)
+        if entries:
+            entry = entries[0]
+            result = DataDescriptionEntryCall(name, entry, self.program_unit, ctx)
+            entry.add_call(result)
+        else:
+            result = UndefinedCall(name, self.program_unit, ctx)
         self._register(result)
         return result
 

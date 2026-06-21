@@ -244,3 +244,90 @@ class CobolProcedureStatementVisitor(AbstractCobolParserVisitor):
         from .procedure.statements import MoveStatement
 
         return self._build(MoveStatement, ctx)
+
+    def visitOpenStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import OpenStatement
+        return self._build(OpenStatement, ctx)
+
+    def visitCloseStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import CloseStatement
+        return self._build(CloseStatement, ctx)
+
+    def visitReadStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ReadStatement
+        return self._build(ReadStatement, ctx)
+
+    def visitWriteStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import WriteStatement
+        return self._build(WriteStatement, ctx)
+
+    def visitRewriteStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import RewriteStatement
+        return self._build(RewriteStatement, ctx)
+
+    def visitDeleteStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import DeleteStatement
+        return self._build(DeleteStatement, ctx)
+
+    def visitStartStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import StartStatement
+        return self._build(StartStatement, ctx)
+    def visitCallStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import CallStatement
+        return self._build(CallStatement, ctx)
+
+    def visitSetStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import SetStatement
+        return self._build(SetStatement, ctx)
+
+    def visitEvaluateStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import EvaluateStatement
+        return self._build(EvaluateStatement, ctx)
+
+    def visitInitializeStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import InitializeStatement
+        return self._build(InitializeStatement, ctx)
+
+class CobolDataDivisionVisitor(AbstractCobolParserVisitor):
+    """Build data-division sections and their data-description entries (Phase D).
+
+    Ports the section-creation role of ``CobolDataDivisionStep1VisitorImpl``.
+    The 01/02/... hierarchy is resolved inline as each section is built
+    (see :class:`cobol_py.asg.data.DataDescriptionEntryContainer`), so no
+    separate step-2 pass is needed for reference resolution.
+    """
+
+    def _data_division(self, ctx):
+        from .data import DataDivision
+
+        return self._find(DataDivision, ctx)
+
+    def visitWorkingStorageSection(self, ctx):  # noqa: N802
+        dd = self._data_division(ctx)
+        if dd is not None:
+            dd.add_working_storage_section(ctx)
+        return self.visitChildren(ctx)
+
+    def visitLinkageSection(self, ctx):  # noqa: N802
+        dd = self._data_division(ctx)
+        if dd is not None:
+            dd.add_linkage_section(ctx)
+        return self.visitChildren(ctx)
+
+    def visitLocalStorageSection(self, ctx):  # noqa: N802
+        dd = self._data_division(ctx)
+        if dd is not None:
+            dd.add_local_storage_section(ctx)
+        return self.visitChildren(ctx)
+
+    def visitCommunicationSection(self, ctx):  # noqa: N802
+        dd = self._data_division(ctx)
+        if dd is not None:
+            dd.add_communication_section(ctx)
+        return self.visitChildren(ctx)
+
+    def visitFileSection(self, ctx):  # noqa: N802
+        dd = self._data_division(ctx)
+        if dd is not None:
+            dd.add_file_section(ctx)
+        return self.visitChildren(ctx)

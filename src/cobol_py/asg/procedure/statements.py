@@ -308,3 +308,268 @@ STATEMENT_CLASSES = {
     "goback": GobackStatement,
     "move": MoveStatement,
 }
+
+
+# --- file I/O verbs (Phase C2) --------------------------------------------
+
+def _as_list(maybe):
+    """Normalise an ANTLR accessor result to a list (single ctx or list)."""
+    if maybe is None:
+        return []
+    if isinstance(maybe, list):
+        return maybe
+    return [maybe]
+
+
+class OpenStatement(_StatementBase):
+    """``OPEN INPUT/OUTPUT/IO/EXTEND <files>``: collects the file-name calls."""
+
+    statement_type = StatementTypeEnum.OPEN
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.file_calls: List = []
+
+    def _populate(self) -> None:
+        # File names sit under per-mode phrases (openInputStatement / openOutput
+        # / openIO / openExtendStatement), each wrapping a context that holds
+        # fileName(). Walk the ctx for FileNameContext nodes (robust to nesting).
+        stack = [self.ctx]
+        seen = set()
+        while stack:
+            node = stack.pop()
+            if node is None or id(node) in seen:
+                continue
+            seen.add(id(node))
+            if type(node).__name__ == "FileNameContext":
+                self.file_calls.append(self.create_call(node))
+                continue
+            for i in range(getattr(node, "getChildCount", lambda: 0)()):
+                stack.append(node.getChild(i))
+
+
+class CloseStatement(_StatementBase):
+    """``CLOSE <files>``: collects the file-name calls."""
+
+    statement_type = StatementTypeEnum.CLOSE
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.file_calls: List = []
+
+    def _populate(self) -> None:
+        ctx = self.ctx
+        for close_file in _as_list(getattr(ctx, "closeFile", lambda: [])()):
+            for file_name in _as_list(getattr(close_file, "fileName", lambda: [])()):
+                self.file_calls.append(self.create_call(file_name))
+
+
+class ReadStatement(_StatementBase):
+    """``READ <file> [INTO <id>] [NEXT RECORD]``."""
+
+    statement_type = StatementTypeEnum.READ
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.file_call = None
+        self.into_call = None
+        self.next_record = False
+
+    def _populate(self) -> None:
+        ctx = self.ctx
+        file_name = getattr(ctx, "fileName", lambda: None)()
+        if file_name is not None:
+            self.file_call = self.create_call(file_name)
+        if "NEXT" in ctx.getText().upper():
+            self.next_record = True
+        into_ctx = getattr(ctx, "readInto", lambda: None)()
+        if into_ctx is not None:
+            identifier = getattr(into_ctx, "identifier", lambda: None)()
+            if identifier is not None:
+                self.into_call = self.create_call(identifier)
+
+
+class WriteStatement(_StatementBase):
+    """``WRITE <record> [FROM <id>]``."""
+
+    statement_type = StatementTypeEnum.WRITE
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.record_call = None
+        self.from_call = None
+
+    def _populate(self) -> None:
+        record = getattr(self.ctx, "recordName", lambda: None)()
+        if record is not None:
+            self.record_call = self.create_call(record)
+        from_ctx = getattr(self.ctx, "writeFromPhrase", lambda: None)()
+        if from_ctx is not None:
+            identifier = getattr(from_ctx, "identifier", lambda: None)()
+            if identifier is not None:
+                self.from_call = self.create_call(identifier)
+
+
+class RewriteStatement(_StatementBase):
+    """``REWRITE <record>``."""
+
+    statement_type = StatementTypeEnum.REWRITE
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.record_call = None
+
+    def _populate(self) -> None:
+        record = getattr(self.ctx, "recordName", lambda: None)()
+        if record is not None:
+            self.record_call = self.create_call(record)
+
+
+class DeleteStatement(_StatementBase):
+    """``DELETE <file>``."""
+
+    statement_type = StatementTypeEnum.DELETE
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.file_call = None
+
+    def _populate(self) -> None:
+        file_name = getattr(self.ctx, "fileName", lambda: None)()
+        if file_name is not None:
+            self.file_call = self.create_call(file_name)
+
+
+class StartStatement(_StatementBase):
+    """``START <file> KEY ...``."""
+
+    statement_type = StatementTypeEnum.START
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.file_call = None
+
+    def _populate(self) -> None:
+        file_name = getattr(self.ctx, "fileName", lambda: None)()
+        if file_name is not None:
+            self.file_call = self.create_call(file_name)
+
+
+# --- more common verbs (Phase C2 cont.) -----------------------------------
+
+class CallStatement(_StatementBase):
+    """``CALL <program> [USING <args>]``: subprogram call + USING arguments."""
+
+    statement_type = StatementTypeEnum.CALL
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.program_value_stmt = None
+        self.using_calls: List = []
+
+    def _populate(self) -> None:
+        ctx = self.ctx
+        ids = _as_list(getattr(ctx, "identifier", lambda: [])())
+        lits = _as_list(getattr(ctx, "literal", lambda: [])())
+        name_ctx = ids[0] if ids else (lits[0] if lits else None)
+        if name_ctx is not None:
+            self.program_value_stmt = self.create_value_stmt(name_ctx)
+        # USING parameters nest under callUsingPhrase -> callUsingParameter
+        # -> callByReference/Value/Content -> identifier. Walk the USING subtree
+        # for IdentifierContext nodes (robust to that nesting).
+        roots = _as_list(getattr(ctx, "callUsingPhrase", lambda: [])())
+        stack = list(roots)
+        seen = set()
+        while stack:
+            node = stack.pop()
+            if node is None or id(node) in seen:
+                continue
+            seen.add(id(node))
+            if type(node).__name__ == "IdentifierContext":
+                self.using_calls.append(self.create_call(node))
+                continue
+            for i in range(getattr(node, "getChildCount", lambda: 0)()):
+                stack.append(node.getChild(i))
+
+
+class SetStatement(_StatementBase):
+    """``SET <data> TO <value>`` / ``SET <data> UP|DOWN BY <value>``."""
+
+    statement_type = StatementTypeEnum.SET
+
+    class SetType(Enum):
+        SET_TO = "SET_TO"
+        SET_UP = "SET_UP"
+        SET_DOWN = "SET_DOWN"
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.set_type: Optional[SetStatement.SetType] = None
+        self.receiving_calls: List = []
+        self.value_stmt = None
+
+    def _populate(self) -> None:
+        ctx = self.ctx
+        text = ctx.getText().upper()
+        tos = _as_list(getattr(ctx, "setToStatement", lambda: [])())
+        updown = _as_list(getattr(ctx, "setUpDownByStatement", lambda: [])())
+        if updown and not tos:
+            self.set_type = SetStatement.SetType.SET_DOWN if "DOWN" in text else SetStatement.SetType.SET_UP
+        else:
+            self.set_type = SetStatement.SetType.SET_TO
+        # receiving identifiers live under setTo() within either form.
+        for grp in tos + updown:
+            for set_to in _as_list(getattr(grp, "setTo", lambda: [])()):
+                for identifier in _as_list(getattr(set_to, "identifier", lambda: [])()):
+                    self.receiving_calls.append(self.create_call(identifier))
+        # value: SET TO <value> (setToValue) or UP/DOWN BY <value> (setByValue).
+        for acc in ("setToValue", "setByValue"):
+            for value_ctx in _as_list(getattr(ctx, acc, lambda: [])()):
+                vals = _as_list(getattr(value_ctx, "identifier", lambda: [])()) or _as_list(
+                    getattr(value_ctx, "literal", lambda: [])()
+                )
+                if vals:
+                    self.value_stmt = self.create_value_stmt(vals[0])
+                    break
+            if self.value_stmt is not None:
+                break
+
+
+class EvaluateStatement(_StatementBase):
+    """``EVALUATE <subject> WHEN ...``: subject + when-clause count (minimal)."""
+
+    statement_type = StatementTypeEnum.EVALUATE
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.subject_value_stmt = None
+        self.when_count = 0
+
+    def _populate(self) -> None:
+        ctx = self.ctx
+        select = getattr(ctx, "evaluateSelect", lambda: None)()
+        if select is not None:
+            for acc in ("condition", "arithmeticExpression", "identifier", "literal"):
+                vals = _as_list(getattr(select, acc, lambda: [])())
+                if vals:
+                    self.subject_value_stmt = self.create_value_stmt(vals[0])
+                    break
+        whens = _as_list(getattr(ctx, "evaluateWhen", lambda: [])()) or _as_list(
+            getattr(ctx, "evaluateWhenPhrase", lambda: [])()
+        )
+        self.when_count = len(whens)
+        # WHEN-branch statement containers deferred (nested stmts attach to scope).
+
+
+class InitializeStatement(_StatementBase):
+    """``INITIALIZE <data-items>``: the data items to initialize."""
+
+    statement_type = StatementTypeEnum.INITIALIZE
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.data_item_calls: List = []
+
+    def _populate(self) -> None:
+        for identifier in _as_list(getattr(self.ctx, "identifier", lambda: [])()):
+            self.data_item_calls.append(self.create_call(identifier))
