@@ -84,27 +84,112 @@ class CobolParserRunner:
         pre_processed_input = CobolPreprocessorImpl().process_file(cobol_file, params)
         return self._parse_preprocess_input(pre_processed_input, params)
 
+    # --- ASG analysis -------------------------------------------------------
+
+    def analyze(
+        self,
+        cobol_code: str,
+        params: Optional[CobolParserParams] = None,
+        compilation_unit_name: Optional[str] = None,
+    ):
+        """Preprocess, parse to an AST, then build the ASG :class:`Program`.
+
+        Ports ``CobolParserRunnerImpl.analyzeCode``. The deliverable of
+        ``parse``/``parse_file`` is the ``startRule`` AST; this method runs the
+        additional ASG visitor passes (porting ``analyze()``) and returns the
+        semantic ``Program`` model.
+        """
+        from .asg.program import Program
+        from .asg.visitor import CobolCompilationUnitVisitor, CobolProgramUnitVisitor
+
+        if params is None:
+            params = self._create_default_params()
+
+        name = compilation_unit_name or "Anonymous"
+        _LOG.info("Analyzing compilation unit %s.", name)
+
+        pre_processed_input = CobolPreprocessorImpl().process(cobol_code, params)
+        ctx, tokens = self._lex_and_parse(pre_processed_input, params)
+
+        program = Program()
+        lines = pre_processed_input.splitlines()
+        CobolCompilationUnitVisitor(name, lines, tokens, program).visit(ctx)
+
+        # Phase A wires only the program-unit pass; data/procedure-statement
+        # passes are added in later phases via _run_analysis_passes.
+        self._run_analysis_passes(program)
+        return program
+
+    def analyze_file(
+        self,
+        cobol_file: Union[str, Path],
+        format: Optional[CobolSourceFormatEnum] = None,
+    ):
+        """Analyze a COBOL file into an ASG :class:`Program`."""
+        if not Path(cobol_file).is_file():
+            raise CobolParserException("Could not find file " + str(Path(cobol_file).resolve()))
+
+        compilation_unit_name = self._get_compilation_unit_name(cobol_file)
+        if format is not None:
+            params = self._create_default_params(format, cobol_file)
+        else:
+            params = self._create_default_params()
+
+        with open(cobol_file, "r", encoding=params.charset) as fh:
+            cobol_code = fh.read()
+
+        return self.analyze(cobol_code, params, compilation_unit_name)
+
+    @staticmethod
+    def _run_analysis_passes(program) -> None:
+        """Run the ASG build passes that are currently implemented.
+
+        Mirrors ``CobolParserRunnerImpl.analyze(program)``. Each phase extends
+        this: Phase A = program units (run during the compilation-unit visit);
+        Phase B adds the procedure-division pass; Phase C1 the statement pass;
+        Phases D/E the data/environment passes.
+        """
+        from .asg.visitor import (
+            CobolProcedureDivisionVisitor,
+            CobolProcedureStatementVisitor,
+            CobolProgramUnitVisitor,
+        )
+
+        # Pass 1: program units + the four divisions (must precede pass 2, so
+        # that ProcedureDivision is registered before scopes are located).
+        for compilation_unit in program.compilation_units:
+            CobolProgramUnitVisitor(compilation_unit).visit(compilation_unit.ctx)
+
+        # Pass 2: procedure-division structure (sections, paragraphs, clauses).
+        # Must precede pass 3 so PERFORM/GOTO calls can resolve to paragraphs.
+        for compilation_unit in program.compilation_units:
+            CobolProcedureDivisionVisitor(program).visit(compilation_unit.ctx)
+
+        # Pass 3: typed procedure statements (Phase C1 core verbs).
+        for compilation_unit in program.compilation_units:
+            CobolProcedureStatementVisitor(program).visit(compilation_unit.ctx)
+
     # --- internal -----------------------------------------------------------
 
-    def _parse_preprocess_input(
+    def _lex_and_parse(
         self, pre_processed_input: str, params: CobolParserParams
     ):
-        # run the lexer
+        """Lex and parse preprocessed input, returning ``(ctx, tokens)``."""
         lexer = CobolLexer(InputStream(pre_processed_input))
 
         if not params.ignore_syntax_errors:
             lexer.removeErrorListeners()
             lexer.addErrorListener(ThrowingErrorListener())
 
-        # get a list of matched tokens
         tokens = CommonTokenStream(lexer)
-
-        # pass the tokens to the parser. The throwing error listener is attached
-        # inside the two-stage parse (LL stage only) — see _start_rule_two_stage.
         parser = CobolParser(tokens)
+        ctx = self._start_rule_two_stage(parser, params.ignore_syntax_errors)
+        return ctx, tokens
 
-        # specify our entry point -> the AST
-        return self._start_rule_two_stage(parser, params.ignore_syntax_errors)
+    def _parse_preprocess_input(
+        self, pre_processed_input: str, params: CobolParserParams
+    ):
+        return self._lex_and_parse(pre_processed_input, params)[0]
 
     @staticmethod
     def _start_rule_two_stage(parser, ignore_syntax_errors: bool):
