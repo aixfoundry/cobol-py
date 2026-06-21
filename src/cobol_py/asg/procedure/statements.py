@@ -573,3 +573,73 @@ class InitializeStatement(_StatementBase):
     def _populate(self) -> None:
         for identifier in _as_list(getattr(self.ctx, "identifier", lambda: [])()):
             self.data_item_calls.append(self.create_call(identifier))
+
+
+# --- string / table verbs (Phase C2 cont.) -------------------------------
+
+class StringStatement(_StatementBase):
+    """``STRING ... INTO <id>``: the INTO receiving call (phrase detail deferred)."""
+
+    statement_type = StatementTypeEnum.STRING
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.into_call = None
+        self.sending_calls: List = []
+
+    def _populate(self) -> None:
+        into = getattr(self.ctx, "stringIntoPhrase", lambda: None)()
+        if into is not None:
+            for identifier in _as_list(getattr(into, "identifier", lambda: [])()):
+                self.into_call = self.create_call(identifier)
+                break
+        for sending in _as_list(getattr(self.ctx, "stringSending", lambda: [])()):
+            for identifier in _as_list(getattr(sending, "identifier", lambda: [])()):
+                self.sending_calls.append(self.create_call(identifier))
+
+
+class UnstringStatement(_StatementBase):
+    """``UNSTRING ... INTO <ids>``: the INTO receiving calls (minimal)."""
+
+    statement_type = StatementTypeEnum.UNSTRING
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.into_calls: List = []
+
+    def _populate(self) -> None:
+        # INTO targets nest under unstringIntoPhrase -> unstringInto -> identifier.
+        for phrase in _as_list(getattr(self.ctx, "unstringIntoPhrase", lambda: [])()):
+            for into in _as_list(getattr(phrase, "unstringInto", lambda: [])()):
+                for identifier in _as_list(getattr(into, "identifier", lambda: [])()):
+                    self.into_calls.append(self.create_call(identifier))
+
+
+class InspectStatement(_StatementBase):
+    """``INSPECT <id> ...``: the inspected data item (phrase detail deferred)."""
+
+    statement_type = StatementTypeEnum.INSPECT
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.data_item_call = None
+
+    def _populate(self) -> None:
+        for identifier in _as_list(getattr(self.ctx, "identifier", lambda: [])()):
+            self.data_item_call = self.create_call(identifier)
+            break
+
+
+class SearchStatement(_StatementBase):
+    """``SEARCH <table> ...``: the table being searched (phrase detail deferred)."""
+
+    statement_type = StatementTypeEnum.SEARCH
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.data_call = None
+
+    def _populate(self) -> None:
+        for qdn in _as_list(getattr(self.ctx, "qualifiedDataName", lambda: [])()):
+            self.data_call = self.create_call(qdn)
+            break

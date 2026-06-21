@@ -287,6 +287,21 @@ class CobolProcedureStatementVisitor(AbstractCobolParserVisitor):
     def visitInitializeStatement(self, ctx):  # noqa: N802
         from .procedure.statements import InitializeStatement
         return self._build(InitializeStatement, ctx)
+    def visitStringStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import StringStatement
+        return self._build(StringStatement, ctx)
+
+    def visitUnstringStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import UnstringStatement
+        return self._build(UnstringStatement, ctx)
+
+    def visitInspectStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import InspectStatement
+        return self._build(InspectStatement, ctx)
+
+    def visitSearchStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import SearchStatement
+        return self._build(SearchStatement, ctx)
 
 class CobolDataDivisionVisitor(AbstractCobolParserVisitor):
     """Build data-division sections and their data-description entries (Phase D).
