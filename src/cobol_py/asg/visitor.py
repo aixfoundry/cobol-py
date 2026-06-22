@@ -303,6 +303,107 @@ class CobolProcedureStatementVisitor(AbstractCobolParserVisitor):
         from .procedure.statements import SearchStatement
         return self._build(SearchStatement, ctx)
 
+    def visitSortStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import SortStatement
+
+        return self._build(SortStatement, ctx)
+
+    def visitMergeStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import MergeStatement
+
+        return self._build(MergeStatement, ctx)
+
+    def visitAlterStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import AlterStatement
+
+        return self._build(AlterStatement, ctx)
+
+    def visitCancelStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import CancelStatement
+
+        return self._build(CancelStatement, ctx)
+
+    def visitReturnStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ReturnStatement
+
+        return self._build(ReturnStatement, ctx)
+
+    def visitReleaseStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ReleaseStatement
+
+        return self._build(ReleaseStatement, ctx)
+
+    def visitExecCicsStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ExecCicsStatement
+
+        return self._build(ExecCicsStatement, ctx)
+
+    def visitExecSqlStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ExecSqlStatement
+
+        return self._build(ExecSqlStatement, ctx)
+
+    def visitExecSqlImsStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ExecSqlImsStatement
+
+        return self._build(ExecSqlImsStatement, ctx)
+
+    def visitEnableStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import EnableStatement
+
+        return self._build(EnableStatement, ctx)
+
+    def visitDisableStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import DisableStatement
+
+        return self._build(DisableStatement, ctx)
+
+    def visitReceiveStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ReceiveStatement
+
+        return self._build(ReceiveStatement, ctx)
+
+    def visitSendStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import SendStatement
+
+        return self._build(SendStatement, ctx)
+
+    def visitExhibitStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import ExhibitStatement
+
+        return self._build(ExhibitStatement, ctx)
+
+    def visitGenerateStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import GenerateStatement
+
+        return self._build(GenerateStatement, ctx)
+
+    def visitInitiateStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import InitiateStatement
+
+        return self._build(InitiateStatement, ctx)
+
+    def visitTerminateStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import TerminateStatement
+
+        return self._build(TerminateStatement, ctx)
+
+    def visitPurgeStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import PurgeStatement
+
+        return self._build(PurgeStatement, ctx)
+
+    def visitUseStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import UseStatement
+
+        return self._build(UseStatement, ctx)
+
+    def visitEntryStatement(self, ctx):  # noqa: N802
+        from .procedure.statements import EntryStatement
+
+        return self._build(EntryStatement, ctx)
+
+
 class CobolDataDivisionVisitor(AbstractCobolParserVisitor):
     """Build data-division sections and their data-description entries (Phase D).
 

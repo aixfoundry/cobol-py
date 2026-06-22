@@ -116,11 +116,15 @@ def test_if_captures_condition_and_nested_statement(analyze):
     )
     # Act
     main = analyze(src).compilation_unit.program_unit.procedure_division.get_paragraph("MAIN")
-    # Assert: IF is the first statement, with a condition; the nested DISPLAY
-    # attaches flat to the paragraph scope.
-    assert isinstance(main.statements[0], IfStatement)
-    assert main.statements[0].condition is not None
-    assert isinstance(main.statements[1], DisplayStatement)
+    # Assert: IF is the only top-level statement; the nested DISPLAY lives inside
+    # the IF's THEN phrase scope (it does not leak to the paragraph).
+    assert len(main.statements) == 1
+    if_stmt = main.statements[0]
+    assert isinstance(if_stmt, IfStatement)
+    assert if_stmt.condition is not None
+    assert if_stmt.then is not None
+    then_stmts = if_stmt.then.statements
+    assert len(then_stmts) == 1 and isinstance(then_stmts[0], DisplayStatement)
 
 
 def test_stop_run_type(analyze):
