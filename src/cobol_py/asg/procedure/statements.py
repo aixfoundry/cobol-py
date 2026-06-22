@@ -343,14 +343,38 @@ class GobackStatement(_StatementBase):
     statement_type = StatementTypeEnum.GO_BACK
 
 
-# --- arithmetic (typed + ctx retained; operand decomposition deferred) -----
+# --- arithmetic (ADD/SUBTRACT/MULTIPLY/DIVIDE/COMPUTe) --------------------
+# Each verb keeps the shared ON / NOT ON SIZE ERROR phrase ownership from the
+# base and adds its own operand/clause decomposition. Ports the Java
+# ``ScopeImpl.add{Add,Subtract,Multiply,Divide,Compute}Statement`` builders and
+# the per-verb ``*StatementImpl`` sub-builders (From/To/Giving/Store/Remainder/
+# ByPhrase/...). Receiving targets that may carry ROUNDED (addTo, addGiving,
+# divideInto, divideGiving, multiplyRegularOperand, multiplyGivingResult,
+# subtractMinuend, subtractGiving, computeStore) are wrapped in
+# :class:`_RoundedCall`; pure ``identifier | literal`` operands become ValueStmts.
+
+
+class _RoundedCall:
+    """A receiving target carrying an optional ROUNDED flag.
+
+    Collapses proleap's per-verb leaf wrappers (``To`` / ``Giving`` / ``Into``
+    / ``Store`` / ``MultiplyRegularOperand`` / ``SubtractMinuend`` / ...), each
+    of which holds a ``Call`` plus a boolean ``rounded``.
+    """
+
+    __slots__ = ("call", "rounded")
+
+    def __init__(self, call, rounded: bool = False) -> None:
+        self.call = call
+        self.rounded = rounded
+
 
 class _ArithmeticStatementBase(_StatementBase):
     """Base for ADD/SUBTRACT/MULTIPLY/DIVIDE/COMPUTE.
 
-    Operand decomposition is deferred, but the ``ON SIZE ERROR`` /
-    ``NOT ON SIZE ERROR`` phrases are owned so their nested statements do not
-    leak to the enclosing paragraph.
+    Owns the ``ON SIZE ERROR`` / ``NOT ON SIZE ERROR`` phrases so their nested
+    statements do not leak to the enclosing paragraph; per-verb operands are
+    filled by each subclass's ``_populate`` override.
     """
 
     def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
@@ -367,25 +391,246 @@ class _ArithmeticStatementBase(_StatementBase):
             NotOnSizeErrorPhrase, ctx.notOnSizeErrorPhrase()
         )
 
+    def _operand_value_stmts(self, ctxs) -> List:
+        """Build a ValueStmt per ``identifier | literal`` operand ctx."""
+        return [self.create_value_stmt(c.identifier(), c.literal()) for c in ctxs]
+
+    def _rounded_call(self, ctx) -> _RoundedCall:
+        """Build a :class:`_RoundedCall` from an ``identifier ROUNDED?`` ctx."""
+        call = None
+        ident = ctx.identifier()
+        if ident is not None:
+            call = self.create_call(ident)
+        rounded = getattr(ctx, "ROUNDED", lambda: None)() is not None
+        return _RoundedCall(call, rounded)
+
 
 class AddStatement(_ArithmeticStatementBase):
+    """``ADD``: TO / TO GIVING / CORRESPONDING forms."""
+
     statement_type = StatementTypeEnum.ADD
+
+    class AddType(Enum):
+        TO = "TO"
+        TO_GIVING = "TO_GIVING"
+        CORRESPONDING = "CORRESPONDING"
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.add_type: Optional[AddStatement.AddType] = None
+        self.from_value_stmts: List = []  # addends (addFrom); TO + TO GIVING
+        self.to_targets: List[_RoundedCall] = []  # addTo (TO)
+        self.to_value_stmts: List = []  # addToGiving (TO GIVING)
+        self.giving_targets: List[_RoundedCall] = []  # addGiving (TO GIVING)
+        self.corresponding_from_call = None  # identifier (CORRESPONDING)
+        self.corresponding_to_call = None  # addTo identifier (CORRESPONDING)
+
+    def _populate(self) -> None:
+        super()._populate()
+        ctx = self.ctx
+        if ctx.addToStatement() is not None:
+            self.add_type = AddStatement.AddType.TO
+            sub = ctx.addToStatement()
+            self.from_value_stmts = self._operand_value_stmts(_as_list(sub.addFrom()))
+            self.to_targets = [self._rounded_call(t) for t in _as_list(sub.addTo())]
+        elif ctx.addToGivingStatement() is not None:
+            self.add_type = AddStatement.AddType.TO_GIVING
+            sub = ctx.addToGivingStatement()
+            self.from_value_stmts = self._operand_value_stmts(_as_list(sub.addFrom()))
+            self.to_value_stmts = self._operand_value_stmts(
+                _as_list(sub.addToGiving())
+            )
+            self.giving_targets = [
+                self._rounded_call(g) for g in _as_list(sub.addGiving())
+            ]
+        elif ctx.addCorrespondingStatement() is not None:
+            self.add_type = AddStatement.AddType.CORRESPONDING
+            sub = ctx.addCorrespondingStatement()
+            if sub.identifier() is not None:
+                self.corresponding_from_call = self.create_call(sub.identifier())
+            to = sub.addTo()  # singular in the CORRESPONDING form
+            if to is not None and to.identifier() is not None:
+                self.corresponding_to_call = self.create_call(to.identifier())
 
 
 class SubtractStatement(_ArithmeticStatementBase):
+    """``SUBTRACT``: FROM / FROM GIVING / CORRESPONDING forms."""
+
     statement_type = StatementTypeEnum.SUBTRACT
+
+    class SubtractType(Enum):
+        FROM = "FROM"
+        FROM_GIVING = "FROM_GIVING"
+        CORRESPONDING = "CORRESPONDING"
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.subtract_type: Optional[SubtractStatement.SubtractType] = None
+        self.subtrahend_value_stmts: List = []  # subtractSubtrahend
+        self.from_targets: List[_RoundedCall] = []  # subtractMinuend (FROM)
+        self.from_value_stmt = None  # subtractMinuendGiving (FROM GIVING)
+        self.giving_targets: List[_RoundedCall] = []  # subtractGiving (FROM GIVING)
+        self.corresponding_subtrahend_call = None  # qualifiedDataName (CORR)
+        self.corresponding_from_target: Optional[_RoundedCall] = None
+
+    def _populate(self) -> None:
+        super()._populate()
+        ctx = self.ctx
+        if ctx.subtractFromStatement() is not None:
+            self.subtract_type = SubtractStatement.SubtractType.FROM
+            sub = ctx.subtractFromStatement()
+            self.subtrahend_value_stmts = self._operand_value_stmts(
+                _as_list(sub.subtractSubtrahend())
+            )
+            self.from_targets = [
+                self._rounded_call(m) for m in _as_list(sub.subtractMinuend())
+            ]
+        elif ctx.subtractFromGivingStatement() is not None:
+            self.subtract_type = SubtractStatement.SubtractType.FROM_GIVING
+            sub = ctx.subtractFromGivingStatement()
+            self.subtrahend_value_stmts = self._operand_value_stmts(
+                _as_list(sub.subtractSubtrahend())
+            )
+            mg = sub.subtractMinuendGiving()  # singular
+            if mg is not None:
+                self.from_value_stmt = self.create_value_stmt(
+                    mg.identifier(), mg.literal()
+                )
+            self.giving_targets = [
+                self._rounded_call(g) for g in _as_list(sub.subtractGiving())
+            ]
+        elif ctx.subtractCorrespondingStatement() is not None:
+            self.subtract_type = SubtractStatement.SubtractType.CORRESPONDING
+            sub = ctx.subtractCorrespondingStatement()
+            qdn = sub.qualifiedDataName()
+            if qdn is not None:
+                self.corresponding_subtrahend_call = self.create_call(qdn)
+            mc = sub.subtractMinuendCorresponding()  # qualifiedDataName ROUNDED?
+            if mc is not None:
+                q = mc.qualifiedDataName()
+                call = self.create_call(q) if q is not None else None
+                self.corresponding_from_target = _RoundedCall(
+                    call, mc.ROUNDED() is not None
+                )
 
 
 class MultiplyStatement(_ArithmeticStatementBase):
+    """``MULTIPLY``: BY / BY GIVING forms."""
+
     statement_type = StatementTypeEnum.MULTIPLY
+
+    class MultiplyType(Enum):
+        BY = "BY"
+        BY_GIVING = "BY_GIVING"
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.multiply_type: Optional[MultiplyStatement.MultiplyType] = None
+        self.operand_value_stmt = None  # MULTIPLY <operand>
+        self.by_targets: List[_RoundedCall] = []  # multiplyRegularOperand (BY)
+        self.giving_operand_value_stmt = None  # multiplyGivingOperand (BY GIVING)
+        self.giving_targets: List[_RoundedCall] = []  # multiplyGivingResult
+
+    def _populate(self) -> None:
+        super()._populate()
+        ctx = self.ctx
+        self.operand_value_stmt = self.create_value_stmt(
+            ctx.identifier(), ctx.literal()
+        )
+        if ctx.multiplyRegular() is not None:
+            self.multiply_type = MultiplyStatement.MultiplyType.BY
+            reg = ctx.multiplyRegular()
+            self.by_targets = [
+                self._rounded_call(op) for op in _as_list(reg.multiplyRegularOperand())
+            ]
+        elif ctx.multiplyGiving() is not None:
+            self.multiply_type = MultiplyStatement.MultiplyType.BY_GIVING
+            g = ctx.multiplyGiving()
+            gop = g.multiplyGivingOperand()  # singular
+            if gop is not None:
+                self.giving_operand_value_stmt = self.create_value_stmt(
+                    gop.identifier(), gop.literal()
+                )
+            self.giving_targets = [
+                self._rounded_call(r) for r in _as_list(g.multiplyGivingResult())
+            ]
 
 
 class DivideStatement(_ArithmeticStatementBase):
+    """``DIVIDE``: INTO / INTO GIVING / BY GIVING forms (+ optional REMAINDER)."""
+
     statement_type = StatementTypeEnum.DIVIDE
+
+    class DivideType(Enum):
+        INTO = "INTO"
+        INTO_GIVING = "INTO_GIVING"
+        BY_GIVING = "BY_GIVING"
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.divide_type: Optional[DivideStatement.DivideType] = None
+        self.operand_value_stmt = None  # DIVIDE <operand>
+        self.into_targets: List[_RoundedCall] = []  # divideInto (INTO)
+        self.into_value_stmt = None  # INTO <operand> (INTO GIVING)
+        self.by_value_stmt = None  # BY <operand> (BY GIVING)
+        self.giving_targets: List[_RoundedCall] = []  # divideGiving (GIVING)
+        self.remainder_call = None  # REMAINDER identifier
+
+    def _populate(self) -> None:
+        super()._populate()
+        ctx = self.ctx
+        self.operand_value_stmt = self.create_value_stmt(
+            ctx.identifier(), ctx.literal()
+        )
+        if ctx.divideIntoStatement() is not None:
+            self.divide_type = DivideStatement.DivideType.INTO
+            sub = ctx.divideIntoStatement()
+            self.into_targets = [
+                self._rounded_call(i) for i in _as_list(sub.divideInto())
+            ]
+        elif ctx.divideIntoGivingStatement() is not None:
+            self.divide_type = DivideStatement.DivideType.INTO_GIVING
+            sub = ctx.divideIntoGivingStatement()
+            self.into_value_stmt = self.create_value_stmt(
+                sub.identifier(), sub.literal()
+            )
+            self.giving_targets = self._divide_givings(sub)
+        elif ctx.divideByGivingStatement() is not None:
+            self.divide_type = DivideStatement.DivideType.BY_GIVING
+            sub = ctx.divideByGivingStatement()
+            self.by_value_stmt = self.create_value_stmt(
+                sub.identifier(), sub.literal()
+            )
+            self.giving_targets = self._divide_givings(sub)
+        rem = ctx.divideRemainder()
+        if rem is not None and rem.identifier() is not None:
+            self.remainder_call = self.create_call(rem.identifier())
+
+    def _divide_givings(self, sub_ctx) -> List[_RoundedCall]:
+        """The ``divideGivingPhrase`` -> ``divideGiving`` targets (INTO/BY GIVING)."""
+        phrase = sub_ctx.divideGivingPhrase()
+        if phrase is None:
+            return []
+        return [self._rounded_call(dg) for dg in _as_list(phrase.divideGiving())]
 
 
 class ComputeStatement(_ArithmeticStatementBase):
+    """``COMPUTE <stores> = <arithmetic expression>``."""
+
     statement_type = StatementTypeEnum.COMPUTE
+
+    def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, scope, ctx)
+        self.stores: List[_RoundedCall] = []  # computeStore targets
+        self.arithmetic_expression = None  # ArithmeticValueStmt
+
+    def _populate(self) -> None:
+        super()._populate()
+        ctx = self.ctx
+        self.stores = [self._rounded_call(s) for s in _as_list(ctx.computeStore())]
+        expr = ctx.arithmeticExpression()
+        if expr is not None:
+            self.arithmetic_expression = self.create_arithmetic_value_stmt(expr)
 
 
 # --- file I/O verbs (Phase C2) --------------------------------------------
@@ -443,15 +688,27 @@ class CloseStatement(_StatementBase):
 
 
 class ReadStatement(_StatementBase):
-    """``READ <file> [INTO <id>] [NEXT RECORD] [INVALID KEY ...] [AT END ...]``."""
+    """``READ <file> [NEXT] [RECORD] [INTO <id>] [WITH <lock>] [KEY <id>] ...``.
+
+    Ports ``ScopeImpl.addReadStatement`` + ``ReadStatementImpl.addInto/addKey/
+    addWith``. Note ``next_record`` is keyed on the ``RECORD`` token (matching
+    Java), not ``NEXT``.
+    """
 
     statement_type = StatementTypeEnum.READ
+
+    class WithType(Enum):
+        KEPT_LOCK = "KEPT_LOCK"
+        NO_LOCK = "NO_LOCK"
+        WAIT = "WAIT"
 
     def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
         super().__init__(program_unit, scope, ctx)
         self.file_call = None
         self.into_call = None
         self.next_record = False
+        self.key_call = None
+        self.with_type: Optional[ReadStatement.WithType] = None
         self.invalid_key_phrase: Optional[InvalidKeyPhrase] = None
         self.not_invalid_key_phrase: Optional[NotInvalidKeyPhrase] = None
         self.at_end_phrase: Optional[AtEndPhrase] = None
@@ -462,13 +719,22 @@ class ReadStatement(_StatementBase):
         file_name = getattr(ctx, "fileName", lambda: None)()
         if file_name is not None:
             self.file_call = self.create_call(file_name)
-        if "NEXT" in ctx.getText().upper():
+        # Java keys nextRecord off ctx.RECORD(), not ctx.NEXT().
+        if getattr(ctx, "RECORD", lambda: None)() is not None:
             self.next_record = True
         into_ctx = getattr(ctx, "readInto", lambda: None)()
         if into_ctx is not None:
             identifier = getattr(into_ctx, "identifier", lambda: None)()
             if identifier is not None:
                 self.into_call = self.create_call(identifier)
+        with_ctx = getattr(ctx, "readWith", lambda: None)()
+        if with_ctx is not None:
+            self.with_type = self._with_type(with_ctx)
+        key_ctx = getattr(ctx, "readKey", lambda: None)()
+        if key_ctx is not None:
+            qdn = getattr(key_ctx, "qualifiedDataName", lambda: None)()
+            if qdn is not None:
+                self.key_call = self.create_call(qdn)
         self.invalid_key_phrase = self._phrase(InvalidKeyPhrase, ctx.invalidKeyPhrase())
         self.not_invalid_key_phrase = self._phrase(
             NotInvalidKeyPhrase, ctx.notInvalidKeyPhrase()
@@ -476,16 +742,45 @@ class ReadStatement(_StatementBase):
         self.at_end_phrase = self._phrase(AtEndPhrase, ctx.atEndPhrase())
         self.not_at_end_phrase = self._phrase(NotAtEndPhrase, ctx.notAtEndPhrase())
 
+    @staticmethod
+    def _with_type(ctx) -> "Optional[ReadStatement.WithType]":
+        # readWith: WITH? ((KEPT | NO) LOCK | WAIT)
+        if getattr(ctx, "KEPT", lambda: None)() is not None:
+            return ReadStatement.WithType.KEPT_LOCK
+        if getattr(ctx, "NO", lambda: None)() is not None:
+            return ReadStatement.WithType.NO_LOCK
+        if getattr(ctx, "WAIT", lambda: None)() is not None:
+            return ReadStatement.WithType.WAIT
+        return None
+
 
 class WriteStatement(_StatementBase):
-    """``WRITE <record> [FROM <id>] [AT END-OF-PAGE ...] [INVALID KEY ...]``."""
+    """``WRITE <record> [FROM <id|lit>] [advancing] [AT END-OF-PAGE ...] ...``.
+
+    Ports ``ScopeImpl.addWriteStatement`` + ``WriteStatementImpl.addFrom /
+    addAdvancingPhrase``. FROM is a ValueStmt (may be a literal); the advancing
+    phrase decomposes into position (BEFORE/AFTER) + type (PAGE/LINES/MNEMONIC).
+    """
 
     statement_type = StatementTypeEnum.WRITE
+
+    class PositionType(Enum):
+        BEFORE = "BEFORE"
+        AFTER = "AFTER"
+
+    class AdvancingType(Enum):
+        PAGE = "PAGE"
+        LINES = "LINES"
+        MNEMONIC = "MNEMONIC"
 
     def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
         super().__init__(program_unit, scope, ctx)
         self.record_call = None
-        self.from_call = None
+        self.from_value_stmt = None
+        self.advancing_position: Optional[WriteStatement.PositionType] = None
+        self.advancing_type: Optional[WriteStatement.AdvancingType] = None
+        self.advancing_lines_value_stmt = None  # writeAdvancingLines count
+        self.advancing_mnemonic_call = None  # writeAdvancingMnemonic
         self.at_end_of_page_phrase: Optional[AtEndOfPagePhrase] = None
         self.not_at_end_of_page_phrase: Optional[NotAtEndOfPagePhrase] = None
         self.invalid_key_phrase: Optional[InvalidKeyPhrase] = None
@@ -498,9 +793,13 @@ class WriteStatement(_StatementBase):
             self.record_call = self.create_call(record)
         from_ctx = getattr(ctx, "writeFromPhrase", lambda: None)()
         if from_ctx is not None:
-            identifier = getattr(from_ctx, "identifier", lambda: None)()
-            if identifier is not None:
-                self.from_call = self.create_call(identifier)
+            self.from_value_stmt = self.create_value_stmt(
+                getattr(from_ctx, "identifier", lambda: None)(),
+                getattr(from_ctx, "literal", lambda: None)(),
+            )
+        adv = getattr(ctx, "writeAdvancingPhrase", lambda: None)()
+        if adv is not None:
+            self._populate_advancing(adv)
         self.at_end_of_page_phrase = self._phrase(
             AtEndOfPagePhrase, ctx.writeAtEndOfPagePhrase()
         )
@@ -512,15 +811,39 @@ class WriteStatement(_StatementBase):
             NotInvalidKeyPhrase, ctx.notInvalidKeyPhrase()
         )
 
+    def _populate_advancing(self, adv) -> None:
+        # writeAdvancingPhrase: (BEFORE | AFTER) ADVANCING? (page|lines|mnemonic)
+        if getattr(adv, "BEFORE", lambda: None)() is not None:
+            self.advancing_position = WriteStatement.PositionType.BEFORE
+        elif getattr(adv, "AFTER", lambda: None)() is not None:
+            self.advancing_position = WriteStatement.PositionType.AFTER
+        page = getattr(adv, "writeAdvancingPage", lambda: None)()
+        lines = getattr(adv, "writeAdvancingLines", lambda: None)()
+        mnemonic = getattr(adv, "writeAdvancingMnemonic", lambda: None)()
+        if page is not None:
+            self.advancing_type = WriteStatement.AdvancingType.PAGE
+        elif lines is not None:
+            self.advancing_type = WriteStatement.AdvancingType.LINES
+            self.advancing_lines_value_stmt = self.create_value_stmt(
+                getattr(lines, "identifier", lambda: None)(),
+                getattr(lines, "literal", lambda: None)(),
+            )
+        elif mnemonic is not None:
+            self.advancing_type = WriteStatement.AdvancingType.MNEMONIC
+            mn = getattr(mnemonic, "mnemonicName", lambda: None)()
+            if mn is not None:
+                self.advancing_mnemonic_call = self.create_call(mn)
+
 
 class RewriteStatement(_StatementBase):
-    """``REWRITE <record> [INVALID KEY ...]``."""
+    """``REWRITE <record> [FROM <id>] [INVALID KEY ...]``."""
 
     statement_type = StatementTypeEnum.REWRITE
 
     def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
         super().__init__(program_unit, scope, ctx)
         self.record_call = None
+        self.from_call = None
         self.invalid_key_phrase: Optional[InvalidKeyPhrase] = None
         self.not_invalid_key_phrase: Optional[NotInvalidKeyPhrase] = None
 
@@ -529,6 +852,11 @@ class RewriteStatement(_StatementBase):
         record = getattr(ctx, "recordName", lambda: None)()
         if record is not None:
             self.record_call = self.create_call(record)
+        from_ctx = getattr(ctx, "rewriteFrom", lambda: None)()
+        if from_ctx is not None:
+            identifier = getattr(from_ctx, "identifier", lambda: None)()
+            if identifier is not None:
+                self.from_call = self.create_call(identifier)
         self.invalid_key_phrase = self._phrase(InvalidKeyPhrase, ctx.invalidKeyPhrase())
         self.not_invalid_key_phrase = self._phrase(
             NotInvalidKeyPhrase, ctx.notInvalidKeyPhrase()
@@ -558,13 +886,25 @@ class DeleteStatement(_StatementBase):
 
 
 class StartStatement(_StatementBase):
-    """``START <file> KEY ... [INVALID KEY ...]``."""
+    """``START <file> KEY <rel> <id> [INVALID KEY ...]``.
+
+    Ports ``ScopeImpl.addStartStatement`` + ``StartStatementImpl.addKey``. The
+    KeyType mirrors Java (GREATER_OR_EQUAL / GREATER / EQUAL; ``NOT LESS`` maps
+    to GREATER_OR_EQUAL).
+    """
 
     statement_type = StatementTypeEnum.START
+
+    class KeyType(Enum):
+        GREATER_OR_EQUAL = "GREATER_OR_EQUAL"
+        GREATER = "GREATER"
+        EQUAL = "EQUAL"
 
     def __init__(self, program_unit, scope, ctx: ParserRuleContext) -> None:
         super().__init__(program_unit, scope, ctx)
         self.file_call = None
+        self.key_type: Optional[StartStatement.KeyType] = None
+        self.key_comparison_call = None
         self.invalid_key_phrase: Optional[InvalidKeyPhrase] = None
         self.not_invalid_key_phrase: Optional[NotInvalidKeyPhrase] = None
 
@@ -573,10 +913,33 @@ class StartStatement(_StatementBase):
         file_name = getattr(ctx, "fileName", lambda: None)()
         if file_name is not None:
             self.file_call = self.create_call(file_name)
+        key_ctx = getattr(ctx, "startKey", lambda: None)()
+        if key_ctx is not None:
+            self.key_type = self._key_type(key_ctx)
+            qdn = getattr(key_ctx, "qualifiedDataName", lambda: None)()
+            if qdn is not None:
+                self.key_comparison_call = self.create_call(qdn)
         self.invalid_key_phrase = self._phrase(InvalidKeyPhrase, ctx.invalidKeyPhrase())
         self.not_invalid_key_phrase = self._phrase(
             NotInvalidKeyPhrase, ctx.notInvalidKeyPhrase()
         )
+
+    @staticmethod
+    def _key_type(ctx) -> "Optional[StartStatement.KeyType]":
+        def tok(name):
+            return getattr(ctx, name, lambda: None)() is not None
+
+        if tok("MORETHANOREQUAL"):
+            return StartStatement.KeyType.GREATER_OR_EQUAL
+        if tok("GREATER") and tok("EQUAL"):
+            return StartStatement.KeyType.GREATER_OR_EQUAL
+        if tok("NOT") and (tok("LESSTHANCHAR") or tok("LESS")):
+            return StartStatement.KeyType.GREATER_OR_EQUAL
+        if tok("MORETHANCHAR") or tok("GREATER"):
+            return StartStatement.KeyType.GREATER
+        if tok("EQUAL") or tok("EQUALCHAR"):
+            return StartStatement.KeyType.EQUAL
+        return None
 
 
 # --- more common verbs (Phase C2 cont.) -----------------------------------
@@ -590,6 +953,7 @@ class CallStatement(_StatementBase):
         super().__init__(program_unit, scope, ctx)
         self.program_value_stmt = None
         self.using_calls: List = []
+        self.giving_call = None
         self.on_overflow_phrase: Optional[OnOverflowPhrase] = None
         self.on_exception_clause: Optional[OnExceptionClause] = None
         self.not_on_exception_clause: Optional[NotOnExceptionClause] = None
@@ -617,6 +981,12 @@ class CallStatement(_StatementBase):
                 continue
             for i in range(getattr(node, "getChildCount", lambda: 0)()):
                 stack.append(node.getChild(i))
+        # GIVING / RETURNING <id>.
+        giving_phrase = getattr(ctx, "callGivingPhrase", lambda: None)()
+        if giving_phrase is not None:
+            giving_ident = getattr(giving_phrase, "identifier", lambda: None)()
+            if giving_ident is not None:
+                self.giving_call = self.create_call(giving_ident)
         self.on_overflow_phrase = self._phrase(OnOverflowPhrase, ctx.onOverflowPhrase())
         self.on_exception_clause = self._phrase(
             OnExceptionClause, ctx.onExceptionClause()
@@ -648,7 +1018,10 @@ class SetStatement(_StatementBase):
         tos = _as_list(getattr(ctx, "setToStatement", lambda: [])())
         updown = _as_list(getattr(ctx, "setUpDownByStatement", lambda: [])())
         if updown and not tos:
-            self.set_type = SetStatement.SetType.SET_DOWN if "DOWN" in text else SetStatement.SetType.SET_UP
+            # UP BY / DOWN BY is a typed token on the setUpDownByStatement ctx,
+            # not a substring (avoids false-positive on names containing "DOWN").
+            has_down = updown[0].DOWN() is not None if hasattr(updown[0], "DOWN") else "DOWN" in text
+            self.set_type = SetStatement.SetType.SET_DOWN if has_down else SetStatement.SetType.SET_UP
         else:
             self.set_type = SetStatement.SetType.SET_TO
         # receiving identifiers live under setTo() within either form.

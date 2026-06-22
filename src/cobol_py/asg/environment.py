@@ -75,13 +75,15 @@ class FileControlParagraph(CobolDivisionElement):
 
     @staticmethod
     def _populate_entry(entry: FileControlEntry, ctx) -> None:
-        # Minimal clause capture (raw text); full clause objects deferred.
-        select = ctx.selectClause() if hasattr(ctx, "selectClause") else None
-        if select is not None:
-            entry.organization = select.getText()
-        assign_clauses = ctx.assignClause() if hasattr(ctx, "assignClause") else None
-        if assign_clauses:
-            entry.assign = assign_clauses[0].getText()
+        # Raw clause text capture; typed clause objects are built by the
+        # file-control clause visitor (Phase E2). The clauses live nested under
+        # fileControlEntry -> fileControlClause -> <clause>, not directly on the
+        # entry context, so iterate the clause list and route by alternative.
+        for clause_ctx in (ctx.fileControlClause() or []):
+            if clause_ctx.organizationClause() is not None:
+                entry.organization = clause_ctx.organizationClause().getText()
+            elif clause_ctx.assignClause() is not None:
+                entry.assign = clause_ctx.assignClause().getText()
 
     @property
     def file_control_entries(self) -> List[FileControlEntry]:

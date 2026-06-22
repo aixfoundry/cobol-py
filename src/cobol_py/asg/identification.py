@@ -56,13 +56,23 @@ class IdentificationDivision(CobolDivisionElement):
 
     @staticmethod
     def _set_attribute(paragraph: ProgramIdParagraph, ctx: ParserRuleContext) -> None:
+        # Typed-token dispatch in Java's order (COMMON | INITIAL | LIBRARY |
+        # DEFINITION | RECURSIVE). Avoids substring false-positives (a program
+        # named "RECURSIVE-CALC" must not read as RECURSIVE) and the wrong
+        # RECURSIVE-before-LIBRARY precedence of the old text scan.
         Attr = ProgramIdParagraph.Attribute
-        text = ctx.getText().upper()
-        if "COMMON" in text:
+
+        def _present(token_name: str) -> bool:
+            accessor = getattr(ctx, token_name, None)
+            return callable(accessor) and accessor() is not None
+
+        if _present("COMMON"):
             paragraph.attribute = Attr.COMMON
-        elif "INITIAL" in text:
+        elif _present("INITIAL"):
             paragraph.attribute = Attr.INITIAL
-        elif "RECURSIVE" in text:
-            paragraph.attribute = Attr.RECURSIVE
-        elif "LIBRARY" in text:
+        elif _present("LIBRARY"):
             paragraph.attribute = Attr.LIBRARY
+        elif _present("DEFINITION"):
+            paragraph.attribute = Attr.DEFINITION
+        elif _present("RECURSIVE"):
+            paragraph.attribute = Attr.RECURSIVE

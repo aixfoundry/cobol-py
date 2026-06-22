@@ -70,6 +70,12 @@ class CobolReplacementMapping:
         if replaceable is None:
             return None
         parts = _WS_SPLIT.split(replaceable)
+        # Java's String.split(regex) (limit 0) discards trailing empty strings;
+        # Python's re.split keeps them, which would append a trailing separator
+        # to the joined regex and break matching when the replaceable carries
+        # trailing hidden whitespace. Trim trailing empties to match Java.
+        while parts and parts[-1] == "":
+            parts.pop()
         regex_parts = [re.escape(part) for part in parts]
         return _REGEX_SEPARATOR.join(regex_parts)
 

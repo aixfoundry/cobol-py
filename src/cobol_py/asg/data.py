@@ -158,10 +158,13 @@ class DataDescriptionEntryContainer(CobolDivisionElement):
             if ctx.FILLER() is not None:
                 result.filler = True
                 result.filler_number = self.compilation_unit.increment_filler_counter()
-            # picture (raw string; full clause deferred)
+            # picture: store the picture-string (e.g. "X(5)"), not the whole
+            # clause text (which includes the PIC/PICTURE keyword).
             pic_clauses = ctx.dataPictureClause()
             if pic_clauses:
-                result.picture = pic_clauses[0].getText()
+                pic_string = pic_clauses[0].pictureString()
+                if pic_string is not None:
+                    result.picture = pic_string.getText()
             self._register_entry(name, result)
         return result
 

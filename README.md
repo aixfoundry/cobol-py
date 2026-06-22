@@ -12,8 +12,10 @@ Python, built on [ANTLR4](https://www.antlr.org/).
 2. **Main grammar** (`Cobol.g4`) — parses the preprocessed text into a `startRule`
    AST.
 
-> Scope is the **parsing pipeline** only (raw source → preprocessed text → AST).
-> proleap's ASG layer (semantic analysis, data / control flow) is **not** ported.
+> The deliverable is the full pipeline: raw source → preprocessed text → AST →
+> **ASG** (Abstract Semantic Graph). The ASG is a typed, registry-backed object
+> model of the program — divisions, sections, data descriptions, paragraphs,
+> statements, and resolved calls — built on top of the `startRule` AST.
 
 ## Install
 
@@ -96,10 +98,53 @@ class MyListener(CobolListener):
         print("found MOVE:", ctx.getText())
 ```
 
+## ASG (semantic layer)
+
+`CobolParserRunner().analyze(...)` runs the preprocessor + AST parse, then the
+ASG visitor passes, and returns a typed `Program` model — the same shape as
+proleap's ASG, ported to idiomatic Python (snake_case attrs, one class per
+Java interface+Impl pair, direct attributes instead of getters).
+
+```python
+from cobol_py import CobolParserRunner, CobolParserParams, CobolSourceFormatEnum
+
+params = CobolParserParams(format=CobolSourceFormatEnum.FIXED)
+program = CobolParserRunner().analyze(src, params)
+
+# Procedure-division statements, fully typed.
+proc = program.compilation_unit.program_unit.procedure_division
+for stmt in proc.root_paragraphs[0].statements:
+    print(type(stmt).__name__, stmt.statement_type)
+```
+
+Coverage (mirrors proleap's metamodel):
+
+- **Structure** — `CompilationUnit` / `ProgramUnit` / four divisions;
+  identification, environment (FILE-CONTROL `SELECT`s), data (working-storage /
+  linkage / local-storage / file-section `FD`s with the 01-level hierarchy),
+  procedure (sections / paragraphs / root-paragraphs).
+- **Statements** — all 50 verbs produce a typed node. File I/O (OPEN/CLOSE/
+  READ/WRITE/REWRITE/DELETE/START), arithmetic (ADD/SUBTRACT/MULTIPLY/DIVIDE/
+  COMPUTE), control (IF/PERFORM/EVALUATE/GO TO/SEARCH), MOVE/CALL/SET/STRING/
+  UNSTRING/INSPECT/INITIALIZE/DISPLAY/ACCEPT/STOP, and the C2 tail (SORT/MERGE/
+  ALTER/CANCEL/RETURN/RELEASE + EXEC CICS/SQL/SQLIMS and the rarer verbs).
+- **Phrase scopes** — every statement-owning phrase (AT END, INVALID KEY,
+  ON SIZE ERROR, ON EXCEPTION, ON OVERFLOW, AT END-OF-PAGE, IF THEN/ELSE,
+  PERFORM inline body, SEARCH/EVALUATE WHEN) owns its nested statements, so they
+  nest under their parent instead of leaking to the paragraph — matching
+  proleap, where these phrases implement `Scope`.
+- **Calls** — references resolve to `ProcedureCall` / `SectionCall` /
+  `DataDescriptionEntryCall` / `FileControlEntryCall` (with back-links on the
+  declarations); unresolved names fall back to `UndefinedCall`.
+
+Clause detail still deferred on a few verbs (full arithmetic/condition operand
+decomposition, OCCURS/REDEFINES/VALUE/USAGE data clauses, SEARCH/EVALUATE WHEN
+condition decomposition); every verb already produces its typed node.
+
 ## Testing
 
 ```bash
-uv run pytest                      # fast unit + AST golden tests (~130 tests)
+uv run pytest                      # full suite (~197 tests)
 COBOL_PY_NIST_FULL=1 uv run pytest tests/test_nist.py   # full NIST suite (slow)
 ```
 
@@ -110,6 +155,7 @@ COBOL_PY_NIST_FULL=1 uv run pytest tests/test_nist.py   # full NIST suite (slow)
 | `tests/test_parse.py` | full pipeline on small FIXED/TANDEM/VARIABLE fixtures |
 | `tests/test_ast_tree.py` | parse-tree **golden** comparison vs proleap's `.cbl.tree` files |
 | `tests/test_nist.py` | NIST COBOL-85 conformance (a stride by default; full is opt-in) |
+| `tests/test_asg/*.py` | ASG layer: foundation, data/procedure structure, statements, file verbs, call resolution, phrase-scope nesting |
 
 `tests/test_ast_tree.py` is the strongest fidelity check: it parses every program
 under `testdata/io/proleap/cobol/ast` and asserts the cleaned `toStringTree` output
@@ -147,6 +193,8 @@ scripts/generate_parser.py     # regenerate src/cobol_py/*.py from the grammars
 src/cobol_py/                  # importable package
   preprocessor/                # line reader/writer, indicator processor,
                                # comment marker, document parser, copybook finders
+  asg/                         # Abstract Semantic Graph: typed program model
+                               # (divisions, statements, calls) over the AST
   runner.py                    # CobolParserRunner — the public entry point
   Cobol{Lexer,Parser,Listener,Visitor}.py
   CobolPreprocessor{Lexer,Parser,Listener,Visitor}.py
@@ -173,8 +221,10 @@ examples/example.cbl           # self-contained FIXED example
   error), the runner falls back to full LL with the error listeners re-armed, so
   the parse tree and error behaviour are identical to a plain LL parse. This is a
   Python-specific optimisation — proleap on the JVM does not need it.
-- The ASG / semantic-analysis layer of proleap is intentionally out of scope;
-  the deliverable ends at the `startRule` AST.
+- The ASG is a port of proleap's semantic layer (idiomatic Python: one class per
+  Java interface+Impl pair, snake_case, direct attrs). A handful of clause
+  details are still deferred (see the ASG section above); the parsing pipeline is
+  complete and every verb already produces its typed ASG node.
 
 ## License
 
