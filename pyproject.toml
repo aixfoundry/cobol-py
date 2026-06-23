@@ -8,8 +8,15 @@ version = "0.1.0"
 description = "COBOL parser for Python, porting the proleap-cobol-parser preprocessor + Cobol.g4 pipeline to a startRule AST"
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 keywords = ["cobol", "antlr4", "parser", "cobol85", "proleap", "preprocessor", "ast"]
+authors = [
+    { name = "AIx Foundry Project" },
+]
+maintainers = [
+    { name = "AIx Foundry Project" },
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -19,6 +26,10 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Linguistic",
 ]
 dependencies = [
     # Runtime for the generated ANTLR4 Python target. Pinned exactly because the
@@ -34,6 +45,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/aixfoundry/cobol-py"
+Repository = "https://github.com/aixfoundry/cobol-py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cobol_py"]

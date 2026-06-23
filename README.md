@@ -1,5 +1,10 @@
 # cobol-py
 
+[![PyPI](https://img.shields.io/pypi/v/cobol-py)](https://pypi.org/project/cobol-py/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/cobol-py)](https://pypi.org/project/cobol-py/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/aixfoundry/cobol-py/actions/workflows/ci.yml/badge.svg)](https://github.com/aixfoundry/cobol-py/actions/workflows/ci.yml)
+
 A **COBOL parser for Python** that ports the parsing pipeline of
 [`proleap-cobol-parser`](https://github.com/uwol/proleap-cobol-parser) (Java) to
 Python, built on [ANTLR4](https://www.antlr.org/).
@@ -20,8 +25,14 @@ Python, built on [ANTLR4](https://www.antlr.org/).
 ## Install
 
 ```bash
-uv sync                      # create .venv and install antlr4-python3-runtime + pytest
-uv pip install -e .          # or, install the package into another project
+pip install cobol-py             # from PyPI
+```
+
+Or with uv for development:
+
+```bash
+uv sync                          # create .venv and install antlr4-python3-runtime + pytest
+uv pip install -e .              # or, install the package into another project
 ```
 
 Runtime dependency: [`antlr4-python3-runtime`](https://pypi.org/project/antlr4-python3-runtime/) `4.13.2`.
