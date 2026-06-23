@@ -90,10 +90,113 @@ class CobolProgramUnitVisitor(AbstractCobolParserVisitor):
             program_unit.add_identification_division(ctx)
         return self.visitChildren(ctx)
 
+    def visitProgramIdParagraph(self, ctx):  # noqa: N802
+        from .identification import IdentificationDivision
+        div = self._find(IdentificationDivision, ctx)
+        if div is not None:
+            div.add_program_id_paragraph(ctx)
+        return self.visitChildren(ctx)
+
+    def visitAuthorParagraph(self, ctx):  # noqa: N802
+        from .identification import IdentificationDivision
+        div = self._find(IdentificationDivision, ctx)
+        if div is not None:
+            div.add_author_paragraph(ctx)
+        return self.visitChildren(ctx)
+
+    def visitDateWrittenParagraph(self, ctx):  # noqa: N802
+        from .identification import IdentificationDivision
+        div = self._find(IdentificationDivision, ctx)
+        if div is not None:
+            div.add_date_written_paragraph(ctx)
+        return self.visitChildren(ctx)
+
+    def visitDateCompiledParagraph(self, ctx):  # noqa: N802
+        from .identification import IdentificationDivision
+        div = self._find(IdentificationDivision, ctx)
+        if div is not None:
+            div.add_date_compiled_paragraph(ctx)
+        return self.visitChildren(ctx)
+
+    def visitInstallationParagraph(self, ctx):  # noqa: N802
+        from .identification import IdentificationDivision
+        div = self._find(IdentificationDivision, ctx)
+        if div is not None:
+            div.add_installation_paragraph(ctx)
+        return self.visitChildren(ctx)
+
+    def visitRemarksParagraph(self, ctx):  # noqa: N802
+        from .identification import IdentificationDivision
+        div = self._find(IdentificationDivision, ctx)
+        if div is not None:
+            div.add_remarks_paragraph(ctx)
+        return self.visitChildren(ctx)
+
+    def visitSecurityParagraph(self, ctx):  # noqa: N802
+        from .identification import IdentificationDivision
+        div = self._find(IdentificationDivision, ctx)
+        if div is not None:
+            div.add_security_paragraph(ctx)
+        return self.visitChildren(ctx)
+
     def visitEnvironmentDivision(self, ctx):  # noqa: N802
         program_unit = self.find_program_unit(ctx)
         if program_unit is not None:
             program_unit.add_environment_division(ctx)
+        return self.visitChildren(ctx)
+
+    def visitConfigurationSection(self, ctx):  # noqa: N802
+        from .environment import EnvironmentDivision
+        div = self._find(EnvironmentDivision, ctx)
+        if div is not None:
+            result = div.add_configuration_section(ctx)
+            # source/object computer paragraphs
+            for para in (ctx.configurationSectionParagraph() or []):
+                if para.sourceComputerParagraph() is not None:
+                    result.add_source_computer_paragraph(para.sourceComputerParagraph())
+                elif para.objectComputerParagraph() is not None:
+                    result.add_object_computer_paragraph(para.objectComputerParagraph())
+        return self.visitChildren(ctx)
+
+    def visitSpecialNamesParagraph(self, ctx):  # noqa: N802
+        from .environment import EnvironmentDivision, SpecialNamesParagraph
+        div = self._find(EnvironmentDivision, ctx)
+        if div is not None:
+            result = div.add_special_names_paragraph(ctx)
+            for clause in (ctx.specialNameClause() or []):
+                if clause.alphabetClause() is not None:
+                    result.add_alphabet_clause(clause.alphabetClause())
+                elif clause.channelClause() is not None:
+                    result.add_channel_clause(clause.channelClause())
+                elif clause.classClause() is not None:
+                    result.add_class_clause(clause.classClause())
+                elif clause.currencySignClause() is not None:
+                    result.add_currency_sign_clause(clause.currencySignClause())
+                elif clause.decimalPointClause() is not None:
+                    result.add_decimal_point_clause(clause.decimalPointClause())
+                elif clause.defaultDisplaySignClause() is not None:
+                    result.add_default_display_sign_clause(clause.defaultDisplaySignClause())
+                elif clause.odtClause() is not None:
+                    result.add_odt_clause(clause.odtClause())
+                elif clause.reserveNetworkClause() is not None:
+                    result.add_reserve_network_clause(clause.reserveNetworkClause())
+                elif clause.symbolicCharactersClause() is not None:
+                    result.add_symbolic_characters_clause(clause.symbolicCharactersClause())
+        return self.visitChildren(ctx)
+
+    def visitIoControlParagraph(self, ctx):  # noqa: N802
+        from .environment import IoControlParagraph
+        ioc = self._find(IoControlParagraph, ctx)
+        if ioc is not None:
+            for clause in (ctx.ioControlClause() or []):
+                if clause.commitmentControlClause() is not None:
+                    ioc.add_commitment_control_clause(clause.commitmentControlClause())
+                elif clause.multipleFileClause() is not None:
+                    ioc.add_multiple_file_clause(clause.multipleFileClause())
+                elif clause.rerunClause() is not None:
+                    ioc.add_rerun_clause(clause.rerunClause())
+                elif clause.sameClause() is not None:
+                    ioc.add_same_clause(clause.sameClause())
         return self.visitChildren(ctx)
 
     def visitDataDivision(self, ctx):  # noqa: N802

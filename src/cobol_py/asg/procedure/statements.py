@@ -644,6 +644,12 @@ def _as_list(maybe):
     return [maybe]
 
 
+def _has(ctx, token_name: str) -> bool:
+    """Return ``True`` if the named ANTLR typed token is present on ``ctx``."""
+    accessor = getattr(ctx, token_name, None)
+    return callable(accessor) and accessor() is not None
+
+
 class OpenStatement(_StatementBase):
     """``OPEN INPUT/OUTPUT/IO/EXTEND <files>``: collects the file-name calls."""
 
@@ -1498,62 +1504,794 @@ class ReleaseStatement(_StatementBase):
 
 # --- EXEC (embedded CICS / SQL) + remaining rare verbs --------------------
 #
-# These verbs retain their ctx but their internal clauses are not decomposed.
-# They complete coverage of StatementTypeEnum: every COBOL verb now produces a
-# typed statement node (matching proleap, which builds a Statement for each).
+# All 14 verbs now carry typed clause decomposition matching Java (Wave 5).
+# EXEC verbs extract the untagged body text via TagUtils-style stripping.
+
+# ---------------------------------------------------------------------------
+# EXEC CICS / SQL / SQLIMS — body text extraction
+# ---------------------------------------------------------------------------
+
+def _untagged_text(ctx, tag: str, end_tag: str = "}") -> str:
+    """Extract body text from EXEC-line tokens, stripping tags (Java TagUtils.getUntaggedText)."""
+    from ...preprocessor.constants import EXEC_CICS_TAG, EXEC_END_TAG, EXEC_SQL_TAG, EXEC_SQLIMS_TAG
+
+    tag_map = {"EXEC_CICS": EXEC_CICS_TAG, "EXEC_SQL": EXEC_SQL_TAG,
+               "EXEC_SQLIMS": EXEC_SQLIMS_TAG}
+    real_tag = tag_map.get(tag, tag)
+    token_name = {"EXEC_CICS": "EXECCICSLINE", "EXEC_SQL": "EXECSQLLINE",
+                   "EXEC_SQLIMS": "EXECSQLIMSLINE"}.get(tag, "")
+    if not token_name:
+        return ctx.getText()
+    tokens_getter = getattr(ctx, token_name, None)
+    if tokens_getter is None or not callable(tokens_getter):
+        return ctx.getText()
+    token_nodes = tokens_getter()
+    if not token_nodes:
+        return ""
+    parts = []
+    for tn in (token_nodes if isinstance(token_nodes, list) else [token_nodes]):
+        text = tn.getText() if hasattr(tn, "getText") else str(tn)
+        for t in (real_tag, end_tag):
+            text = text.replace(t, "")
+        parts.append(text.strip())
+    return " ".join(parts).strip()
+
 
 class ExecCicsStatement(_StatementBase):
     statement_type = StatementTypeEnum.EXEC_CICS
+
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.exec_cics_text: str = ""
+
+    def _populate(self):
+        self.exec_cics_text = _untagged_text(self.ctx, "EXEC_CICS")
 
 
 class ExecSqlStatement(_StatementBase):
     statement_type = StatementTypeEnum.EXEC_SQL
 
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.exec_sql_text: str = ""
+
+    def _populate(self):
+        self.exec_sql_text = _untagged_text(self.ctx, "EXEC_SQL")
+
 
 class ExecSqlImsStatement(_StatementBase):
     statement_type = StatementTypeEnum.EXEC_SQLIMS
 
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.exec_sql_ims_text: str = ""
 
-class EnableStatement(_StatementBase):
-    statement_type = StatementTypeEnum.ENABLE
+    def _populate(self):
+        self.exec_sql_ims_text = _untagged_text(self.ctx, "EXEC_SQLIMS")
+
+
+# ---------------------------------------------------------------------------
+# DISABLE / ENABLE — typed MCS control
+# ---------------------------------------------------------------------------
+
+class DisableType(Enum):
+    INPUT = "INPUT"
+    INPUT_OUTPUT = "INPUT_OUTPUT"
+    OUTPUT = "OUTPUT"
 
 
 class DisableStatement(_StatementBase):
     statement_type = StatementTypeEnum.DISABLE
 
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.disable_type: Optional[DisableType] = None
+        self.terminal: bool = False
+        self.communication_description_call = None
+        self.key_value_stmt = None
 
-class ReceiveStatement(_StatementBase):
-    statement_type = StatementTypeEnum.RECEIVE
+    def _populate(self):
+        ctx = self.ctx
+        # Detect type via direct ANTLR accessors (matching Java: ctx.INPUT() != null, etc.)
+        if ctx.I_O() is not None:
+            self.disable_type = DisableType.INPUT_OUTPUT
+        elif ctx.INPUT() is not None:
+            self.disable_type = DisableType.INPUT
+        elif ctx.OUTPUT() is not None:
+            self.disable_type = DisableType.OUTPUT
+        self.terminal = ctx.TERMINAL() is not None
+        cd = ctx.cdName()
+        if cd is not None:
+            self.communication_description_call = self.create_call(cd)
+        self.key_value_stmt = self.create_value_stmt(ctx.identifier(), ctx.literal())
 
 
-class SendStatement(_StatementBase):
-    statement_type = StatementTypeEnum.SEND
+class EnableType(Enum):
+    INPUT = "INPUT"
+    INPUT_OUTPUT = "INPUT_OUTPUT"
+    OUTPUT = "OUTPUT"
+
+
+class EnableStatement(_StatementBase):
+    statement_type = StatementTypeEnum.ENABLE
+
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.enable_type: Optional[EnableType] = None
+        self.terminal: bool = False
+        self.communication_description_call = None
+        self.key_value_stmt = None
+
+    def _populate(self):
+        ctx = self.ctx
+        if ctx.INPUT() is not None:
+            self.enable_type = EnableType.INPUT
+        elif ctx.I_O() is not None:
+            self.enable_type = EnableType.INPUT_OUTPUT
+        elif ctx.OUTPUT() is not None:
+            self.enable_type = EnableType.OUTPUT
+        self.terminal = ctx.TERMINAL() is not None
+        cd = ctx.cdName()
+        if cd is not None:
+            self.communication_description_call = self.create_call(cd)
+        self.key_value_stmt = self.create_value_stmt(ctx.identifier(), ctx.literal())
+
+
+# ---------------------------------------------------------------------------
+# ENTRY — alternate entry point
+# ---------------------------------------------------------------------------
+
+class EntryStatement(_StatementBase):
+    statement_type = StatementTypeEnum.ENTRY
+
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.entry_value_stmt = None
+        self.using_calls: List = []
+
+    def _populate(self):
+        ctx = self.ctx
+        self.entry_value_stmt = self.create_value_stmt(ctx.literal())
+        for ident_ctx in _as_list(ctx.identifier()):
+            self.using_calls.append(self.create_call(ident_ctx))
+
+
+# ---------------------------------------------------------------------------
+# EXHIBIT — display with operands
+# ---------------------------------------------------------------------------
+
+class ExhibitOperand(CobolDivisionElement):
+    """One ``identifier | literal`` operand of EXHIBIT."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.operand_value_stmt = None
 
 
 class ExhibitStatement(_StatementBase):
     statement_type = StatementTypeEnum.EXHIBIT
 
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.named: bool = False
+        self.changed: bool = False
+        self.operands: List[ExhibitOperand] = []
+
+    def _populate(self):
+        ctx = self.ctx
+        self.named = _has(ctx, "NAMED")
+        self.changed = _has(ctx, "CHANGED")
+        for op_ctx in _as_list(ctx.exhibitOperand()):
+            operand = self._get_element(op_ctx)
+            if operand is None:
+                operand = ExhibitOperand(self.program_unit, op_ctx)
+                operand.operand_value_stmt = self.create_value_stmt(
+                    op_ctx.identifier(), op_ctx.literal()
+                )
+                self._register(operand)
+            self.operands.append(operand)
+
+
+# ---------------------------------------------------------------------------
+# GENERATE / INITIATE / TERMINATE / PURGE — report-writer and MCS verbs
+# ---------------------------------------------------------------------------
 
 class GenerateStatement(_StatementBase):
     statement_type = StatementTypeEnum.GENERATE
+
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.report_description_call = None
+
+    def _populate(self):
+        rn = self.ctx.reportName()
+        if rn is not None:
+            self.report_description_call = self.create_call(rn)
 
 
 class InitiateStatement(_StatementBase):
     statement_type = StatementTypeEnum.INITIATE
 
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.report_calls: List = []
+
+    def _populate(self):
+        for rn in _as_list(self.ctx.reportName()):
+            self.report_calls.append(self.create_call(rn))
+
 
 class TerminateStatement(_StatementBase):
     statement_type = StatementTypeEnum.TERMINATE
+
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.report_call = None
+
+    def _populate(self):
+        rn = self.ctx.reportName()
+        if rn is not None:
+            self.report_call = self.create_call(rn)
 
 
 class PurgeStatement(_StatementBase):
     statement_type = StatementTypeEnum.PURGE
 
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.communication_description_entry_calls: List = []
+
+    def _populate(self):
+        for cd in _as_list(self.ctx.cdName()):
+            self.communication_description_entry_calls.append(self.create_call(cd))
+
+
+# ---------------------------------------------------------------------------
+# RECEIVE — FROM / INTO forms with sub-clause decomposition
+# ---------------------------------------------------------------------------
+
+class ReceiveType(Enum):
+    FROM = "FROM"
+    INTO = "INTO"
+
+
+# -- RECEIVE FROM sub-models -------------------------------------------------
+
+class ReceiveBefore(CobolDivisionElement):
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.time_value_stmt = None
+
+
+class ReceiveFrom(CobolDivisionElement):
+    class FromType(Enum):
+        THREAD = "THREAD"
+        LAST_THREAD = "LAST_THREAD"
+        ANY_THREAD = "ANY_THREAD"
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.from_type: Optional[ReceiveFrom.FromType] = None
+        self.thread_call = None
+
+
+class ReceiveWith(CobolDivisionElement):
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.no_wait = True
+
+
+class ReceiveThread(CobolDivisionElement):
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.thread_in_call = None
+
+
+class ReceiveSize(CobolDivisionElement):
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.size_value_stmt = None
+
+
+class ReceiveStatus(CobolDivisionElement):
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.status_call = None
+
+
+class ReceiveFromStatement(CobolDivisionElement):
+    """``dataName FROM receiveFrom (before|with|thread|size|status)*``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.data_call = None
+        self.from_: Optional[ReceiveFrom] = None
+        self.before: Optional[ReceiveBefore] = None
+        self.with_: Optional[ReceiveWith] = None
+        self.thread: Optional[ReceiveThread] = None
+        self.size: Optional[ReceiveSize] = None
+        self.status: Optional[ReceiveStatus] = None
+
+    def _populate(self):
+        ctx = self.ctx
+        self.data_call = self.create_call(ctx.dataName())
+        # from
+        rf = ctx.receiveFrom()
+        if rf is not None:
+            self.from_ = self._get_element(rf)
+            if self.from_ is None:
+                ft = ReceiveFrom(self.program_unit, rf)
+                if _has(rf, "LAST"):
+                    ft.from_type = ReceiveFrom.FromType.LAST_THREAD
+                elif _has(rf, "ANY"):
+                    ft.from_type = ReceiveFrom.FromType.ANY_THREAD
+                else:
+                    ft.from_type = ReceiveFrom.FromType.THREAD
+                ft.thread_call = self.create_call(rf.dataName())
+                self._register(ft)
+                self.from_ = ft
+        # before
+        for bc in _as_list(ctx.receiveBefore()):
+            self.before = self._get_element(bc)
+            if self.before is None:
+                bt = ReceiveBefore(self.program_unit, bc)
+                bt.time_value_stmt = self.create_value_stmt(
+                    bc.identifier(), bc.numericLiteral()
+                )
+                self._register(bt)
+                self.before = bt
+        # with
+        for wc in _as_list(ctx.receiveWith()):
+            self.with_ = self._get_element(wc)
+            if self.with_ is None:
+                wt = ReceiveWith(self.program_unit, wc)
+                self._register(wt)
+                self.with_ = wt
+        # thread
+        for tc in _as_list(ctx.receiveThread()):
+            self.thread = self._get_element(tc)
+            if self.thread is None:
+                tt = ReceiveThread(self.program_unit, tc)
+                tt.thread_in_call = self.create_call(tc.dataName())
+                self._register(tt)
+                self.thread = tt
+        # size
+        for sc in _as_list(ctx.receiveSize()):
+            self.size = self._get_element(sc)
+            if self.size is None:
+                st = ReceiveSize(self.program_unit, sc)
+                st.size_value_stmt = self.create_value_stmt(
+                    sc.numericLiteral(), sc.identifier()
+                )
+                self._register(st)
+                self.size = st
+        # status
+        for stc in _as_list(ctx.receiveStatus()):
+            self.status = self._get_element(stc)
+            if self.status is None:
+                stt = ReceiveStatus(self.program_unit, stc)
+                ident = stc.identifier()
+                if ident is not None:
+                    stt.status_call = self.create_call(ident)
+                self._register(stt)
+                self.status = stt
+
+
+# -- RECEIVE INTO sub-models -------------------------------------------------
+
+class ReceiveIntoType(Enum):
+    MESSAGE = "MESSAGE"
+    SEGMENT = "SEGMENT"
+
+
+class ReceiveNoData(CobolDivisionElement):
+    """``NO DATA statement*`` phrase scope for RECEIVE INTO."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+
+
+class ReceiveWithData(CobolDivisionElement):
+    """``WITH DATA statement*`` phrase scope for RECEIVE INTO."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+
+
+class ReceiveIntoStatement(CobolDivisionElement):
+    """``cdName (MESSAGE|SEGMENT) INTO? id [NO DATA] [WITH DATA]``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.communication_description_call = None
+        self.receive_into_type: Optional[ReceiveIntoType] = None
+        self.into_call = None
+        self.no_data: Optional[ReceiveNoData] = None
+        self.with_data: Optional[ReceiveWithData] = None
+
+    def _populate(self):
+        ctx = self.ctx
+        cd = ctx.cdName()
+        if cd is not None:
+            self.communication_description_call = self.create_call(cd)
+        if _has(ctx, "MESSAGE"):
+            self.receive_into_type = ReceiveIntoType.MESSAGE
+        elif _has(ctx, "SEGMENT"):
+            self.receive_into_type = ReceiveIntoType.SEGMENT
+        ident = ctx.identifier()
+        if ident is not None:
+            self.into_call = self.create_call(ident)
+        nd = ctx.receiveNoData()
+        if nd is not None:
+            result = self._get_element(nd)
+            if result is None:
+                result = ReceiveNoData(self.program_unit, nd)
+                self._register(result)
+            self.no_data = result
+        wd = ctx.receiveWithData()
+        if wd is not None:
+            result = self._get_element(wd)
+            if result is None:
+                result = ReceiveWithData(self.program_unit, wd)
+                self._register(result)
+            self.with_data = result
+
+
+class ReceiveStatement(_StatementBase):
+    statement_type = StatementTypeEnum.RECEIVE
+
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.receive_type: Optional[ReceiveType] = None
+        self.receive_from_statement: Optional[ReceiveFromStatement] = None
+        self.receive_into_statement: Optional[ReceiveIntoStatement] = None
+        self.on_exception_clause: Optional[OnExceptionClause] = None
+        self.not_on_exception_clause: Optional[NotOnExceptionClause] = None
+
+    def _populate(self):
+        ctx = self.ctx
+        rfs = ctx.receiveFromStatement()
+        ris = ctx.receiveIntoStatement()
+        if rfs is not None:
+            self.receive_type = ReceiveType.FROM
+            result = self._get_element(rfs)
+            if result is None:
+                result = ReceiveFromStatement(self.program_unit, rfs)
+                result._populate()
+                self._register(result)
+            self.receive_from_statement = result
+        elif ris is not None:
+            self.receive_type = ReceiveType.INTO
+            result = self._get_element(ris)
+            if result is None:
+                result = ReceiveIntoStatement(self.program_unit, ris)
+                result._populate()
+                self._register(result)
+            self.receive_into_statement = result
+        self.on_exception_clause = self._phrase(OnExceptionClause, ctx.onExceptionClause())
+        self.not_on_exception_clause = self._phrase(
+            NotOnExceptionClause, ctx.notOnExceptionClause()
+        )
+
+
+# ---------------------------------------------------------------------------
+# SEND — SYNC / ASYNC forms with sub-clause decomposition
+# ---------------------------------------------------------------------------
+
+class SendType(Enum):
+    ASYNC = "ASYNC"
+    SYNC = "SYNC"
+
+
+class SendAsync(CobolDivisionElement):
+    """``TO (TOP|BOTTOM) identifier``."""
+
+    class AsyncType(Enum):
+        TOP = "TOP"
+        BOTTOM = "BOTTOM"
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.async_type: Optional[SendAsync.AsyncType] = None
+        self.data_description_entry_call = None
+
+
+class SendFrom(CobolDivisionElement):
+    """``FROM identifier``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.from_call = None
+
+
+class SendWithType(Enum):
+    CALL = "CALL"
+    EGI = "EGI"
+    EMI = "EMI"
+    ESI = "ESI"
+
+
+class SendWith(CobolDivisionElement):
+    """``WITH (EGI|EMI|ESI|identifier)``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.with_call = None
+        self.with_type: Optional[SendWithType] = None
+
+
+class SendAdvancingType(Enum):
+    PAGE = "PAGE"
+    LINES = "LINES"
+    MNEMONIC = "MNEMONIC"
+
+
+class SendPositionType(Enum):
+    BEFORE = "BEFORE"
+    AFTER = "AFTER"
+
+
+class SendAdvancingLines(CobolDivisionElement):
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.lines_value_stmt = None
+
+
+class SendAdvancingMnemonic(CobolDivisionElement):
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.mnemonic_call = None
+
+
+class SendAdvancing(CobolDivisionElement):
+    """``(BEFORE|AFTER) ADVANCING? (PAGE|LINES|MNEMONIC)``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.advancing_type: Optional[SendAdvancingType] = None
+        self.position_type: Optional[SendPositionType] = None
+        self.advancing_lines: Optional[SendAdvancingLines] = None
+        self.advancing_mnemonic: Optional[SendAdvancingMnemonic] = None
+
+
+class SendSync(CobolDivisionElement):
+    """``(id|lit) [FROM] [WITH] [REPLACING] [advancing]``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.receiving_program_value_stmt = None
+        self.from_: Optional[SendFrom] = None
+        self.with_: Optional[SendWith] = None
+        self.replacing: bool = False
+        self.advancing: Optional[SendAdvancing] = None
+
+
+class SendStatement(_StatementBase):
+    statement_type = StatementTypeEnum.SEND
+
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.send_type: Optional[SendType] = None
+        self.sync: Optional[SendSync] = None
+        self.async_: Optional[SendAsync] = None
+        self.on_exception_clause: Optional[OnExceptionClause] = None
+        self.not_on_exception_clause: Optional[NotOnExceptionClause] = None
+
+    def _populate(self):
+        ctx = self.ctx
+        sync_ctx = ctx.sendStatementSync()
+        async_ctx = ctx.sendStatementAsync()
+        if sync_ctx is not None:
+            self.send_type = SendType.SYNC
+            sync = self._get_element(sync_ctx)
+            if sync is None:
+                sync = SendSync(self.program_unit, sync_ctx)
+                sync.receiving_program_value_stmt = self.create_value_stmt(
+                    sync_ctx.identifier(), sync_ctx.literal()
+                )
+                # FROM
+                from_ctx = sync_ctx.sendFromPhrase()
+                if from_ctx is not None:
+                    sf = SendFrom(self.program_unit, from_ctx)
+                    ident = from_ctx.identifier()
+                    if ident is not None:
+                        sf.from_call = self.create_call(ident)
+                    self._register(sf)
+                    sync.from_ = sf
+                # WITH
+                with_ctx = sync_ctx.sendWithPhrase()
+                if with_ctx is not None:
+                    sw = SendWith(self.program_unit, with_ctx)
+                    if _has(with_ctx, "EGI"):
+                        sw.with_type = SendWithType.EGI
+                    elif _has(with_ctx, "EMI"):
+                        sw.with_type = SendWithType.EMI
+                    elif _has(with_ctx, "ESI"):
+                        sw.with_type = SendWithType.ESI
+                    elif with_ctx.identifier() is not None:
+                        sw.with_type = SendWithType.CALL
+                        sw.with_call = self.create_call(with_ctx.identifier())
+                    self._register(sw)
+                    sync.with_ = sw
+                # REPLACING
+                if sync_ctx.sendReplacingPhrase() is not None:
+                    sync.replacing = True
+                # ADVANCING
+                adv_ctx = sync_ctx.sendAdvancingPhrase()
+                if adv_ctx is not None:
+                    sa = SendAdvancing(self.program_unit, adv_ctx)
+                    if _has(adv_ctx, "AFTER"):
+                        sa.position_type = SendPositionType.AFTER
+                    elif _has(adv_ctx, "BEFORE"):
+                        sa.position_type = SendPositionType.BEFORE
+                    page = adv_ctx.sendAdvancingPage()
+                    lines = adv_ctx.sendAdvancingLines()
+                    mnemonic = adv_ctx.sendAdvancingMnemonic()
+                    if page is not None:
+                        sa.advancing_type = SendAdvancingType.PAGE
+                    elif lines is not None:
+                        sa.advancing_type = SendAdvancingType.LINES
+                        al = SendAdvancingLines(self.program_unit, lines)
+                        al.lines_value_stmt = self.create_value_stmt(
+                            lines.identifier(), lines.literal()
+                        )
+                        self._register(al)
+                        sa.advancing_lines = al
+                    elif mnemonic is not None:
+                        sa.advancing_type = SendAdvancingType.MNEMONIC
+                        am = SendAdvancingMnemonic(self.program_unit, mnemonic)
+                        mn = mnemonic.mnemonicName()
+                        if mn is not None:
+                            am.mnemonic_call = self.create_call(mn)
+                        self._register(am)
+                        sa.advancing_mnemonic = am
+                    self._register(sa)
+                    sync.advancing = sa
+                self._register(sync)
+            self.sync = sync
+        elif async_ctx is not None:
+            self.send_type = SendType.ASYNC
+            sa = self._get_element(async_ctx)
+            if sa is None:
+                sa = SendAsync(self.program_unit, async_ctx)
+                if _has(async_ctx, "TOP"):
+                    sa.async_type = SendAsync.AsyncType.TOP
+                elif _has(async_ctx, "BOTTOM"):
+                    sa.async_type = SendAsync.AsyncType.BOTTOM
+                ident = async_ctx.identifier()
+                if ident is not None:
+                    sa.data_description_entry_call = self.create_call(ident)
+                self._register(sa)
+            self.async_ = sa
+        self.on_exception_clause = self._phrase(OnExceptionClause, ctx.onExceptionClause())
+        self.not_on_exception_clause = self._phrase(
+            NotOnExceptionClause, ctx.notOnExceptionClause()
+        )
+
+
+# ---------------------------------------------------------------------------
+# USE — AFTER / DEBUG forms with sub-clause decomposition
+# ---------------------------------------------------------------------------
+
+class UseType(Enum):
+    AFTER = "AFTER"
+    DEBUG = "DEBUG"
+
+
+class UseAfterOn(CobolDivisionElement):
+    """The ``ON`` clause of USE AFTER: ``INPUT|OUTPUT|I_O|EXTEND|fileName+``."""
+
+    class AfterOnType(Enum):
+        INPUT = "INPUT"
+        OUTPUT = "OUTPUT"
+        INPUT_OUTPUT = "INPUT_OUTPUT"
+        EXTEND = "EXTEND"
+        FILE = "FILE"
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.after_on_type: Optional[UseAfterOn.AfterOnType] = None
+        self.file_calls: List = []
+
+
+class UseAfterStatement(CobolDivisionElement):
+    """``GLOBAL? AFTER STANDARD? (EXCEPTION|ERROR) PROCEDURE ON? useAfterOn``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.global_: bool = False
+        self.after_on: Optional[UseAfterOn] = None
+
+
+class DebugOnType(Enum):
+    ALL_PROCEDURES = "ALL_PROCEDURES"
+    ALL_REFERENCES = "ALL_REFERENCES"
+    FILE = "FILE"
+    PROCEDURE = "PROCEDURE"
+
+
+class UseDebugOn(CobolDivisionElement):
+    """One ``ON`` target of USE FOR DEBUGGING."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.debug_on_type: Optional[DebugOnType] = None
+        self.on_call = None
+
+
+class UseDebugStatement(CobolDivisionElement):
+    """``FOR? DEBUGGING ON? useDebugOn+``."""
+
+    def __init__(self, program_unit, ctx):
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.debug_ons: List[UseDebugOn] = []
+
 
 class UseStatement(_StatementBase):
     statement_type = StatementTypeEnum.USE
 
+    def __init__(self, program_unit, scope, ctx):
+        super().__init__(program_unit, scope, ctx)
+        self.use_type: Optional[UseType] = None
+        self.use_after_statement: Optional[UseAfterStatement] = None
+        self.use_debug_statement: Optional[UseDebugStatement] = None
 
-class EntryStatement(_StatementBase):
-    statement_type = StatementTypeEnum.ENTRY
+    def _populate(self):
+        ctx = self.ctx
+        after_ctx = ctx.useAfterClause()
+        debug_ctx = ctx.useDebugClause()
+        if after_ctx is not None:
+            self.use_type = UseType.AFTER
+            ua = self._get_element(after_ctx)
+            if ua is None:
+                ua = UseAfterStatement(self.program_unit, after_ctx)
+                ua.global_ = _has(after_ctx, "GLOBAL")
+                # after ON
+                on_ctx = after_ctx.useAfterOn()
+                if on_ctx is not None:
+                    ao = self._get_element(on_ctx)
+                    if ao is None:
+                        ao = UseAfterOn(self.program_unit, on_ctx)
+                        # type
+                        if on_ctx.fileName():
+                            ao.after_on_type = UseAfterOn.AfterOnType.FILE
+                        elif _has(on_ctx, "INPUT") and _has(on_ctx, "I_O"):
+                            ao.after_on_type = UseAfterOn.AfterOnType.INPUT_OUTPUT
+                        elif _has(on_ctx, "INPUT"):
+                            ao.after_on_type = UseAfterOn.AfterOnType.INPUT
+                        elif _has(on_ctx, "OUTPUT"):
+                            ao.after_on_type = UseAfterOn.AfterOnType.OUTPUT
+                        elif _has(on_ctx, "EXTEND"):
+                            ao.after_on_type = UseAfterOn.AfterOnType.EXTEND
+                        # files
+                        for fn in _as_list(on_ctx.fileName()):
+                            ao.file_calls.append(self.create_call(fn))
+                        self._register(ao)
+                    ua.after_on = ao
+                self._register(ua)
+            self.use_after_statement = ua
+        elif debug_ctx is not None:
+            self.use_type = UseType.DEBUG
+            ud = self._get_element(debug_ctx)
+            if ud is None:
+                ud = UseDebugStatement(self.program_unit, debug_ctx)
+                for on_ctx in _as_list(debug_ctx.useDebugOn()):
+                    do = UseDebugOn(self.program_unit, on_ctx)
+                    if _has(on_ctx, "PROCEDURES"):
+                        do.debug_on_type = DebugOnType.ALL_PROCEDURES
+                    elif _has(on_ctx, "REFERENCES"):
+                        do.debug_on_type = DebugOnType.ALL_REFERENCES
+                        ident = on_ctx.identifier()
+                        if ident is not None:
+                            do.on_call = self.create_call(ident)
+                    elif on_ctx.procedureName() is not None:
+                        do.debug_on_type = DebugOnType.PROCEDURE
+                        do.on_call = self.create_call(on_ctx.procedureName())
+                    elif on_ctx.fileName() is not None:
+                        do.debug_on_type = DebugOnType.FILE
+                        do.on_call = self.create_call(on_ctx.fileName())
+                    self._register(do)
+                    ud.debug_ons.append(do)
+                self._register(ud)
+            self.use_debug_statement = ud
 

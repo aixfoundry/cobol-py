@@ -126,6 +126,17 @@ class OccursSortOrder(Enum):
     DESCENDING = "DESCENDING"
 
 
+class BlockContainsUnit(Enum):
+    CHARACTERS = "CHARACTERS"
+    RECORDS = "RECORDS"
+
+
+class LabelRecordsClauseType(Enum):
+    DATA_NAMES = "DATA_NAMES"
+    OMITTED = "OMITTED"
+    STANDARD = "STANDARD"
+
+
 # ============================================================================
 # data description entries (Format1 group/scalar, Format2 rename, Format3 cond)
 # ============================================================================
@@ -838,6 +849,107 @@ class IntegerStringClause(CobolDivisionElement):
         self.primitive_type: Optional[IntegerStringPrimitiveType] = None
 
 
+# -- FD (File Description Entry) clause models (10 clauses) -----------------
+
+class BlockContainsClause(CobolDivisionElement):
+    """BLOCK CONTAINS <from> [TO <to>] RECORDS|CHARACTERS. Ports ``BlockContainsClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.unit: Optional[BlockContainsUnit] = None
+        self.from_: Optional = None  # IntegerLiteral
+        self.to: Optional = None  # IntegerLiteral
+
+
+class CodeSetClause(CobolDivisionElement):
+    """CODE-SET IS <alphabet>. Ports ``CodeSetClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.alphabet_name: Optional[str] = None
+
+
+class DataRecordsClause(CobolDivisionElement):
+    """DATA RECORD IS <names>. Ports ``DataRecordsClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.data_calls: List = []
+
+
+class FDExternalClause(CobolDivisionElement):
+    """IS? EXTERNAL (at FD level). Ports ``data.file.ExternalClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.external: bool = False
+
+
+class FDGlobalClause(CobolDivisionElement):
+    """IS? GLOBAL (at FD level). Ports ``data.file.GlobalClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.global_: bool = False
+
+
+class LabelRecordsClause(CobolDivisionElement):
+    """LABEL RECORD IS|ARE STANDARD|OMITTED|<names>. Ports ``LabelRecordsClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.label_records_clause_type: Optional[LabelRecordsClauseType] = None
+        self.data_calls: List = []
+
+
+class LinageClause(CobolDivisionElement):
+    """LINAGE IS <lines> [FOOTING <ft>] [TOP <top>] [BOTTOM <btm>]. Ports ``LinageClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.number_of_lines_value_stmt = None
+        self.footing_at_value_stmt = None
+        self.lines_at_top_value_stmt = None
+        self.lines_at_bottom_value_stmt = None
+
+
+class RecordContainsClause(CobolDivisionElement):
+    """RECORD CONTAINS <from> [TO <to>] [VARYING ...]. Ports ``RecordContainsClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.varying: bool = False
+        self.from_: Optional = None  # IntegerLiteral
+        self.to: Optional = None  # IntegerLiteral
+        self.depending_on_call = None
+
+
+class ReportClause(CobolDivisionElement):
+    """REPORT IS|ARE <reports>. Ports ``data.file.ReportClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.report_calls: List = []
+
+
+class ValueOfNameValuePair:
+    """One (name, value) pair inside VALUE OF. Ports ``ValueOfNameValuePair``."""
+
+    __slots__ = ("name_call", "value")
+
+    def __init__(self) -> None:
+        self.name_call = None
+        self.value = None  # ValueStmt
+
+
+class ValueOfClause(CobolDivisionElement):
+    """VALUE OF <name-value-pair>+. Ports ``ValueOfClause``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.value_pairs: List[ValueOfNameValuePair] = []
+
+
 # -- utility for usage-clause typed-token dispatch ---------------------------
 # The usage clause has 25 alternatives; we map them in the grammar's precedence
 # order (the order they appear in the grammar).
@@ -1125,13 +1237,177 @@ class CommunicationSection(DataDescriptionEntryContainer):
 
 
 class FileDescriptionEntry(DataDescriptionEntryContainer, Declaration):
-    """An FD entry. Also a data-description container for its 01-level records."""
+    """An FD entry. Also a data-description container for its 01-level records.
+
+    Ports ``data.file.FileDescriptionEntry``. In addition to the inherited
+    data-description entry container behavior, it holds the FD-level clauses
+    (BlockContains, LabelRecords, Linage, ...).
+    """
 
     container_type = DataDescriptionEntryContainer.ContainerType.FILE_DESCRIPTION_ENTRY
 
     def __init__(self, name, program_unit: "ProgramUnit", ctx: ParserRuleContext) -> None:
         super().__init__(program_unit=program_unit, ctx=ctx)
         self.name = name
+        # FD clause storage
+        self.block_contains_clause: Optional[BlockContainsClause] = None
+        self.code_set_clause: Optional[CodeSetClause] = None
+        self.data_records_clause: Optional[DataRecordsClause] = None
+        self.fd_external_clause: Optional[FDExternalClause] = None
+        self.fd_global_clause: Optional[FDGlobalClause] = None
+        self.label_records_clause: Optional[LabelRecordsClause] = None
+        self.linage_clause: Optional[LinageClause] = None
+        self.record_contains_clause: Optional[RecordContainsClause] = None
+        self.report_clause: Optional[ReportClause] = None
+        self.value_of_clause: Optional[ValueOfClause] = None
+
+    def add_block_contains_clause(self, ctx) -> BlockContainsClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = BlockContainsClause(self.program_unit, ctx)
+            if _has(ctx, "CHARACTERS"):
+                result.unit = BlockContainsUnit.CHARACTERS
+            elif _has(ctx, "RECORDS") or _has(ctx, "RECORD"):
+                result.unit = BlockContainsUnit.RECORDS
+            il = ctx.integerLiteral()
+            if il is not None:
+                result.from_ = self.create_integer_literal(il)
+            to_ctx = ctx.blockContainsTo()
+            if to_ctx is not None and to_ctx.integerLiteral() is not None:
+                result.to = self.create_integer_literal(to_ctx.integerLiteral())
+            self.block_contains_clause = result
+            self._register(result)
+        return result
+
+    def add_code_set_clause(self, ctx) -> CodeSetClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = CodeSetClause(self.program_unit, ctx)
+            an = ctx.alphabetName()
+            if an is not None:
+                result.alphabet_name = an.getText()
+            self.code_set_clause = result
+            self._register(result)
+        return result
+
+    def add_data_records_clause(self, ctx) -> DataRecordsClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = DataRecordsClause(self.program_unit, ctx)
+            for dn in ctx.dataName():
+                result.data_calls.append(self.create_call(dn))
+            self.data_records_clause = result
+            self._register(result)
+        return result
+
+    def add_fd_external_clause(self, ctx) -> FDExternalClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = FDExternalClause(self.program_unit, ctx)
+            result.external = True
+            self.fd_external_clause = result
+            self._register(result)
+        return result
+
+    def add_fd_global_clause(self, ctx) -> FDGlobalClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = FDGlobalClause(self.program_unit, ctx)
+            result.global_ = True
+            self.fd_global_clause = result
+            self._register(result)
+        return result
+
+    def add_label_records_clause(self, ctx) -> LabelRecordsClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = LabelRecordsClause(self.program_unit, ctx)
+            if _has(ctx, "STANDARD"):
+                result.label_records_clause_type = LabelRecordsClauseType.STANDARD
+            elif _has(ctx, "OMITTED"):
+                result.label_records_clause_type = LabelRecordsClauseType.OMITTED
+            else:
+                result.label_records_clause_type = LabelRecordsClauseType.DATA_NAMES
+            for dn in ctx.dataName():
+                result.data_calls.append(self.create_call(dn))
+            self.label_records_clause = result
+            self._register(result)
+        return result
+
+    def add_linage_clause(self, ctx) -> LinageClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = LinageClause(self.program_unit, ctx)
+            nlines = ctx.linageNumberOfLines()
+            if nlines is not None:
+                result.number_of_lines_value_stmt = self.create_value_stmt(
+                    nlines.identifier(), nlines.integerLiteral()
+                )
+            ft = ctx.linageFootingAt()
+            if ft is not None:
+                result.footing_at_value_stmt = self.create_value_stmt(
+                    ft.identifier(), ft.integerLiteral()
+                )
+            top = ctx.linageLinesAtTop()
+            if top is not None:
+                result.lines_at_top_value_stmt = self.create_value_stmt(
+                    top.identifier(), top.integerLiteral()
+                )
+            btm = ctx.linageLinesAtBottom()
+            if btm is not None:
+                result.lines_at_bottom_value_stmt = self.create_value_stmt(
+                    btm.identifier(), btm.integerLiteral()
+                )
+            self.linage_clause = result
+            self._register(result)
+        return result
+
+    def add_record_contains_clause(self, ctx) -> RecordContainsClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = RecordContainsClause(self.program_unit, ctx)
+            fmt2 = ctx.recordContainsClauseFormat2()
+            fmt1 = ctx.recordContainsClauseFormat1()
+            sub = fmt2 or fmt1
+            if fmt2 is not None:
+                result.varying = True
+            if sub is not None:
+                il = sub.integerLiteral()
+                if il is not None:
+                    result.from_ = self.create_integer_literal(il)
+                dc = getattr(sub, "recordContainsDependingOn", lambda: None)()
+                if dc is not None and dc.qualifiedDataName() is not None:
+                    result.depending_on_call = self.create_call(dc.qualifiedDataName())
+            self.record_contains_clause = result
+            self._register(result)
+        return result
+
+    def add_report_clause(self, ctx) -> ReportClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = ReportClause(self.program_unit, ctx)
+            for rn in ctx.reportName():
+                result.report_calls.append(self.create_call(rn))
+            self.report_clause = result
+            self._register(result)
+        return result
+
+    def add_value_of_clause(self, ctx) -> ValueOfClause:
+        result = self._get_element(ctx)
+        if result is None:
+            result = ValueOfClause(self.program_unit, ctx)
+            for pair_ctx in ctx.valueOfNameValuePair():
+                pair = ValueOfNameValuePair()
+                dn = pair_ctx.dataName()
+                if dn is not None:
+                    pair.name_call = self.create_call(dn)
+                lit = pair_ctx.literal()
+                if lit is not None:
+                    pair.value = self.create_value_stmt(lit)
+                result.value_pairs.append(pair)
+            self.value_of_clause = result
+            self._register(result)
+        return result
 
 
 class FileSection(CobolDivisionElement):
@@ -1144,10 +1420,34 @@ class FileSection(CobolDivisionElement):
     def add_file_description_entry(self, ctx) -> Optional[FileDescriptionEntry]:
         result = self._get_element(ctx)
         if result is None:
-            name = self.determine_name(ctx)
+            # FD name: the fileName context holds the FD's file name
+            fn = ctx.fileName()
+            name = fn.getText() if fn is not None else self.determine_name(ctx)
             result = FileDescriptionEntry(name, self.program_unit, ctx)
             self._file_description_entries.append(result)
             self._register(result)
+            # FD clauses
+            for clause_ctx in (ctx.fileDescriptionEntryClause() or []):
+                if clause_ctx.blockContainsClause() is not None:
+                    result.add_block_contains_clause(clause_ctx.blockContainsClause())
+                elif clause_ctx.codeSetClause() is not None:
+                    result.add_code_set_clause(clause_ctx.codeSetClause())
+                elif clause_ctx.dataRecordsClause() is not None:
+                    result.add_data_records_clause(clause_ctx.dataRecordsClause())
+                elif clause_ctx.labelRecordsClause() is not None:
+                    result.add_label_records_clause(clause_ctx.labelRecordsClause())
+                elif clause_ctx.linageClause() is not None:
+                    result.add_linage_clause(clause_ctx.linageClause())
+                elif clause_ctx.recordContainsClause() is not None:
+                    result.add_record_contains_clause(clause_ctx.recordContainsClause())
+                elif clause_ctx.reportClause() is not None:
+                    result.add_report_clause(clause_ctx.reportClause())
+                elif clause_ctx.valueOfClause() is not None:
+                    result.add_value_of_clause(clause_ctx.valueOfClause())
+                elif clause_ctx.externalClause() is not None:
+                    result.add_fd_external_clause(clause_ctx.externalClause())
+                elif clause_ctx.globalClause() is not None:
+                    result.add_fd_global_clause(clause_ctx.globalClause())
             # data records under the FD
             for entry_ctx in ctx.dataDescriptionEntry():
                 current_group = None

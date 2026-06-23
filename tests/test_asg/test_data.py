@@ -515,3 +515,61 @@ def test_multiple_clauses_on_one_entry(analyze):
     assert entry.value_clause is not None
     assert entry.usage_clause is not None
     assert entry.blank_when_zero_clause is not None
+
+
+# === FD clause tests =======================================================
+
+def _fd_entry(analyze, fd_clauses, data_items=None):
+    src = (
+        "       IDENTIFICATION DIVISION.\n"
+        "       PROGRAM-ID. T.\n"
+        "       ENVIRONMENT DIVISION.\n"
+        "       INPUT-OUTPUT SECTION.\n"
+        "       FILE-CONTROL.\n"
+        "           SELECT MY-FILE ASSIGN TO 'X'.\n"
+        "       DATA DIVISION.\n"
+        "       FILE SECTION.\n"
+        f"       FD  MY-FILE {fd_clauses}.\n"
+        + (data_items or "       01  MY-REC PIC X.\n")
+        + "       WORKING-STORAGE SECTION.\n"
+        "       01  WS-A PIC 9.\n"
+        "       PROCEDURE DIVISION.\n"
+        "           STOP RUN.\n"
+    )
+    fs = analyze(src).compilation_unit.program_unit.data_division.file_section
+    return fs.file_description_entries[0]
+
+
+def test_fd_no_clauses(analyze):
+    fd = _fd_entry(analyze, "LABEL RECORDS ARE STANDARD")
+    assert fd.name == "MY-FILE"
+    assert fd.label_records_clause is not None
+
+
+def test_fd_block_contains(analyze):
+    fd = _fd_entry(analyze, "BLOCK CONTAINS 10 RECORDS")
+    assert fd.block_contains_clause is not None
+    assert fd.block_contains_clause.from_ is not None
+
+
+def test_fd_code_set(analyze):
+    fd = _fd_entry(analyze, "CODE-SET IS MY-ALPHABET")
+    assert fd.code_set_clause is not None
+    assert fd.code_set_clause.alphabet_name is not None
+
+
+def test_fd_data_records(analyze):
+    fd = _fd_entry(analyze, "DATA RECORD IS MY-REC")
+    assert fd.data_records_clause is not None
+    assert len(fd.data_records_clause.data_calls) >= 1
+
+
+def test_fd_label_records_standard(analyze):
+    fd = _fd_entry(analyze, "LABEL RECORDS ARE STANDARD")
+    assert fd.label_records_clause is not None
+
+
+def test_fd_record_contains(analyze):
+    fd = _fd_entry(analyze, "RECORD CONTAINS 80 LABEL RECORDS ARE STANDARD")
+    assert fd.record_contains_clause is not None
+    assert fd.label_records_clause is not None

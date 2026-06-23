@@ -125,6 +125,26 @@ class CallValueStmt(ValueStmt):
         self.call = call
 
 
+class BooleanLiteralValueStmt(ValueStmt):
+    """A ``TRUE`` / ``FALSE`` literal used as a standalone value statement.
+
+    Ports ``valuestmt/BooleanLiteralValueStmt``. Used in EVALUATE WHEN
+    branches (``WHEN TRUE``) and similar contexts.
+    """
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit, ctx)
+        self.boolean_literal = None
+
+
+class Argument(CobolDivisionElement):
+    """Marker element wrapping an ``argument`` grammar context.
+
+    Ports ``valuestmt/Argument``. No extra fields beyond the ctx;
+    used as a structural node in the ASG tree.
+    """
+
+
 # ============================================================================
 # arithmetic expression tree
 # ============================================================================

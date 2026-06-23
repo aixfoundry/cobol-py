@@ -274,7 +274,7 @@ class ProcedureDivision(Scope):
         entries = self._paragraphs_by_name.get(_symbol(name), [])
         return entries[0] if entries else None
 
-    # -- clauses (minimal stubs; internals that need createCall deferred) ----
+    # -- clauses (using / giving / declaratives) ---------------------------
 
     def add_declaratives(self, ctx: ParserRuleContext):
         if self.declaratives is None:
@@ -283,22 +283,152 @@ class ProcedureDivision(Scope):
         return self.declaratives
 
     def add_giving_clause(self, ctx: ParserRuleContext):
-        if self.giving_clause is None:
-            self.giving_clause = _ClauseStub(self.program_unit, ctx)
-            self._register(self.giving_clause)
-        return self.giving_clause
+        result = self._get_element(ctx)
+        if result is None:
+            result = GivingClause(self.program_unit, ctx)
+            # grammar: (GIVING | RETURNING) dataName
+            data_name = ctx.dataName()
+            if data_name is not None:
+                result.giving_call = self.create_call(data_name)
+            self.giving_clause = result
+            self._register(result)
+        return result
 
     def add_using_clause(self, ctx: ParserRuleContext):
-        if self.using_clause is None:
-            self.using_clause = _ClauseStub(self.program_unit, ctx)
-            self._register(self.using_clause)
-        return self.using_clause
+        result = self._get_element(ctx)
+        if result is None:
+            result = UsingClause(self.program_unit, ctx)
+            for param_ctx in ctx.procedureDivisionUsingParameter():
+                param = result.add_using_parameter(param_ctx)
+            self.using_clause = result
+            self._register(result)
+        return result
+
+
+# --- Procedure Division clause models -------------------------------------
+
+class UsingParameterType(Enum):
+    REFERENCE = "REFERENCE"
+    VALUE = "VALUE"
+
+
+class ByReference(CobolDivisionElement):
+    """A single ``BY REFERENCE`` data item: ``[OPTIONAL] identifier|fileName | ANY``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.reference_call = None
+        self.optional = False
+        self.any = False
+
+
+class ByValue(CobolDivisionElement):
+    """A single ``BY VALUE`` item: ``identifier | literal | ANY``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.value_value_stmt = None
+        self.any = False
+
+
+class ByReferencePhrase(CobolDivisionElement):
+    """``(BY? REFERENCE)? byReference+``: a group of BY REFERENCE parameters."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.by_references: List[ByReference] = []
+
+    def add_by_reference(self, ctx: ParserRuleContext) -> ByReference:
+        result = self._get_element(ctx)
+        if result is None:
+            result = ByReference(self.program_unit, ctx)
+            if ctx.OPTIONAL() is not None:
+                result.optional = True
+            if ctx.ANY() is not None:
+                result.any = True
+            result.reference_call = self.create_call(
+                ctx.identifier() or ctx.fileName()
+            )
+            self.by_references.append(result)
+            self._register(result)
+        return result
+
+
+class ByValuePhrase(CobolDivisionElement):
+    """``BY? VALUE byValue+``: a group of BY VALUE parameters."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.by_values: List[ByValue] = []
+
+    def add_by_value(self, ctx: ParserRuleContext) -> ByValue:
+        result = self._get_element(ctx)
+        if result is None:
+            result = ByValue(self.program_unit, ctx)
+            if ctx.ANY() is not None:
+                result.any = True
+            result.value_value_stmt = self.create_value_stmt(
+                ctx.identifier(), ctx.literal()
+            )
+            self.by_values.append(result)
+            self._register(result)
+        return result
+
+
+class UsingParameter(CobolDivisionElement):
+    """One USING parameter: either ``BY REFERENCE`` or ``BY VALUE`` phrase."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.using_parameter_type: Optional[UsingParameterType] = None
+        self.by_reference_phrase: Optional[ByReferencePhrase] = None
+        self.by_value_phrase: Optional[ByValuePhrase] = None
+
+
+class UsingClause(CobolDivisionElement):
+    """``USING|CHAINING usingParameter+``: the USING clause of PROCEDURE DIVISION."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.using_parameters: List[UsingParameter] = []
+
+    def add_using_parameter(self, ctx: ParserRuleContext) -> UsingParameter:
+        result = self._get_element(ctx)
+        if result is None:
+            result = UsingParameter(self.program_unit, ctx)
+            # Determine phrase type: BY REFERENCE or BY VALUE
+            ref_phrase_ctx = ctx.procedureDivisionByReferencePhrase()
+            val_phrase_ctx = ctx.procedureDivisionByValuePhrase()
+            if ref_phrase_ctx is not None:
+                result.using_parameter_type = UsingParameterType.REFERENCE
+                phrase = ByReferencePhrase(self.program_unit, ref_phrase_ctx)
+                for ref_ctx in ref_phrase_ctx.procedureDivisionByReference():
+                    phrase.add_by_reference(ref_ctx)
+                self._register(phrase)
+                result.by_reference_phrase = phrase
+            elif val_phrase_ctx is not None:
+                result.using_parameter_type = UsingParameterType.VALUE
+                phrase = ByValuePhrase(self.program_unit, val_phrase_ctx)
+                for val_ctx in val_phrase_ctx.procedureDivisionByValue():
+                    phrase.add_by_value(val_ctx)
+                self._register(phrase)
+                result.by_value_phrase = phrase
+            self.using_parameters.append(result)
+            self._register(result)
+        return result
+
+
+class GivingClause(CobolDivisionElement):
+    """``GIVING|RETURNING dataName``: the GIVING clause of PROCEDURE DIVISION."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.giving_call = None
 
 
 class _ClauseStub(CobolDivisionElement):
-    """Placeholder for declaratives / giving / using clauses.
+    """Placeholder for declaratives (full structure deferred).
 
-    Their full structure (calls, parameters) depends on the ``createCall``
-    machinery added in Phase C1; until then we only retain ``ctx`` and register
-    the node so navigation still works.
+    Using and giving clauses are now decomposed; this stub remains only for
+    declaratives.
     """

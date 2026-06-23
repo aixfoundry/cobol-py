@@ -546,6 +546,17 @@ class ProcedureUnitFactory:
             self._register(result)
         return result
 
+    def create_boolean_literal_value_stmt(self, ctx):
+        """Build a :class:`BooleanLiteralValueStmt` from a ``booleanLiteral`` ctx."""
+        from .valuestmt import BooleanLiteralValueStmt
+
+        result = self._get_element(ctx)
+        if result is None:
+            result = BooleanLiteralValueStmt(self.program_unit, ctx)
+            result.boolean_literal = self.create_boolean_literal(ctx)
+            self._register(result)
+        return result
+
     def create_boolean_literal(self, ctx):
         from .literal import BooleanLiteral
 
@@ -606,6 +617,7 @@ class ProcedureUnitFactory:
         from ..CobolParser import CobolParser as CP
         from .valuestmt import (
             ArithmeticValueStmt,
+            BooleanLiteralValueStmt,
             CallValueStmt,
             ConditionValueStmt,
             IntegerLiteralValueStmt,
@@ -620,6 +632,8 @@ class ProcedureUnitFactory:
             result = IntegerLiteralValueStmt(self.program_unit, ctx)
             result.integer_literal = self.create_integer_literal(ctx)
             return result
+        if isinstance(ctx, CP.BooleanLiteralContext):
+            return self.create_boolean_literal_value_stmt(ctx)
         if isinstance(ctx, CP.ConditionContext):
             return self.create_condition_value_stmt(ctx)
         if isinstance(ctx, CP.ArithmeticExpressionContext):
