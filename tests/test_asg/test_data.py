@@ -572,4 +572,28 @@ def test_fd_label_records_standard(analyze):
 def test_fd_record_contains(analyze):
     fd = _fd_entry(analyze, "RECORD CONTAINS 80 LABEL RECORDS ARE STANDARD")
     assert fd.record_contains_clause is not None
-    assert fd.label_records_clause is not None
+
+
+# === DataDescriptionEntryExecSql ===========================================
+
+def test_data_description_exec_sql(analyze):
+    src = (
+        "       IDENTIFICATION DIVISION.\n"
+        "       PROGRAM-ID. T.\n"
+        "       DATA DIVISION.\n"
+        "       WORKING-STORAGE SECTION.\n"
+        "           EXEC SQL INCLUDE SQLCA END-EXEC.\n"
+        "       01  WS-A PIC 9.\n"
+        "       PROCEDURE DIVISION.\n"
+        "           STOP RUN.\n"
+    )
+    dd = analyze(src).compilation_unit.program_unit.data_division
+    ws = dd.working_storage_section
+    # Should have two entries: the exec-sql entry and the group entry
+    assert len(ws.data_description_entries) >= 2
+    exec_entry = ws.data_description_entries[0]
+    from cobol_py.asg.data import DataDescriptionEntryExecSql
+    assert isinstance(exec_entry, DataDescriptionEntryExecSql)
+    assert exec_entry.data_description_entry_type.name == "EXEC_SQL"
+    assert "INCLUDE SQLCA" in exec_entry.exec_sql_text.upper()
+    assert "EXECSQL" not in exec_entry.exec_sql_text

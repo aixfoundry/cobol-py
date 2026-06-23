@@ -41,6 +41,28 @@ def _has(ctx, token_name: str) -> bool:
     return callable(accessor) and accessor() is not None
 
 
+def _untagged_exec_sql(ctx) -> str:
+    """Extract body text from EXECSQLLINE tokens, stripping ``*>EXECSQL`` / ``}`` tags.
+
+    Mirrors ``TagUtils.getUntaggedText`` in the Java source.
+    """
+    from ..preprocessor.constants import EXEC_SQL_TAG
+
+    tokens_getter = getattr(ctx, "EXECSQLLINE", None)
+    if tokens_getter is None or not callable(tokens_getter):
+        return ctx.getText()
+    token_nodes = tokens_getter()
+    if not token_nodes:
+        return ""
+    parts = []
+    for tn in (token_nodes if isinstance(token_nodes, list) else [token_nodes]):
+        text = tn.getText() if hasattr(tn, "getText") else str(tn)
+        for t in (EXEC_SQL_TAG, "}"):
+            text = text.replace(t, "")
+        parts.append(text.strip())
+    return " ".join(parts).strip()
+
+
 # -- clause enums ------------------------------------------------------------
 
 class UsageClauseType(Enum):
@@ -521,6 +543,22 @@ class DataDescriptionEntryRename(DataDescriptionEntry):
             self.renames_clause = result
             self._register(result)
         return result
+
+
+class DataDescriptionEntryExecSql(DataDescriptionEntry):
+    """An ``EXEC SQL INCLUDE ... END-EXEC.`` entry in the data division.
+
+    Ports ``DataDescriptionEntryExecSql``. Has no level number or name;
+    the body text is extracted via EXECSQLLINE token stripping.
+    """
+
+    def __init__(self, container, program_unit, ctx) -> None:
+        super().__init__(None, container, program_unit, ctx)
+        self.exec_sql_text: Optional[str] = None
+
+    @property
+    def data_description_entry_type(self) -> "DataDescriptionEntry.Type":
+        return DataDescriptionEntry.Type.EXEC_SQL
 
 
 # ============================================================================
@@ -1051,7 +1089,8 @@ class DataDescriptionEntryContainer(CobolDivisionElement):
             result = self._add_rename(ctx.dataDescriptionEntryFormat2())
         elif ctx.dataDescriptionEntryFormat3() is not None:
             result = self._add_condition(ctx.dataDescriptionEntryFormat3())
-        # DataDescriptionEntryExecSql deferred.
+        elif ctx.dataDescriptionEntryExecSql() is not None:
+            result = self._add_exec_sql(ctx.dataDescriptionEntryExecSql())
 
         if current_group is not None and result is not None:
             self._group(current_group, result)
@@ -1171,6 +1210,15 @@ class DataDescriptionEntryContainer(CobolDivisionElement):
             self._register_entry(name, result)
         return result
 
+    def _add_exec_sql(self, ctx) -> "DataDescriptionEntryExecSql":
+        result = self._get_element(ctx)
+        if result is None:
+            result = DataDescriptionEntryExecSql(self, self.program_unit, ctx)
+            # Extract body text, stripping exec-sql tags (matching Java TagUtils)
+            result.exec_sql_text = _untagged_exec_sql(ctx)
+            self._register_entry(None, result)
+        return result
+
     def _group(self, current_group: DataDescriptionEntryGroup, entry: DataDescriptionEntry) -> None:
         """Attach ``entry`` under the right ancestor by level number.
 
@@ -1232,8 +1280,8 @@ class LocalStorageSection(DataDescriptionEntryContainer):
     container_type = DataDescriptionEntryContainer.ContainerType.LOCAL_STORAGE_SECTION
 
 
-class CommunicationSection(DataDescriptionEntryContainer):
-    container_type = DataDescriptionEntryContainer.ContainerType.COMMUNICATION_SECTION
+# CommunicationSection is now fully modeled in communication.py.
+# Removed stub — see _CommunicationSection placeholder.
 
 
 class FileDescriptionEntry(DataDescriptionEntryContainer, Declaration):
@@ -1473,7 +1521,7 @@ class DataDivision(CobolDivisionElement):
         self.working_storage_section: Optional[WorkingStorageSection] = None
         self.linkage_section: Optional[LinkageSection] = None
         self.local_storage_section: Optional[LocalStorageSection] = None
-        self.communication_section: Optional[CommunicationSection] = None
+        self.communication_section = None  # Lazy-imported CommunicationSection
         self.file_section: Optional[FileSection] = None
         # Report / Screen / ProgramLibrary / DataBase sections deferred.
 
@@ -1506,11 +1554,25 @@ class DataDivision(CobolDivisionElement):
         )
         return self.local_storage_section
 
-    def add_communication_section(self, ctx) -> CommunicationSection:
-        self.communication_section = self._add_container_section(
-            CommunicationSection, "communication_section", ctx
-        )
-        return self.communication_section
+    def add_communication_section(self, ctx):
+        from .communication import CommunicationSection as CS
+
+        result = self._get_element(ctx)
+        if result is None:
+            result = CS(self.program_unit, ctx)
+            # Iterate CD entries (not data description entries)
+            current_group = None
+            for cd_ctx in ctx.communicationDescriptionEntry():
+                cd_entry = result.create_communication_description_entry(cd_ctx)
+                # CD entries have nested data descriptions (dataDescName).
+                # Process those as regular data description entries.
+                for dd_ctx in getattr(cd_ctx, "dataDescriptionEntry", lambda: [])():
+                    entry = result.create_data_description_entry(current_group, dd_ctx)
+                    if isinstance(entry, DataDescriptionEntryGroup):
+                        current_group = entry
+            self.communication_section = result
+            self._register(result)
+        return result
 
     def add_file_section(self, ctx) -> FileSection:
         result = self._get_element(ctx)
