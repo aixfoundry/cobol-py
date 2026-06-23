@@ -1523,7 +1523,9 @@ class DataDivision(CobolDivisionElement):
         self.local_storage_section: Optional[LocalStorageSection] = None
         self.communication_section = None  # Lazy-imported CommunicationSection
         self.file_section: Optional[FileSection] = None
-        # Report / Screen / ProgramLibrary / DataBase sections deferred.
+        self.data_base_section = None  # Lazy-imported DataBaseSection (mainframe)
+        self.program_library_section = None  # Lazy-imported (mainframe)
+        # Report / Screen sections deferred.
 
     def _add_container_section(self, cls, attr, ctx):
         result = self._get_element(ctx)
@@ -1585,6 +1587,37 @@ class DataDivision(CobolDivisionElement):
             for fd_ctx in ctx.fileDescriptionEntry():
                 result.add_file_description_entry(fd_ctx)
             self.file_section = result
+            self._register(result)
+        return result
+
+    def add_data_base_section(self, ctx):
+        from .mainframe import DataBaseSection as DBS
+
+        result = self._get_element(ctx)
+        if result is None:
+            result = DBS(self.program_unit, ctx)
+            for entry_ctx in ctx.dataBaseSectionEntry():
+                result.add_data_base_section_entry(entry_ctx)
+            self.data_base_section = result
+            self._register(result)
+        return result
+
+    def add_program_library_section(self, ctx):
+        from .mainframe import ProgramLibrarySection as PLS
+
+        result = self._get_element(ctx)
+        if result is None:
+            result = PLS(self.program_unit, ctx)
+            for child_idx in range(ctx.getChildCount()):
+                child = ctx.getChild(child_idx)
+                cls_name = type(child).__name__
+                if cls_name in ("LibraryDescriptionEntryContext",
+                                 "LibraryDescriptionEntryFormat1Context",
+                                 "LibraryDescriptionEntryFormat2Context"):
+                    result.create_library_description_entry(
+                        child.parentCtx if hasattr(child, "parentCtx") else child
+                    )
+            self.program_library_section = result
             self._register(result)
         return result
 
