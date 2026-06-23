@@ -7,11 +7,10 @@ Ports ``metamodel/data`` — the data-description hierarchy. Sections
 (rename, 66) and Format3 (condition, 88). The 01/02/... parent hierarchy is
 resolved inline by level number (mirrors ``groupDataDescriptionEntry``).
 
-Clause coverage is intentionally minimal for this phase: level number, name,
-filler flag, and the picture string are captured; the full clause zoo
-(OCCURS, REDEFINES, VALUE, USAGE, ...) is deferred. The goal of Phase D is
-reference resolution — so a ``MOVE ... TO WS-A`` resolves ``WS-A`` to its
-:class:`DataDescriptionEntry` via a :class:`DataDescriptionEntryCall`.
+Phase D2 extends clause coverage to all 27 COBOL data description clauses
+defined in ``dataDescriptionEntryFormat1`` (plus ValueClause for Format2/3).
+Each clause is a typed :class:`CobolDivisionElement` registered in the ASG
+element registry, matching the proleap Java metamodel clause-for-clause.
 """
 
 from __future__ import annotations
@@ -22,6 +21,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from antlr4.ParserRuleContext import ParserRuleContext
 
 from .base import CobolDivisionElement, Declaration
+from .factory import ProcedureUnitFactory
 
 if TYPE_CHECKING:
     from .program import ProgramUnit
@@ -32,6 +32,103 @@ def _symbol(name: Optional[str]) -> Optional[str]:
         return name
     return name.upper()
 
+
+# -- helper: typed-token dispatch (avoids substring false-positives) ----------
+
+def _has(ctx, token_name: str) -> bool:
+    """Return ``True`` if the named ANTLR typed token is present on ``ctx``."""
+    accessor = getattr(ctx, token_name, None)
+    return callable(accessor) and accessor() is not None
+
+
+# -- clause enums ------------------------------------------------------------
+
+class UsageClauseType(Enum):
+    """Ports ``UsageClause.UsageClauseType`` (25 canonical COBOL usage values)."""
+    BINARY = "BINARY"
+    BINARY_EXTENDED = "BINARY_EXTENDED"
+    BINARY_TRUNCATED = "BINARY_TRUNCATED"
+    BIT = "BIT"
+    COMP = "COMP"
+    COMP_1 = "COMP_1"
+    COMP_2 = "COMP_2"
+    COMP_3 = "COMP_3"
+    COMP_4 = "COMP_4"
+    COMP_5 = "COMP_5"
+    CONTROL_POINT = "CONTROL_POINT"
+    DATE = "DATE"
+    DISPLAY = "DISPLAY"
+    DISPLAY_1 = "DISPLAY_1"
+    DOUBLE = "DOUBLE"
+    EVENT = "EVENT"
+    FUNCTION_POINTER = "FUNCTION_POINTER"
+    INDEX = "INDEX"
+    KANJI = "KANJI"
+    LOCK = "LOCK"
+    NATIONAL = "NATIONAL"
+    PACKED_DECIMAL = "PACKED_DECIMAL"
+    POINTER = "POINTER"
+    PROCEDURE_POINTER = "PROCEDURE_POINTER"
+    REAL = "REAL"
+    SQL = "SQL"
+    TASK = "TASK"
+
+
+class SignClauseType(Enum):
+    LEADING = "LEADING"
+    TRAILING = "TRAILING"
+
+
+class SynchronizedType(Enum):
+    LEFT = "LEFT"
+    RIGHT = "RIGHT"
+
+
+class JustifiedType(Enum):
+    JUSTIFIED = "JUSTIFIED"
+    JUSTIFIED_RIGHT = "JUSTIFIED_RIGHT"
+
+
+class CommonOwnLocalType(Enum):
+    COMMON = "COMMON"
+    LOCAL = "LOCAL"
+    OWN = "OWN"
+
+
+class TypeClauseTimeType(Enum):
+    SHORT_DATE = "SHORT_DATE"
+    LONG_DATE = "LONG_DATE"
+    NUMERIC_DATE = "NUMERIC_DATE"
+    NUMERIC_TIME = "NUMERIC_TIME"
+    LONG_TIME = "LONG_TIME"
+    CLOB = "CLOB"
+    BLOB = "BLOB"
+    DBCLOB = "DBCLOB"
+
+
+class UsingClauseType(Enum):
+    CONVENTION = "CONVENTION"
+    LANGUAGE = "LANGUAGE"
+
+
+class ReceivedByType(Enum):
+    CONTENT = "CONTENT"
+    REFERENCE = "REFERENCE"
+
+
+class IntegerStringPrimitiveType(Enum):
+    INTEGER = "INTEGER"
+    STRING = "STRING"
+
+
+class OccursSortOrder(Enum):
+    ASCENDING = "ASCENDING"
+    DESCENDING = "DESCENDING"
+
+
+# ============================================================================
+# data description entries (Format1 group/scalar, Format2 rename, Format3 cond)
+# ============================================================================
 
 class DataDescriptionEntry(CobolDivisionElement, Declaration):
     """One data description entry (a COBOL data item declaration)."""
@@ -72,14 +169,41 @@ class DataDescriptionEntry(CobolDivisionElement, Declaration):
 
 
 class DataDescriptionEntryGroup(DataDescriptionEntry):
-    """A Format1 entry (level 01-49 or 77): may have child entries + a picture."""
+    """A Format1 entry (level 01-49 or 77): may have child entries and clauses.
+
+    Each COBOL clause (PICTURE, VALUE, OCCURS, REDEFINES, ...) is stored as a
+    typed :class:`CobolDivisionElement` attribute, built lazily via ``add_*``
+    factory methods that follow the registry-check-first pattern.
+    """
 
     def __init__(self, name, container, program_unit, ctx) -> None:
         super().__init__(name, container, program_unit, ctx)
         self.data_description_entries: List[DataDescriptionEntry] = []
-        self.picture: Optional[str] = None
         self.filler: bool = False
         self.filler_number: Optional[int] = None
+
+        # --- clause storage (one per clause type; multi-occurrence are List) ---
+        self.picture_clause: Optional[PictureClause] = None
+        self.value_clause: Optional[ValueClause] = None
+        self.occurs_clauses: List[OccursClause] = []
+        self.usage_clause: Optional[UsageClause] = None
+        self.redefines_clause: Optional[RedefinesClause] = None
+        self.sign_clause: Optional[SignClause] = None
+        self.synchronized_clause: Optional[SynchronizedClause] = None
+        self.justified_clause: Optional[JustifiedClause] = None
+        self.blank_when_zero_clause: Optional[BlankWhenZeroClause] = None
+        self.external_clause: Optional[ExternalClause] = None
+        self.global_clause: Optional[GlobalClause] = None
+        self.thread_local_clause: Optional[ThreadLocalClause] = None
+        self.common_own_local_clause: Optional[CommonOwnLocalClause] = None
+        self.aligned_clause: Optional[AlignedClause] = None
+        self.record_area_clause: Optional[RecordAreaClause] = None
+        self.type_clause: Optional[TypeClause] = None
+        self.type_def_clause: Optional[TypeDefClause] = None
+        self.using_clause: Optional[UsingClause] = None
+        self.received_by_clause: Optional[ReceivedByClause] = None
+        self.with_lower_bounds_clause: Optional[WithLowerBoundsClause] = None
+        self.integer_string_clause: Optional[IntegerStringClause] = None
 
     @property
     def data_description_entry_type(self) -> "DataDescriptionEntry.Type":
@@ -88,22 +212,704 @@ class DataDescriptionEntryGroup(DataDescriptionEntry):
     def add_data_description_entry(self, entry: DataDescriptionEntry) -> None:
         self.data_description_entries.append(entry)
 
+    # -- clause builders (registry-check-first pattern) -----------------------
+
+    def _build_clause(self, clause_cls, attr, ctx, **fields):
+        """Generic: get-or-create a clause, set fields, register, store."""
+        result = self._get_element(ctx)
+        if result is None:
+            result = clause_cls(self.program_unit, ctx)
+            for k, v in fields.items():
+                setattr(result, k, v)
+            setattr(self, attr, result)
+            self._register(result)
+        return result
+
+    def add_picture_clause(self, ctx) -> "PictureClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = PictureClause(self.program_unit, ctx)
+            pic = ctx.pictureString()
+            if pic is not None:
+                result.picture_string = pic.getText()
+            self.picture_clause = result
+            self._register(result)
+        return result
+
+    def add_value_clause(self, ctx) -> "ValueClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = ValueClause(self.program_unit, ctx)
+            for interval_ctx in ctx.dataValueInterval():
+                interval = result.add_value_interval(interval_ctx)
+                result.value_intervals.append(interval)
+            self.value_clause = result
+            self._register(result)
+        return result
+
+    def add_occurs_clause(self, ctx) -> "OccursClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = OccursClause(self.program_unit, ctx)
+            # from (identifier | integerLiteral)
+            ident = ctx.identifier()
+            lit = ctx.integerLiteral()
+            if ident is not None or lit is not None:
+                result._from = self.create_value_stmt(ident, lit)
+            # to (dataOccursTo -> integerLiteral)
+            to_ctx = ctx.dataOccursTo()
+            if to_ctx is not None:
+                il = to_ctx.integerLiteral()
+                if il is not None:
+                    result._to = self.create_integer_literal(il)
+            # depending
+            depending_ctx = ctx.dataOccursDepending()
+            if depending_ctx is not None:
+                result.add_occurs_depending(depending_ctx)
+            # sort clauses
+            for sort_ctx in ctx.dataOccursSort():
+                result.add_occurs_sort(sort_ctx)
+            # indexed (may appear multiple times under the * repeat)
+            for indexed_ctx in ctx.dataOccursIndexed():
+                result.add_occurs_indexed(indexed_ctx)
+            self.occurs_clauses.append(result)
+            self._register(result)
+        return result
+
+    def add_usage_clause(self, ctx) -> "UsageClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = UsageClause(self.program_unit, ctx)
+            result.usage_clause_type = _dispatch_usage(ctx)
+            self.usage_clause = result
+            self._register(result)
+        return result
+
+    def add_redefines_clause(self, ctx) -> "RedefinesClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = RedefinesClause(self.program_unit, ctx)
+            dname = ctx.dataName()
+            if dname is not None:
+                result.redefines_call = self.create_call(dname)
+            self.redefines_clause = result
+            self._register(result)
+        return result
+
+    def add_sign_clause(self, ctx) -> "SignClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = SignClause(self.program_unit, ctx)
+            if _has(ctx, "LEADING"):
+                result.sign_clause_type = SignClauseType.LEADING
+            elif _has(ctx, "TRAILING"):
+                result.sign_clause_type = SignClauseType.TRAILING
+            result.separate = _has(ctx, "SEPARATE")
+            self.sign_clause = result
+            self._register(result)
+        return result
+
+    def add_synchronized_clause(self, ctx) -> "SynchronizedClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = SynchronizedClause(self.program_unit, ctx)
+            if _has(ctx, "LEFT"):
+                result.sync = SynchronizedType.LEFT
+            elif _has(ctx, "RIGHT"):
+                result.sync = SynchronizedType.RIGHT
+            self.synchronized_clause = result
+            self._register(result)
+        return result
+
+    def add_justified_clause(self, ctx) -> "JustifiedClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = JustifiedClause(self.program_unit, ctx)
+            if _has(ctx, "RIGHT"):
+                result.justified = JustifiedType.JUSTIFIED_RIGHT
+            else:
+                result.justified = JustifiedType.JUSTIFIED
+            self.justified_clause = result
+            self._register(result)
+        return result
+
+    def add_blank_when_zero_clause(self, ctx) -> "BlankWhenZeroClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = BlankWhenZeroClause(self.program_unit, ctx)
+            result.blank_when_zero = True
+            self.blank_when_zero_clause = result
+            self._register(result)
+        return result
+
+    def add_external_clause(self, ctx) -> "ExternalClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = ExternalClause(self.program_unit, ctx)
+            result.external = True
+            lit = ctx.literal()
+            if lit is not None:
+                result.by_literal_value_stmt = self.create_literal_value_stmt(lit)
+            self.external_clause = result
+            self._register(result)
+        return result
+
+    def add_global_clause(self, ctx) -> "GlobalClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = GlobalClause(self.program_unit, ctx)
+            result.global_ = True
+            self.global_clause = result
+            self._register(result)
+        return result
+
+    def add_thread_local_clause(self, ctx) -> "ThreadLocalClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = ThreadLocalClause(self.program_unit, ctx)
+            result.thread_local = True
+            self.thread_local_clause = result
+            self._register(result)
+        return result
+
+    def add_common_own_local_clause(self, ctx) -> "CommonOwnLocalClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = CommonOwnLocalClause(self.program_unit, ctx)
+            if _has(ctx, "COMMON"):
+                result.invariance = CommonOwnLocalType.COMMON
+            elif _has(ctx, "OWN"):
+                result.invariance = CommonOwnLocalType.OWN
+            elif _has(ctx, "LOCAL"):
+                result.invariance = CommonOwnLocalType.LOCAL
+            self.common_own_local_clause = result
+            self._register(result)
+        return result
+
+    def add_aligned_clause(self, ctx) -> "AlignedClause":
+        return self._build_clause(AlignedClause, "aligned_clause", ctx, aligned=True)
+
+    def add_record_area_clause(self, ctx) -> "RecordAreaClause":
+        return self._build_clause(RecordAreaClause, "record_area_clause", ctx, record_area=True)
+
+    def add_type_clause(self, ctx) -> "TypeClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = TypeClause(self.program_unit, ctx)
+            result.time_type = _dispatch_type_clause(ctx)
+            # CLOB/BLOB/DBCLOB carry a length literal
+            lit = ctx.integerLiteral()
+            if lit is not None:
+                result.length = int(lit.getText())
+            self.type_clause = result
+            self._register(result)
+        return result
+
+    def add_type_def_clause(self, ctx) -> "TypeDefClause":
+        return self._build_clause(TypeDefClause, "type_def_clause", ctx, type_def=True)
+
+    def add_using_clause(self, ctx) -> "UsingClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = UsingClause(self.program_unit, ctx)
+            if _has(ctx, "LANGUAGE"):
+                result.using_clause_type = UsingClauseType.LANGUAGE
+            elif _has(ctx, "CONVENTION"):
+                result.using_clause_type = UsingClauseType.CONVENTION
+            # OF value: cobolWord | dataName
+            cw = getattr(ctx, "cobolWord", None)
+            dn = getattr(ctx, "dataName", None)
+            if cw is not None:
+                cw_result = cw() if callable(cw) else None
+            else:
+                cw_result = None
+            dn_result = dn() if (dn is not None and callable(dn)) else None
+            of_ctx = cw_result
+            if of_ctx is None and dn_result is not None:
+                # create_value_stmt handles both identifier and literal
+                pass
+            if of_ctx is not None:
+                result.of_value_stmt = self.create_value_stmt(of_ctx)
+            self.using_clause = result
+            self._register(result)
+        return result
+
+    def add_received_by_clause(self, ctx) -> "ReceivedByClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = ReceivedByClause(self.program_unit, ctx)
+            if _has(ctx, "CONTENT"):
+                result.received_by = ReceivedByType.CONTENT
+            elif _has(ctx, "REFERENCE") or _has(ctx, "REF"):
+                result.received_by = ReceivedByType.REFERENCE
+            self.received_by_clause = result
+            self._register(result)
+        return result
+
+    def add_with_lower_bounds_clause(self, ctx) -> "WithLowerBoundsClause":
+        return self._build_clause(WithLowerBoundsClause, "with_lower_bounds_clause", ctx, with_lower_bounds=True)
+
+    def add_integer_string_clause(self, ctx) -> "IntegerStringClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = IntegerStringClause(self.program_unit, ctx)
+            if _has(ctx, "INTEGER"):
+                result.primitive_type = IntegerStringPrimitiveType.INTEGER
+            elif _has(ctx, "STRING"):
+                result.primitive_type = IntegerStringPrimitiveType.STRING
+            self.integer_string_clause = result
+            self._register(result)
+        return result
+
 
 class DataDescriptionEntryCondition(DataDescriptionEntry):
     """A Format3 entry (level 88, condition name)."""
+
+    def __init__(self, name, container, program_unit, ctx) -> None:
+        super().__init__(name, container, program_unit, ctx)
+        self.value_clause: Optional[ValueClause] = None
 
     @property
     def data_description_entry_type(self) -> "DataDescriptionEntry.Type":
         return DataDescriptionEntry.Type.CONDITION
 
+    def add_value_clause(self, ctx) -> "ValueClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = ValueClause(self.program_unit, ctx)
+            for interval_ctx in ctx.dataValueInterval():
+                interval = result.add_value_interval(interval_ctx)
+                result.value_intervals.append(interval)
+            self.value_clause = result
+            self._register(result)
+        return result
+
 
 class DataDescriptionEntryRename(DataDescriptionEntry):
     """A Format2 entry (level 66, renames)."""
+
+    def __init__(self, name, container, program_unit, ctx) -> None:
+        super().__init__(name, container, program_unit, ctx)
+        self.renames_clause: Optional[RenamesClause] = None
 
     @property
     def data_description_entry_type(self) -> "DataDescriptionEntry.Type":
         return DataDescriptionEntry.Type.RENAME
 
+    def add_renames_clause(self, ctx) -> "RenamesClause":
+        result = self._get_element(ctx)
+        if result is None:
+            result = RenamesClause(self.program_unit, ctx)
+            qdns = ctx.qualifiedDataName()
+            if qdns:
+                result._from = self.create_call(qdns[0])
+                result.calls.append(result._from)
+                if len(qdns) > 1:
+                    result._to = self.create_call(qdns[1])
+                    result.calls.append(result._to)
+            self.renames_clause = result
+            self._register(result)
+        return result
+
+
+# ============================================================================
+# clause model classes (each mirrors a Java *Clause interface + Impl)
+# ============================================================================
+
+class PictureClause(CobolDivisionElement):
+    """PICTURE / PIC IS? <picture-string>. Ports ``PictureClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.picture_string: Optional[str] = None
+
+
+class ValueInterval(CobolDivisionElement):
+    """One VALUE interval (``from [THROUGH|THRU to]``). Ports ``ValueIntervalImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.from_value_stmt = None
+        self.to_value_stmt: Optional = None
+
+    @property
+    def through(self) -> bool:
+        """True when this interval has a THROUGH / THRU upper bound."""
+        return self.to_value_stmt is not None
+
+
+class ValueClause(CobolDivisionElement):
+    """VALUE / VALUES (IS | ARE)? <interval> ... Ports ``ValueClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.value_intervals: List[ValueInterval] = []
+
+    def add_value_interval(self, ctx) -> ValueInterval:
+        result = self._get_element(ctx)
+        if result is None:
+            result = ValueInterval(self.program_unit, ctx)
+            # from
+            from_ctx = ctx.dataValueIntervalFrom()
+            if from_ctx is not None:
+                result.from_value_stmt = self.create_value_stmt(
+                    from_ctx.literal(), from_ctx.cobolWord()
+                )
+            # to
+            to_ctx = ctx.dataValueIntervalTo()
+            if to_ctx is not None:
+                result.to_value_stmt = self.create_value_stmt(to_ctx.literal())
+            self._register(result)
+        return result
+
+    # ValueClause needs create_value_stmt — delegate to the entry scope.
+    # During build, the caller (DataDescriptionEntryGroup.add_value_clause) is a
+    # CobolDivisionElement which has create_value_stmt via ProgramUnitElement.
+    # We route through __init__'s program_unit reference.
+
+    def create_value_stmt(self, *ctxs):
+        """Delegate value-stmt creation via the inherited factory method."""
+        return ProcedureUnitFactory.create_value_stmt(self, *[c for c in ctxs if c is not None])
+
+    def create_call(self, ctx):
+        """Delegate call creation via the inherited factory method."""
+        return ProcedureUnitFactory.create_call(self, ctx)
+
+
+class OccursDepending(CobolDivisionElement):
+    """DEPENDING ON <qualifiedDataName>. Ports ``OccursDependingImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.depending_on_call = None
+
+
+class OccursSort(CobolDivisionElement):
+    """ASCENDING / DESCENDING KEY? IS? <keys>. Ports ``OccursSortImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.order: Optional[OccursSortOrder] = None
+        self.key_calls: List = []
+
+
+class Index(CobolDivisionElement):
+    """An index name (from INDEXED BY). Ports ``Index`` interface + impl."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.name: Optional[str] = None
+        self._calls: List = []  # IndexCall
+
+    def add_call(self, call) -> None:
+        self._calls.append(call)
+
+    @property
+    def calls(self) -> List:
+        return self._calls
+
+
+class OccursIndexed(CobolDivisionElement):
+    """INDEXED BY <indices>. Ports ``OccursIndexedImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.indices: List[Index] = []
+
+    def add_index(self, ctx) -> Index:
+        result = self._get_element(ctx)
+        if result is None:
+            result = Index(self.program_unit, ctx)
+            result.name = ctx.getText()
+            self.indices.append(result)
+            self._register(result)
+        return result
+
+    def get_index(self, name: str) -> Optional[Index]:
+        for idx in self.indices:
+            if idx.name and idx.name.upper() == name.upper():
+                return idx
+        return None
+
+
+class OccursClause(CobolDivisionElement):
+    """OCCURS <from> [TO <to>] [DEPENDING ON ...] [SORT ...] [INDEXED ...].
+    Ports ``OccursClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self._from = None  # ValueStmt
+        self._to = None  # IntegerLiteral
+        self.occurs_depending: Optional[OccursDepending] = None
+        self.occurs_indexed: Optional[OccursIndexed] = None
+        self.occurs_sorts: List[OccursSort] = []
+
+    def add_occurs_depending(self, ctx) -> OccursDepending:
+        result = self._get_element(ctx)
+        if result is None:
+            result = OccursDepending(self.program_unit, ctx)
+            qdn = ctx.qualifiedDataName()
+            if qdn is not None:
+                result.depending_on_call = ProcedureUnitFactory.create_call(self, qdn)
+            self.occurs_depending = result
+            self._register(result)
+        return result
+
+    def add_occurs_sort(self, ctx) -> OccursSort:
+        result = self._get_element(ctx)
+        if result is None:
+            result = OccursSort(self.program_unit, ctx)
+            if _has(ctx, "ASCENDING"):
+                result.order = OccursSortOrder.ASCENDING
+            elif _has(ctx, "DESCENDING"):
+                result.order = OccursSortOrder.DESCENDING
+            for qdn in ctx.qualifiedDataName():
+                result.key_calls.append(ProcedureUnitFactory.create_call(self, qdn))
+            self.occurs_sorts.append(result)
+            self._register(result)
+        return result
+
+    def add_occurs_indexed(self, ctx) -> OccursIndexed:
+        result = self._get_element(ctx)
+        if result is None:
+            result = OccursIndexed(self.program_unit, ctx)
+            for index_ctx in ctx.indexName():
+                result.add_index(index_ctx)
+            self.occurs_indexed = result
+            self._register(result)
+        return result
+
+
+class UsageClause(CobolDivisionElement):
+    """USAGE IS? <type>. Ports ``UsageClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.usage_clause_type: Optional[UsageClauseType] = None
+
+
+class RedefinesClause(CobolDivisionElement):
+    """REDEFINES <dataName>. Ports ``RedefinesClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.redefines_call = None
+
+
+class RenamesClause(CobolDivisionElement):
+    """RENAMES <qdn> [THROUGH|THRU <qdn>]. Ports ``RenamesClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self._from = None
+        self._to = None
+        self.calls: List = []
+
+
+class SignClause(CobolDivisionElement):
+    """SIGN IS? LEADING|TRAILING [SEPARATE]. Ports ``SignClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.sign_clause_type: Optional[SignClauseType] = None
+        self.separate: bool = False
+
+
+class SynchronizedClause(CobolDivisionElement):
+    """SYNCHRONIZED / SYNC [LEFT | RIGHT]. Ports ``SynchronizedClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.sync: Optional[SynchronizedType] = None
+
+
+class JustifiedClause(CobolDivisionElement):
+    """JUSTIFIED / JUST [RIGHT]. Ports ``JustifiedClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.justified: Optional[JustifiedType] = None
+
+
+class BlankWhenZeroClause(CobolDivisionElement):
+    """BLANK WHEN ZERO / ZEROS / ZEROES. Ports ``BlankWhenZeroClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.blank_when_zero: bool = False
+
+
+class ExternalClause(CobolDivisionElement):
+    """IS? EXTERNAL [BY <literal>]. Ports ``ExternalClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.external: bool = False
+        self.by_literal_value_stmt = None
+
+
+class GlobalClause(CobolDivisionElement):
+    """IS? GLOBAL. Ports ``GlobalClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.global_: bool = False
+
+
+class ThreadLocalClause(CobolDivisionElement):
+    """IS? THREAD-LOCAL. Ports ``ThreadLocalClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.thread_local: bool = False
+
+
+class CommonOwnLocalClause(CobolDivisionElement):
+    """COMMON | OWN | LOCAL. Ports ``CommonOwnLocalClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.invariance: Optional[CommonOwnLocalType] = None
+
+
+class AlignedClause(CobolDivisionElement):
+    """ALIGNED. Ports ``AlignedClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.aligned: bool = False
+
+
+class RecordAreaClause(CobolDivisionElement):
+    """RECORD AREA. Ports ``RecordAreaClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.record_area: bool = False
+
+
+class TypeClause(CobolDivisionElement):
+    """TYPE IS? <type> [<length>]. Ports ``TypeClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.time_type: Optional[TypeClauseTimeType] = None
+        self.length: Optional[int] = None
+
+
+class TypeDefClause(CobolDivisionElement):
+    """IS? TYPEDEF. Ports ``TypeDefClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.type_def: bool = False
+
+
+class UsingClause(CobolDivisionElement):
+    """USING (LANGUAGE | CONVENTION) OF? <value>. Ports ``UsingClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.using_clause_type: Optional[UsingClauseType] = None
+        self.of_value_stmt = None
+
+
+class ReceivedByClause(CobolDivisionElement):
+    """RECEIVED? BY? (CONTENT | REFERENCE | REF). Ports ``ReceivedByClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.received_by: Optional[ReceivedByType] = None
+
+
+class WithLowerBoundsClause(CobolDivisionElement):
+    """WITH? LOWER BOUNDS. Ports ``WithLowerBoundsClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.with_lower_bounds: bool = False
+
+
+class IntegerStringClause(CobolDivisionElement):
+    """INTEGER | STRING. Ports ``IntegerStringClauseImpl``."""
+
+    def __init__(self, program_unit, ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.primitive_type: Optional[IntegerStringPrimitiveType] = None
+
+
+# -- utility for usage-clause typed-token dispatch ---------------------------
+# The usage clause has 25 alternatives; we map them in the grammar's precedence
+# order (the order they appear in the grammar).
+
+_USAGE_TOKEN_MAP = [
+    ("BINARY_TRUNCATED", UsageClauseType.BINARY_TRUNCATED),
+    ("BINARY_EXTENDED", UsageClauseType.BINARY_EXTENDED),
+    ("BINARY", UsageClauseType.BINARY),
+    ("BIT", UsageClauseType.BIT),
+    ("COMP_5", UsageClauseType.COMP_5),
+    ("COMP_4", UsageClauseType.COMP_4),
+    ("COMP_3", UsageClauseType.COMP_3),
+    ("COMP_2", UsageClauseType.COMP_2),
+    ("COMP_1", UsageClauseType.COMP_1),
+    ("COMP", UsageClauseType.COMP),
+    ("COMPUTATIONAL_5", UsageClauseType.COMP_5),
+    ("COMPUTATIONAL_4", UsageClauseType.COMP_4),
+    ("COMPUTATIONAL_3", UsageClauseType.COMP_3),
+    ("COMPUTATIONAL_2", UsageClauseType.COMP_2),
+    ("COMPUTATIONAL_1", UsageClauseType.COMP_1),
+    ("COMPUTATIONAL", UsageClauseType.COMP),
+    ("CONTROL_POINT", UsageClauseType.CONTROL_POINT),
+    ("DATE", UsageClauseType.DATE),
+    ("DISPLAY_1", UsageClauseType.DISPLAY_1),
+    ("DISPLAY", UsageClauseType.DISPLAY),
+    ("DOUBLE", UsageClauseType.DOUBLE),
+    ("EVENT", UsageClauseType.EVENT),
+    ("FUNCTION_POINTER", UsageClauseType.FUNCTION_POINTER),
+    ("INDEX", UsageClauseType.INDEX),
+    ("KANJI", UsageClauseType.KANJI),
+    ("LOCK", UsageClauseType.LOCK),
+    ("NATIONAL", UsageClauseType.NATIONAL),
+    ("PACKED_DECIMAL", UsageClauseType.PACKED_DECIMAL),
+    ("POINTER", UsageClauseType.POINTER),
+    ("PROCEDURE_POINTER", UsageClauseType.PROCEDURE_POINTER),
+    ("REAL", UsageClauseType.REAL),
+    ("SQL", UsageClauseType.SQL),
+    ("TASK", UsageClauseType.TASK),
+]
+
+
+def _dispatch_usage(ctx) -> Optional[UsageClauseType]:
+    for token, usg_type in _USAGE_TOKEN_MAP:
+        if _has(ctx, token):
+            return usg_type
+    return None
+
+
+# -- utility for type-clause dispatch ----------------------------------------
+
+_TYPE_TOKEN_MAP = [
+    ("SHORT_DATE", TypeClauseTimeType.SHORT_DATE),
+    ("LONG_DATE", TypeClauseTimeType.LONG_DATE),
+    ("NUMERIC_DATE", TypeClauseTimeType.NUMERIC_DATE),
+    ("NUMERIC_TIME", TypeClauseTimeType.NUMERIC_TIME),
+    ("LONG_TIME", TypeClauseTimeType.LONG_TIME),
+    ("CLOB", TypeClauseTimeType.CLOB),
+    ("BLOB", TypeClauseTimeType.BLOB),
+    ("DBCLOB", TypeClauseTimeType.DBCLOB),
+]
+
+
+def _dispatch_type_clause(ctx) -> Optional[TypeClauseTimeType]:
+    for token, tt in _TYPE_TOKEN_MAP:
+        if _has(ctx, token):
+            return tt
+    return None
+
+
+# ============================================================================
+# data description entry container (builds entries for a section)
+# ============================================================================
 
 class DataDescriptionEntryContainer(CobolDivisionElement):
     """Base for sections (and file description entries) that hold data items."""
@@ -158,13 +964,73 @@ class DataDescriptionEntryContainer(CobolDivisionElement):
             if ctx.FILLER() is not None:
                 result.filler = True
                 result.filler_number = self.compilation_unit.increment_filler_counter()
-            # picture: store the picture-string (e.g. "X(5)"), not the whole
-            # clause text (which includes the PIC/PICTURE keyword).
-            pic_clauses = ctx.dataPictureClause()
-            if pic_clauses:
-                pic_string = pic_clauses[0].pictureString()
-                if pic_string is not None:
-                    result.picture = pic_string.getText()
+
+            # -- clauses (matching Java's inline clause dispatch order) -------
+
+            # picture
+            for c in ctx.dataPictureClause():
+                result.add_picture_clause(c)
+            # redefines
+            for c in ctx.dataRedefinesClause():
+                result.add_redefines_clause(c)
+            # integer-string
+            for c in ctx.dataIntegerStringClause():
+                result.add_integer_string_clause(c)
+            # external
+            for c in ctx.dataExternalClause():
+                result.add_external_clause(c)
+            # global
+            for c in ctx.dataGlobalClause():
+                result.add_global_clause(c)
+            # type-def
+            for c in ctx.dataTypeDefClause():
+                result.add_type_def_clause(c)
+            # thread-local
+            for c in ctx.dataThreadLocalClause():
+                result.add_thread_local_clause(c)
+            # common-own-local
+            for c in ctx.dataCommonOwnLocalClause():
+                result.add_common_own_local_clause(c)
+            # type
+            for c in ctx.dataTypeClause():
+                result.add_type_clause(c)
+            # using
+            for c in ctx.dataUsingClause():
+                result.add_using_clause(c)
+            # usage
+            for c in ctx.dataUsageClause():
+                result.add_usage_clause(c)
+            # value
+            for c in ctx.dataValueClause():
+                result.add_value_clause(c)
+            # received-by
+            for c in ctx.dataReceivedByClause():
+                result.add_received_by_clause(c)
+            # occurs (may appear multiple times, each is a separate clause)
+            for c in ctx.dataOccursClause():
+                result.add_occurs_clause(c)
+            # sign
+            for c in ctx.dataSignClause():
+                result.add_sign_clause(c)
+            # synchronized
+            for c in ctx.dataSynchronizedClause():
+                result.add_synchronized_clause(c)
+            # justified
+            for c in ctx.dataJustifiedClause():
+                result.add_justified_clause(c)
+            # blank-when-zero
+            for c in ctx.dataBlankWhenZeroClause():
+                result.add_blank_when_zero_clause(c)
+            # with-lower-bounds
+            for c in ctx.dataWithLowerBoundsClause():
+                result.add_with_lower_bounds_clause(c)
+            # aligned
+            for c in ctx.dataAlignedClause():
+                result.add_aligned_clause(c)
+            # record-area
+            for c in ctx.dataRecordAreaClause():
+                result.add_record_area_clause(c)
+
             self._register_entry(name, result)
         return result
 
@@ -174,6 +1040,10 @@ class DataDescriptionEntryContainer(CobolDivisionElement):
             name = self.determine_name(ctx)
             result = DataDescriptionEntryCondition(name, self, self.program_unit, ctx)
             result.level_number = DataDescriptionEntry.LEVEL_NUMBER_CONDITION
+            # condition entries always carry a value clause
+            vc = ctx.dataValueClause()
+            if vc is not None:
+                result.add_value_clause(vc)
             self._register_entry(name, result)
         return result
 
@@ -183,6 +1053,9 @@ class DataDescriptionEntryContainer(CobolDivisionElement):
             name = self.determine_name(ctx)
             result = DataDescriptionEntryRename(name, self, self.program_unit, ctx)
             result.level_number = DataDescriptionEntry.LEVEL_NUMBER_RENAME
+            rc = ctx.dataRenamesClause()
+            if rc is not None:
+                result.add_renames_clause(rc)
             self._register_entry(name, result)
         return result
 
@@ -230,6 +1103,10 @@ class DataDescriptionEntryContainer(CobolDivisionElement):
         entries = self._by_name.get(_symbol(name), [])
         return entries[0] if entries else None
 
+
+# ============================================================================
+# sections & file description entries
+# ============================================================================
 
 class WorkingStorageSection(DataDescriptionEntryContainer):
     container_type = DataDescriptionEntryContainer.ContainerType.WORKING_STORAGE_SECTION
@@ -283,6 +1160,10 @@ class FileSection(CobolDivisionElement):
     def file_description_entries(self) -> List[FileDescriptionEntry]:
         return self._file_description_entries
 
+
+# ============================================================================
+# data division
+# ============================================================================
 
 class DataDivision(CobolDivisionElement):
     """The DATA DIVISION: holds the data sections."""
