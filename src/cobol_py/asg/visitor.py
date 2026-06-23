@@ -497,6 +497,12 @@ class CobolProcedureStatementVisitor(AbstractCobolParserVisitor):
         return self._build(PurgeStatement, ctx)
 
     def visitUseStatement(self, ctx):  # noqa: N802
+        # USE statements occur only inside DECLARATIVES, where the declarative
+        # model (Declarative.add_use_statement) builds and owns them during the
+        # procedure-division pass. Skip ones already registered so they are not
+        # duplicated as top-level procedure-division statements.
+        if self.get_element(ctx) is not None:
+            return self.visitChildren(ctx)
         from .procedure.statements import UseStatement
 
         return self._build(UseStatement, ctx)

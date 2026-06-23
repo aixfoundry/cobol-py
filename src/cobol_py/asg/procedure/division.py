@@ -207,7 +207,7 @@ class ProcedureDivision(Scope):
 
     def __init__(self, program_unit: "ProgramUnit", ctx: Optional[ParserRuleContext]) -> None:
         super().__init__(program_unit=program_unit, ctx=ctx)
-        self.declaratives = None  # Declaratives (Phase later)
+        self.declaratives: Optional["Declaratives"] = None  # built by add_declaratives
         self.giving_clause = None  # GivingClause
         self.using_clause = None  # UsingClause
         self._sections: List[Section] = []
@@ -276,11 +276,16 @@ class ProcedureDivision(Scope):
 
     # -- clauses (using / giving / declaratives) ---------------------------
 
-    def add_declaratives(self, ctx: ParserRuleContext):
-        if self.declaratives is None:
-            self.declaratives = _ClauseStub(self.program_unit, ctx)
-            self._register(self.declaratives)
-        return self.declaratives
+    def add_declaratives(self, ctx: ParserRuleContext) -> "Optional[Declaratives]":
+        result = self._get_element(ctx)
+        if result is None:
+            result = Declaratives(self.program_unit, ctx)
+            self.declaratives = result
+            self._register(result)
+            # declaratives
+            for declarative_ctx in ctx.procedureDeclarative():
+                result.add_declarative(declarative_ctx)
+        return result  # type: ignore[return-value]
 
     def add_giving_clause(self, ctx: ParserRuleContext):
         result = self._get_element(ctx)
@@ -426,9 +431,82 @@ class GivingClause(CobolDivisionElement):
         self.giving_call = None
 
 
-class _ClauseStub(CobolDivisionElement):
-    """Placeholder for declaratives (full structure deferred).
+# --- Declaratives block -----------------------------------------------------
+#
+# Ports ``metamodel/procedure/declaratives/{Declaratives,Declarative,
+# SectionHeader}`` (interface + impl collapsed into one class per concept).
+# Grammar::
+#
+#   procedureDeclaratives  : DECLARATIVES DOT_FS procedureDeclarative+
+#                             END DECLARATIVES DOT_FS
+#   procedureDeclarative   : procedureSectionHeader DOT_FS useStatement
+#                             DOT_FS paragraphs
+#   procedureSectionHeader : sectionName SECTION integerLiteral?
 
-    Using and giving clauses are now decomposed; this stub remains only for
-    declaratives.
+
+class SectionHeader(CobolDivisionElement):
+    """The section header that opens a declarative (``sectionName SECTION ...``).
+
+    Ports ``procedure.declaratives.SectionHeader``: a marker element. It is
+    distinct from :class:`Section`, which is a named scope owning paragraphs.
     """
+
+
+class Declarative(CobolDivisionElement):
+    """One declarative: a section header plus a USE statement (+ its paragraphs).
+
+    Ports ``procedure.declaratives.Declarative``.
+    """
+
+    def __init__(self, program_unit: "ProgramUnit", ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.section_header: Optional[SectionHeader] = None
+        self.use_statement = None  # UseStatement
+
+    def add_section_header(self, ctx: Optional[ParserRuleContext]) -> Optional[SectionHeader]:
+        if ctx is None:
+            return None
+        result = self._get_element(ctx)
+        if result is None:
+            result = SectionHeader(self.program_unit, ctx)
+            self.section_header = result
+            self._register(result)
+        return result
+
+    def add_use_statement(self, ctx: Optional[ParserRuleContext]):
+        if ctx is None:
+            return None
+        from .statements import UseStatement
+
+        result = self._get_element(ctx)
+        if result is None:
+            # Mirrors DeclarativeImpl.addUseStatement: the USE statement scopes
+            # back to the procedure division, but is owned by this declarative
+            # (it is NOT appended to procedure_division.statements).
+            procedure_division = self.program_unit.procedure_division
+            result = UseStatement(self.program_unit, procedure_division, ctx)
+            result._populate()
+            self.use_statement = result
+            self._register(result)
+        return result
+
+
+class Declaratives(CobolDivisionElement):
+    """The DECLARATIVES block: a container of declarative sections.
+
+    Ports ``procedure.declaratives.Declaratives``.
+    """
+
+    def __init__(self, program_unit: "ProgramUnit", ctx: ParserRuleContext) -> None:
+        super().__init__(program_unit=program_unit, ctx=ctx)
+        self.declaratives: List[Declarative] = []
+
+    def add_declarative(self, ctx: ParserRuleContext) -> Declarative:
+        result = self._get_element(ctx)
+        if result is None:
+            result = Declarative(self.program_unit, ctx)
+            result.add_section_header(ctx.procedureSectionHeader())
+            result.add_use_statement(ctx.useStatement())
+            self.declaratives.append(result)
+            self._register(result)
+        return result
