@@ -54,9 +54,14 @@ class CobolWordCopyBookFinderImpl:
     ) -> Optional[Path]:
         if not copy_books_directory.is_dir():
             return None
-        for copy_book_candidate in copy_books_directory.iterdir():
-            if self._is_matching_copy_book(copy_book_candidate, params, ctx):
-                return copy_book_candidate
+        try:
+            for copy_book_candidate in copy_books_directory.rglob("*"):
+                if copy_book_candidate.is_file() and self._is_matching_copy_book(
+                    copy_book_candidate, params, ctx
+                ):
+                    return copy_book_candidate
+        except OSError as e:  # pragma: no cover - filesystem dependent
+            _LOG.warning("%s", e)
         return None
 
     def _is_matching_copy_book(

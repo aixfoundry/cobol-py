@@ -42,4 +42,9 @@ class CobolParserParams:
     copy_book_files: Optional[List[Path]] = None
     dialect: Optional[CobolDialect] = None
     format: Optional[CobolSourceFormatEnum] = None
+    ignore_missing_copy: bool = False
+    """When True, missing copybooks are replaced with a comment line instead of
+    raising :class:`CobolPreprocessorException`.  This lets the main grammar parse
+    proceed for code that references unavailable copybooks.
+    """
     ignore_syntax_errors: bool = False

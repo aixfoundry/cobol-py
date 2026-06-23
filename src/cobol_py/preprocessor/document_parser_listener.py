@@ -250,6 +250,13 @@ class CobolDocumentParserListenerImpl(CobolPreprocessorListener):
         copy_book = self._find_copy_book(copy_source, params)
 
         if copy_book is None:
+            if params.ignore_missing_copy:
+                # Preserve the COPY statement as a comment so the main grammar
+                # parse can proceed without the missing copybook content.
+                stmt_text = get_text_including_hidden_tokens(
+                    copy_source.parentCtx, self._tokens
+                )
+                return "      *> COPY-NOT-FOUND " + stmt_text.replace("\n", " ")
             raise CobolPreprocessorException(
                 "Could not find copy book "
                 + copy_source.getText()
