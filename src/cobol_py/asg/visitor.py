@@ -562,3 +562,15 @@ class CobolDataDivisionVisitor(AbstractCobolParserVisitor):
         if dd is not None:
             dd.add_program_library_section(ctx)
         return self.visitChildren(ctx)
+
+    def visitReportSection(self, ctx):  # noqa: N802
+        dd = self._data_division(ctx)
+        if dd is not None:
+            dd.add_report_section(ctx)
+        return self.visitChildren(ctx)
+
+    def visitScreenSection(self, ctx):  # noqa: N802
+        dd = self._data_division(ctx)
+        if dd is not None:
+            dd.add_screen_section(ctx)
+        return self.visitChildren(ctx)

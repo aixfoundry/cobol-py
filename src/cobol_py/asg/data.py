@@ -1525,7 +1525,8 @@ class DataDivision(CobolDivisionElement):
         self.file_section: Optional[FileSection] = None
         self.data_base_section = None  # Lazy-imported DataBaseSection (mainframe)
         self.program_library_section = None  # Lazy-imported (mainframe)
-        # Report / Screen sections deferred.
+        self.report_section = None  # Lazy-imported (mainframe)
+        self.screen_section = None  # Lazy-imported (mainframe)
 
     def _add_container_section(self, cls, attr, ctx):
         result = self._get_element(ctx)
@@ -1618,6 +1619,35 @@ class DataDivision(CobolDivisionElement):
                         child.parentCtx if hasattr(child, "parentCtx") else child
                     )
             self.program_library_section = result
+            self._register(result)
+        return result
+
+    def add_report_section(self, ctx):
+        from .mainframe import ReportSection as RS
+
+        result = self._get_element(ctx)
+        if result is None:
+            result = RS(self.program_unit, ctx)
+            for child_idx in range(ctx.getChildCount()):
+                child = ctx.getChild(child_idx)
+                cls_name = type(child).__name__
+                if "ReportDescriptionContext" in cls_name and "Entry" not in cls_name and "Group" not in cls_name:
+                    result.add_report_description(child)
+            self.report_section = result
+            self._register(result)
+        return result
+
+    def add_screen_section(self, ctx):
+        from .mainframe import ScreenSection as SS
+
+        result = self._get_element(ctx)
+        if result is None:
+            result = SS(self.program_unit, ctx)
+            for child_idx in range(ctx.getChildCount()):
+                child = ctx.getChild(child_idx)
+                if type(child).__name__ == "ScreenDescriptionEntryContext":
+                    result.add_screen_description_entry(child)
+            self.screen_section = result
             self._register(result)
         return result
 
