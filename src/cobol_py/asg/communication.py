@@ -475,8 +475,6 @@ class CommunicationSection(DataDescriptionEntryContainer):
             entry.add_message_date_clause(c)
         for c in ctx.messageTimeClause():
             entry.add_message_time_clause(c)
-        for c in ctx.symbolicTerminalClause():
-            pass  # Terminal belongs to IO, not Input; grammar may include it in Format1 ctx
         for c in ctx.textLengthClause():
             entry.add_text_length_clause(c)
         for c in ctx.endKeyClause():

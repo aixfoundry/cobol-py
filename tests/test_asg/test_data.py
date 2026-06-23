@@ -597,3 +597,50 @@ def test_data_description_exec_sql(analyze):
     assert exec_entry.data_description_entry_type.name == "EXEC_SQL"
     assert "INCLUDE SQLCA" in exec_entry.exec_sql_text.upper()
     assert "EXECSQL" not in exec_entry.exec_sql_text
+
+
+# === CommunicationSection ===================================================
+
+def test_communication_section_input_cd(analyze):
+    src = (
+        "       IDENTIFICATION DIVISION.\n"
+        "       PROGRAM-ID. T.\n"
+        "       DATA DIVISION.\n"
+        "       COMMUNICATION SECTION.\n"
+        "       CD CD-IN FOR INITIAL INPUT\n"
+        "          MESSAGE COUNT IS WS-CNT\n"
+        "          MESSAGE DATE IS WS-DAT\n"
+        "          MESSAGE TIME IS WS-TIM\n"
+        "          SYMBOLIC SOURCE IS WS-SRC\n"
+        "          SYMBOLIC QUEUE IS WS-QUE\n"
+        "          TEXT LENGTH IS WS-TXL\n"
+        "          END KEY IS WS-END\n"
+        "          STATUS KEY IS WS-STS.\n"
+        "       WORKING-STORAGE SECTION.\n"
+        "       01  WS-CNT PIC 9.\n"
+        "       01  WS-DAT PIC 9.\n"
+        "       01  WS-TIM PIC 9.\n"
+        "       01  WS-SRC PIC 9.\n"
+        "       01  WS-QUE PIC 9.\n"
+        "       01  WS-TXL PIC 9.\n"
+        "       01  WS-END PIC 9.\n"
+        "       01  WS-STS PIC 9.\n"
+        "       PROCEDURE DIVISION.\n"
+        "           STOP RUN.\n"
+    )
+    dd = analyze(src).compilation_unit.program_unit.data_division
+    cs = dd.communication_section
+    assert cs is not None
+    from cobol_py.asg.communication import CommunicationSection, CommunicationDescriptionEntryInput
+    assert isinstance(cs, CommunicationSection)
+    assert len(cs.communication_description_entries) == 1
+    cd = cs.communication_description_entries[0]
+    assert isinstance(cd, CommunicationDescriptionEntryInput)
+    assert cd.message_count_clause is not None
+    assert cd.message_date_clause is not None
+    assert cd.message_time_clause is not None
+    assert cd.symbolic_source_clause is not None
+    assert cd.symbolic_queue_clause is not None
+    assert cd.text_length_clause is not None
+    assert cd.end_key_clause is not None
+    assert cd.status_key_clause is not None

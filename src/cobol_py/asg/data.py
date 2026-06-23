@@ -1560,14 +1560,18 @@ class DataDivision(CobolDivisionElement):
         result = self._get_element(ctx)
         if result is None:
             result = CS(self.program_unit, ctx)
-            # Iterate CD entries (not data description entries)
+            # Grammar: (communicationDescriptionEntry | dataDescriptionEntry)*
+            # Both are top-level children of the communication section.
             current_group = None
-            for cd_ctx in ctx.communicationDescriptionEntry():
-                cd_entry = result.create_communication_description_entry(cd_ctx)
-                # CD entries have nested data descriptions (dataDescName).
-                # Process those as regular data description entries.
-                for dd_ctx in getattr(cd_ctx, "dataDescriptionEntry", lambda: [])():
-                    entry = result.create_data_description_entry(current_group, dd_ctx)
+            for child_idx in range(ctx.getChildCount()):
+                child = ctx.getChild(child_idx)
+                cls_name = type(child).__name__
+                if cls_name == "CommunicationDescriptionEntryContext":
+                    result.create_communication_description_entry(child)
+                elif cls_name == "CommunicationDescriptionEntryFormat1Context":
+                    result.create_communication_description_entry(child.parentCtx or child)
+                elif cls_name.startswith("DataDescriptionEntry"):
+                    entry = result.create_data_description_entry(current_group, child)
                     if isinstance(entry, DataDescriptionEntryGroup):
                         current_group = entry
             self.communication_section = result
