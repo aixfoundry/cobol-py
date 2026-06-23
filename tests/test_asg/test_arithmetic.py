@@ -13,13 +13,24 @@ from cobol_py.asg import (
     AddStatement,
     ArithmeticValueStmt,
     CallValueStmt,
+    ClassCondition,
+    ClassConditionType,
     ComputeStatement,
+    ConditionValueStmt,
     DivideStatement,
+    IfStatement,
     Literal,
     LiteralValueStmt,
     MoveStatement,
     MultiplyStatement,
     OnSizeErrorPhrase,
+    PlusMinus,
+    PlusMinusType,
+    Powers,
+    RelationConditionValueStmt,
+    RelationalOperatorType,
+    SignCondition,
+    SignConditionType,
     SubtractStatement,
 )
 
@@ -191,3 +202,168 @@ def test_arithmetic_on_size_error_phrase_owned(analyze):
     # the nested MOVE lives inside the SIZE ERROR phrase, not the paragraph
     assert len(add.on_size_error_phrase.statements) == 1
     assert isinstance(add.on_size_error_phrase.statements[0], MoveStatement)
+
+
+# === Phase C2: arithmetic expression tree decomposition ======================
+
+def test_compute_simple_plus(analyze):
+    """COMPUTE X = A + B produces first multDivs plus one PlusMinus."""
+    comp = _main_statements(analyze, "           COMPUTE WS-R = WS-A + WS-B.\n")[0]
+    expr = comp.arithmetic_expression
+    assert isinstance(expr, ArithmeticValueStmt)
+    # First term via multDivs
+    assert expr.mult_divs is not None
+    # Then one plusMinus for "+ WS-B"
+    assert len(expr.plus_minuses) == 1
+    pm = expr.plus_minuses[0]
+    assert isinstance(pm, PlusMinus)
+    assert pm.plus_minus_type is PlusMinusType.PLUS
+
+
+def test_compute_expression_has_mult_divs(analyze):
+    """COMPUTE X = A * B produces MultDiv inside multDivs."""
+    comp = _main_statements(analyze, "           COMPUTE WS-R = WS-A * WS-B.\n")[0]
+    mult_divs = comp.arithmetic_expression.mult_divs
+    assert mult_divs is not None
+    assert len(mult_divs.mult_divs) == 1  # one * operator
+
+
+def test_compute_minus_expression(analyze):
+    """COMPUTE X = A - B has MINUS PlusMinus."""
+    comp = _main_statements(analyze, "           COMPUTE WS-R = WS-A - WS-B.\n")[0]
+    assert len(comp.arithmetic_expression.plus_minuses) == 1
+    assert comp.arithmetic_expression.plus_minuses[0].plus_minus_type is PlusMinusType.MINUS
+
+
+def test_compute_power_expression(analyze):
+    """COMPUTE X = A ** 2 produces Power inside powers."""
+    comp = _main_statements(analyze, "           COMPUTE WS-R = WS-A ** 2.\n")[0]
+    mult_divs = comp.arithmetic_expression.mult_divs
+    powers = mult_divs.powers
+    assert isinstance(powers, Powers)
+    assert powers.basis is not None
+    assert powers.powers  # the ** chain
+    assert len(powers.powers) == 1
+
+
+def test_compute_paren_expression(analyze):
+    """COMPUTE X = (A + B) * B produces a sub-expression inside Basis."""
+    comp = _main_statements(analyze, "           COMPUTE WS-R = (WS-A + WS-B) * WS-B.\n")[0]
+    assert isinstance(comp.arithmetic_expression, ArithmeticValueStmt)
+    md = comp.arithmetic_expression.mult_divs
+    assert md is not None
+    assert len(md.mult_divs) == 1  # * WS-B
+
+
+def test_compute_multiple_plus_minus(analyze):
+    """COMPUTE X = A + B - A produces two PlusMinus nodes."""
+    comp = _main_statements(analyze, "           COMPUTE WS-R = WS-A + WS-B - WS-A.\n")[0]
+    assert len(comp.arithmetic_expression.plus_minuses) == 2
+    assert comp.arithmetic_expression.plus_minuses[0].plus_minus_type is PlusMinusType.PLUS
+    assert comp.arithmetic_expression.plus_minuses[1].plus_minus_type is PlusMinusType.MINUS
+
+
+# === Phase C2: condition expression tree decomposition =======================
+
+def _if_statement(analyze, condition_line, data_items="01  WS-A PIC 9.\n       01  WS-B PIC 9."):
+    src = (
+        "       IDENTIFICATION DIVISION.\n"
+        "       PROGRAM-ID. T.\n"
+        "       DATA DIVISION.\n"
+        "       WORKING-STORAGE SECTION.\n"
+        f"       {data_items}"
+        "       PROCEDURE DIVISION.\n"
+        "       MAIN.\n"
+        f"           IF {condition_line}\n"
+        "               MOVE 0 TO WS-A\n"
+        "           END-IF.\n"
+    )
+    return analyze(src).compilation_unit.program_unit.procedure_division.get_paragraph("MAIN").statements[0]
+
+
+def test_if_arithmetic_comparison(analyze):
+    """IF A > B produces a relation condition with GREATER operator."""
+    stmt = _if_statement(analyze, "WS-A > WS-B")
+    assert isinstance(stmt, IfStatement)
+    cond = stmt.condition
+    assert isinstance(cond, ConditionValueStmt)
+    assert cond.combinable_condition is not None
+    sc = cond.combinable_condition.simple_condition
+    assert sc.relation_condition is not None
+    rc = sc.relation_condition
+    assert isinstance(rc, RelationConditionValueStmt)
+    assert rc.comparison_stmt is not None
+    op = rc.comparison_stmt.operator
+    assert op is not None
+    assert op.relational_operator_type == RelationalOperatorType.GREATER
+
+
+def test_if_condition_with_and(analyze):
+    """IF A > 0 AND B < 10 produces AndOrCondition."""
+    stmt = _if_statement(analyze, "WS-A > 0 AND WS-B < 10")
+    cond = stmt.condition
+    assert isinstance(cond, ConditionValueStmt)
+    assert cond.and_or_conditions
+    assert cond.and_or_conditions[0].and_or_condition_type is not None
+
+
+def test_if_not_equal(analyze):
+    """IF A NOT = B produces NOT_EQUAL relational operator."""
+    stmt = _if_statement(analyze, "WS-A NOT = WS-B")
+    sc = stmt.condition.combinable_condition.simple_condition
+    op = sc.relation_condition.comparison_stmt.operator
+    assert op.relational_operator_type == RelationalOperatorType.NOT_EQUAL
+
+
+def test_if_sign_positive(analyze):
+    """IF A IS POSITIVE → SignCondition."""
+    stmt = _if_statement(analyze, "WS-A IS POSITIVE")
+    sc = stmt.condition.combinable_condition.simple_condition
+    assert sc.relation_condition is not None
+    rs = sc.relation_condition.comparison_stmt
+    assert isinstance(rs, SignCondition)
+    assert rs.sign_condition_type == SignConditionType.POSITIVE
+
+
+def test_if_sign_not_negative(analyze):
+    """IF A IS NOT NEGATIVE → SignCondition with not_=True."""
+    stmt = _if_statement(analyze, "WS-A IS NOT NEGATIVE")
+    sc = stmt.condition.combinable_condition.simple_condition
+    rs = sc.relation_condition.comparison_stmt
+    assert isinstance(rs, SignCondition)
+    assert rs.sign_condition_type == SignConditionType.NEGATIVE
+    assert rs.not_ is True
+
+
+def test_if_class_numeric(analyze):
+    """IF A IS NUMERIC → ClassCondition."""
+    stmt = _if_statement(analyze, "WS-A IS NUMERIC")
+    sc = stmt.condition.combinable_condition.simple_condition
+    cc = sc.class_condition
+    assert isinstance(cc, ClassCondition)
+    assert cc.class_condition_type == ClassConditionType.NUMERIC
+    assert cc.not_ is False
+
+
+def test_if_class_not_alphabetic(analyze):
+    """IF A IS NOT ALPHABETIC → ClassCondition with not_=True."""
+    stmt = _if_statement(analyze, "WS-A IS NOT ALPHABETIC")
+    cc = stmt.condition.combinable_condition.simple_condition.class_condition
+    assert isinstance(cc, ClassCondition)
+    assert cc.class_condition_type == ClassConditionType.ALPHABETIC
+    assert cc.not_ is True
+
+
+def test_if_condition_not_prefix(analyze):
+    """IF NOT (A > B) → CombinableCondition with not_."""
+    stmt = _if_statement(analyze, "NOT WS-A > WS-B")
+    cc = stmt.condition.combinable_condition
+    assert cc is not None
+    assert cc.not_ is True
+
+
+def test_if_or_condition(analyze):
+    """IF A > 0 OR B < 0 produces AndOrCondition with OR type."""
+    stmt = _if_statement(analyze, "WS-A > 0 OR WS-B < 0")
+    assert stmt.condition.and_or_conditions
+    assert stmt.condition.and_or_conditions[0].and_or_condition_type is not None

@@ -634,8 +634,8 @@ class ProcedureUnitFactory:
 
         result = self._get_element(ctx)
         if result is None:
-            # Full combinable/and-or decomposition deferred; retain ctx.
             result = ConditionValueStmt(self.program_unit, ctx)
+            result._populate()
             self._register(result)
         return result
 
@@ -644,8 +644,18 @@ class ProcedureUnitFactory:
 
         result = self._get_element(ctx)
         if result is None:
-            # Full mult-divs/plus-minus decomposition deferred; retain ctx.
             result = ArithmeticValueStmt(self.program_unit, ctx)
+            result._populate()
+            self._register(result)
+        return result
+
+    def create_relation_condition_value_stmt(self, ctx):
+        from .valuestmt import RelationConditionValueStmt
+
+        result = self._get_element(ctx)
+        if result is None:
+            result = RelationConditionValueStmt(self.program_unit, ctx)
+            result._populate()
             self._register(result)
         return result
 
