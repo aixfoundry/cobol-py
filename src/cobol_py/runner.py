@@ -209,7 +209,13 @@ class CobolParserRunner:
         full LL, re-arming the error listeners so genuine syntax errors are
         reported exactly as a plain LL parse would. The parse tree is identical
         to a plain LL parse.
+
+        A recursion-depth cap is applied to the ATN closure computation to
+        prevent stack overflow on deeply-nested qualified data names (see
+        :mod:`._antlr_patch`).
         """
+        from ._antlr_patch import patch_context
+
         # Stage 1: fast SLL.
         parser.removeErrorListeners()
         parser._interp.predictionMode = PredictionMode.SLL
@@ -219,12 +225,13 @@ class CobolParserRunner:
         except ParseCancellationException:
             pass
 
-        # Stage 2: full LL.
+        # Stage 2: full LL, with ATN closure depth protection.
         parser.getTokenStream().seek(0)
         parser.reset()
         parser._interp.predictionMode = PredictionMode.LL
         parser._errHandler = DefaultErrorStrategy()
         if not ignore_syntax_errors:
             parser.addErrorListener(ThrowingErrorListener())
-        return parser.startRule()
+        with patch_context():
+            return parser.startRule()
 
