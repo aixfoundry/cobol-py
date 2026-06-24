@@ -100,7 +100,7 @@ def test_reader_fixed_area_split():
 
 def test_reader_raises_on_unparseable_line():
     with pytest.raises(CobolPreprocessorException) as exc_info:
-        CobolLineReaderImpl().parse_line("123456XABC", 4, _params())
+        CobolLineReaderImpl().parse_line("123456!ABC", 4, _params())
     assert "line 5" in exc_info.value.message
 
 
