@@ -19,6 +19,16 @@ class CobolVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by CobolParser#copybookContent.
+    def visitCopybookContent(self, ctx:CobolParser.CopybookContentContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by CobolParser#copybookEntry.
+    def visitCopybookEntry(self, ctx:CobolParser.CopybookEntryContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by CobolParser#programUnit.
     def visitProgramUnit(self, ctx:CobolParser.ProgramUnitContext):
         return self.visitChildren(ctx)

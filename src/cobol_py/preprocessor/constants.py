@@ -40,7 +40,9 @@ NEWLINE = "\n"
 
 # Some Japanese COBOL sources use full-width (ideographic) spaces (U+3000) in
 # the indicator column.  Include it alongside the ASCII space.
-INDICATOR_FIELD = r"([ABCdD$\t\-/*# 　])"
+# Also include letters E-Z used as non-standard indicator markers in the NIST
+# COBOL85 test suite (treated as NORMAL lines).
+INDICATOR_FIELD = r"([ABCDEFGHIJKLMNOPQRSTUVWXYZd$\t\-/*# 　])"
 
 
 class CobolSourceFormatEnum(Enum):
@@ -72,7 +74,7 @@ class CobolSourceFormatEnum(Enum):
 
 # Valid indicator-area characters for auto-detection heuristics.
 # Mirrors INDICATOR_FIELD but as a plain set for membership tests.
-_VALID_INDICATOR_SET = set("ABCdD$-\t/*# 　　　")  # includes ASCII + full-width spaces
+_VALID_INDICATOR_SET = set("ABCDEFGHIJKLMNOPQRSTUVWXYZd$-\t/*# 　　　")  # letters A-Z, d, full-width spaces
 
 # Sequence numbers in fixed-format COBOL are 6 characters: digits and spaces.
 _SEQ_AREA_RE = re.compile(r"[0-9 ]{6}")

@@ -26,6 +26,24 @@ class CobolListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by CobolParser#copybookContent.
+    def enterCopybookContent(self, ctx:CobolParser.CopybookContentContext):
+        pass
+
+    # Exit a parse tree produced by CobolParser#copybookContent.
+    def exitCopybookContent(self, ctx:CobolParser.CopybookContentContext):
+        pass
+
+
+    # Enter a parse tree produced by CobolParser#copybookEntry.
+    def enterCopybookEntry(self, ctx:CobolParser.CopybookEntryContext):
+        pass
+
+    # Exit a parse tree produced by CobolParser#copybookEntry.
+    def exitCopybookEntry(self, ctx:CobolParser.CopybookEntryContext):
+        pass
+
+
     # Enter a parse tree produced by CobolParser#programUnit.
     def enterProgramUnit(self, ctx:CobolParser.ProgramUnitContext):
         pass

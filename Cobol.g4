@@ -19,10 +19,28 @@
 
 grammar Cobol;
 
-startRule : compilationUnit EOF;
+startRule : (compilationUnit | copybookContent) EOF;
 
 compilationUnit
    : programUnit*
+   ;
+
+// copybook / include fragment — files that are COPY'd into a larger program
+// rather than compiled standalone.  They start with data descriptions,
+// file-control entries, procedure statements, etc. without an
+// IDENTIFICATION DIVISION header.
+copybookContent
+   : copybookEntry*
+   ;
+
+copybookEntry
+   : dataDescriptionEntry
+   | selectClause fileControlClause* DOT_FS
+   | ioControlClause DOT_FS
+   | fileDescriptionEntry dataDescriptionEntry*
+   | statement+ DOT_FS?
+   | paragraphName DOT_FS statement*
+   | dataRecordsClause DOT_FS
    ;
 
 programUnit
