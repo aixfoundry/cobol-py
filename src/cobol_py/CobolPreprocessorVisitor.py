@@ -59,6 +59,11 @@ class CobolPreprocessorVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by CobolPreprocessorParser#prefixingPhrase.
+    def visitPrefixingPhrase(self, ctx:CobolPreprocessorParser.PrefixingPhraseContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by CobolPreprocessorParser#replacingPhrase.
     def visitReplacingPhrase(self, ctx:CobolPreprocessorParser.ReplacingPhraseContext):
         return self.visitChildren(ctx)

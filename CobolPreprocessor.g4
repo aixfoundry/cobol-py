@@ -172,7 +172,7 @@ execSqlImsStatement
 // copy statement
 
 copyStatement
-   : COPY copySource (NEWLINE* (directoryPhrase | familyPhrase | replacingPhrase | SUPPRESS))* NEWLINE* DOT
+   : COPY copySource (NEWLINE* (directoryPhrase | familyPhrase | replacingPhrase | prefixingPhrase | SUPPRESS))* NEWLINE* DOT
    ;
 
 copySource
@@ -181,6 +181,10 @@ copySource
 
 copyLibrary
    : literal | cobolWord
+   ;
+
+prefixingPhrase
+   : (PREFIXING | PREFIX) NEWLINE* cobolWord MINUSCHAR?
    ;
 
 replacingPhrase
@@ -254,7 +258,7 @@ charDataSql
    ;
 
 charDataLine
-   : (cobolWord | literal | filename | TEXT | DOT | LPARENCHAR | RPARENCHAR)+
+   : (cobolWord | literal | filename | TEXT | MINUSCHAR | DOT | LPARENCHAR | RPARENCHAR)+
    ;
 
 cobolWord
@@ -314,6 +318,7 @@ charDataKeyword
    | PFD | PGMN | PGMNAME | PPTDBG | PROCESS | PROLOG
    | QUOTE
    | RENT | REPLACING | RMODE
+   | PREFIX | PREFIXING
    | SEQ | SEQUENCE | SEP | SEPARATE | SHORT | SIZE | SOURCE | SP | SPACE | SPIE | SQL | SQLC | SQLCCSID | SS | SSR | SSRANGE | STD | SYSEIB | SZ
    | TERM | TERMINAL | TEST | THREAD | TITLE | TRIG | TRUNC
    | UE | UPPER
@@ -541,6 +546,8 @@ OUT : O U T;
 OUTDD : O U T D D;
 PFD : P F D;
 PPTDBG : P P T D B G;
+PREFIXING : P R E F I X I N G;
+PREFIX : P R E F I X;
 PGMN : P G M N;
 PGMNAME : P G M N A M E;
 PROCESS : P R O C E S S;
@@ -616,6 +623,7 @@ COMMENTTAG : '*>';
 COMMACHAR : ',';
 DOT : '.';
 DOUBLEEQUALCHAR : '==';
+MINUSCHAR : '-';
 
 // literals
 NONNUMERICLITERAL : STRINGLITERAL | HEXNUMBER;

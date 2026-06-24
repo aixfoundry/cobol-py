@@ -16,6 +16,15 @@ class CobolDocumentContext:
     def __init__(self) -> None:
         self._current_replaceable_replacements: Optional[List[CobolReplacementMapping]] = None
         self._output_buffer: list[str] = []
+        self._prefix: Optional[str] = None
+
+    def store_prefix(self, prefix: Optional[str]) -> None:
+        """Store the PREFIXING/PREFIX value for the current copybook expansion."""
+        self._prefix = prefix
+
+    def get_prefix(self) -> Optional[str]:
+        """Return the current PREFIXING/PREFIX value, or *None*."""
+        return self._prefix
 
     def read(self) -> str:
         return "".join(self._output_buffer)

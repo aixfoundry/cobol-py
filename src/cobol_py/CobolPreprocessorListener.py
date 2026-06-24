@@ -98,6 +98,15 @@ class CobolPreprocessorListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by CobolPreprocessorParser#prefixingPhrase.
+    def enterPrefixingPhrase(self, ctx:CobolPreprocessorParser.PrefixingPhraseContext):
+        pass
+
+    # Exit a parse tree produced by CobolPreprocessorParser#prefixingPhrase.
+    def exitPrefixingPhrase(self, ctx:CobolPreprocessorParser.PrefixingPhraseContext):
+        pass
+
+
     # Enter a parse tree produced by CobolPreprocessorParser#replacingPhrase.
     def enterReplacingPhrase(self, ctx:CobolPreprocessorParser.ReplacingPhraseContext):
         pass

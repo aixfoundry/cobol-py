@@ -48,6 +48,32 @@ _LOG = logging.getLogger(__name__)
 # echoed back into the replacement followed by the EXEC_END_TAG.
 _END_EXEC_PATTERN = re.compile(r"(end-exec)", re.IGNORECASE)
 
+# Tandem NonStop PREFIXING: match level numbers (01-49, 66, 77, 88) followed by
+# a data name to which the prefix must be prepended.  Uses re.MULTILINE so that
+# ^ matches after every newline in the copybook content.
+_LEVEL_NAME_RE = re.compile(
+    r"^(\s*(?:0[1-9]|[1-4]\d|66|77|88)\s+)([A-Za-z][\w-]*)",
+    re.MULTILINE,
+)
+
+
+def _apply_prefix(copybook_text: str, prefix: str) -> str:
+    """Prepend *prefix* to every data name definition in *copybook_text*.
+
+    This implements the Tandem NonStop COBOL ``PREFIXING`` / ``PREFIX``
+    extension of the ``COPY`` statement.  It scans for COBOL level numbers
+    (01-49, 66, 77, 88) followed by a data name and inserts *prefix* before
+    the name.  For example ``01  D-REC.`` becomes ``01  XDATBAS-D-REC.``
+    when *prefix* is ``XDATBAS-``.
+    """
+    if not prefix:
+        return copybook_text
+
+    def _add_prefix(m: re.Match) -> str:
+        return m.group(1) + prefix + m.group(2)
+
+    return _LEVEL_NAME_RE.sub(_add_prefix, copybook_text)
+
 
 class CobolDocumentParserListenerImpl(CobolPreprocessorListener):
     def __init__(self, params: CobolParserParams, tokens) -> None:
@@ -149,11 +175,16 @@ class CobolDocumentParserListenerImpl(CobolPreprocessorListener):
         for replacing_phrase in ctx.replacingPhrase():
             self.context().store_replaceables_and_replacements(replacing_phrase.replaceClause())
 
+        # prefixing phrase (Tandem NonStop extension)
+        prefix = self._read_prefixing_phrase(ctx)
+
         # copy the copy book
         copy_source = ctx.copySource()
         copy_book_content = self._get_copy_book_content(copy_source, self._params)
 
         if copy_book_content is not None:
+            if prefix is not None:
+                copy_book_content = _apply_prefix(copy_book_content, prefix)
             self.context().write(copy_book_content + NEWLINE)
             self.context().replace_replaceables_by_replacements(self._tokens)
 
@@ -272,3 +303,26 @@ class CobolDocumentParserListenerImpl(CobolPreprocessorListener):
         except OSError as e:
             _LOG.warning("%s", e)
             return None
+
+    def _read_prefixing_phrase(self, ctx) -> Optional[str]:
+        """Read the PREFIXING/PREFIX phrase from a copy statement, if present.
+
+        Returns the prefix text including any trailing hyphen (e.g. ``XDATBAS-``)
+        or *None* when the copy statement has no PREFIXING/PREFIX clause.
+        """
+        phrases = ctx.prefixingPhrase()
+        if phrases is None:
+            return None
+        # A COPY statement can have at most one prefixingPhrase under the
+        # current grammar, but guard against the unexpected just in case.
+        for phrase in phrases:
+            prefix_word = phrase.cobolWord()
+            if prefix_word is None:
+                return None
+            prefix_text = prefix_word.getText()
+            # Append the trailing hyphen if present in the source.
+            minus = phrase.MINUSCHAR()
+            if minus is not None:
+                prefix_text += "-"
+            return prefix_text
+        return None
