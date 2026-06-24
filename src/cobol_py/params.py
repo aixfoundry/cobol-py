@@ -47,4 +47,15 @@ class CobolParserParams:
     raising :class:`CobolPreprocessorException`.  This lets the main grammar parse
     proceed for code that references unavailable copybooks.
     """
+
+    # -- copybook name index (performance optimisation) -----------------------
+
+    copybook_name_index: Optional[dict] = None
+    """Optional ``{lowercase_filename: Path}`` dict for O(1) copybook lookups.
+
+    When provided, :class:`~.copybook.CobolWordCopyBookFinderImpl` uses this
+    index instead of linearly scanning :attr:`copy_book_files`.  The index is
+    built once by the caller and reused across all COPY statements in a file.
+    """
+
     ignore_syntax_errors: bool = False

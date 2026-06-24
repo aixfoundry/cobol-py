@@ -24,6 +24,12 @@ from .line_writer import CobolLineWriterImpl
 
 _LOG = logging.getLogger(__name__)
 
+# Module-level cache for preprocessed copybook content.
+# Key: (file_path_str, charset, format_name).  Value: preprocessed text.
+# Shared across all CobolPreprocessorImpl instances within a process.
+# In a multiprocessing batch, each worker builds its own cache independently.
+_COPYBOOK_CACHE: dict[tuple, str] = {}
+
 
 class CobolPreprocessorImpl:
     """The proleap preprocessor: text-in, preprocessed-text-out."""
@@ -66,6 +72,15 @@ class CobolPreprocessorImpl:
     ) -> str:
         charset = params.charset
         cobol_file = Path(cobol_file)
+
+        # Check the module-level cache.  Many copybooks are shared across
+        # hundreds of main files; preprocessing each one once per worker
+        # process saves the ANTLR4 lex/parse/walk overhead on every reuse.
+        cache_key = (str(cobol_file), charset)
+        cached = _COPYBOOK_CACHE.get(cache_key)
+        if cached is not None:
+            return cached
+
         _LOG.info(
             "Preprocessing file %s with line format %s and charset %s.",
             cobol_file.name,
@@ -93,6 +108,11 @@ class CobolPreprocessorImpl:
                         fallback,
                         params.charset if charset != fallback else charset,
                     )
+                    # Re-check cache with the resolved charset.
+                    cache_key = (str(cobol_file), charset)
+                    cached = _COPYBOOK_CACHE.get(cache_key)
+                    if cached is not None:
+                        return cached
                     break
                 except UnicodeDecodeError:
                     continue
@@ -101,7 +121,10 @@ class CobolPreprocessorImpl:
                 cobol_file_content = raw.decode("latin-1")
                 charset = "latin-1"
                 params.charset = "latin-1"
-        return self.process(cobol_file_content, params)
+
+        result = self.process(cobol_file_content, params)
+        _COPYBOOK_CACHE[cache_key] = result
+        return result
 
     # --- pipeline steps -----------------------------------------------------
 

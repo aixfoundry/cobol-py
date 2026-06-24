@@ -36,6 +36,21 @@ def _norm(path) -> str:
 
 class CobolWordCopyBookFinderImpl:
     def find_copy_book(self, params: CobolParserParams, ctx) -> Optional[Path]:
+        # Fast path: O(1) lookup via pre-built name index.
+        if params.copybook_name_index is not None:
+            identifier = ctx.getText().lower()
+            if params.copy_book_extensions is not None:
+                for ext in params.copy_book_extensions:
+                    key = identifier + "." + ext if ext else identifier
+                    result = params.copybook_name_index.get(key)
+                    if result is not None:
+                        return result
+            else:
+                result = params.copybook_name_index.get(identifier)
+                if result is not None:
+                    return result
+
+        # Slow path: linear scan (backward compatible).
         if params.copy_book_files is not None:
             for copy_book_file in params.copy_book_files:
                 if self._is_matching_copy_book(copy_book_file, params, ctx):
@@ -104,6 +119,20 @@ class CobolWordCopyBookFinderImpl:
 
 class LiteralCopyBookFinderImpl:
     def find_copy_book(self, params: CobolParserParams, ctx) -> Optional[Path]:
+        # Fast path: O(1) lookup via pre-built name index.
+        if params.copybook_name_index is not None:
+            copy_book_identifier = trim_quotes(ctx.getText()).replace("\\", "/")
+            result = params.copybook_name_index.get(copy_book_identifier.lower())
+            if result is not None:
+                return result
+            # Also try basename (handle path-containing identifiers like "dir/NAME.INC").
+            basename = copy_book_identifier.split("/")[-1].lower()
+            if basename != copy_book_identifier.lower():
+                result = params.copybook_name_index.get(basename)
+                if result is not None:
+                    return result
+
+        # Slow path: linear scan (backward compatible).
         if params.copy_book_files is not None:
             for copy_book_file in params.copy_book_files:
                 if self._is_matching_copy_book(copy_book_file, None, ctx):
