@@ -72,7 +72,35 @@ class CobolPreprocessorImpl:
             params.format,
             charset,
         )
-        cobol_file_content = cobol_file.read_text(encoding=charset)
+        try:
+            cobol_file_content = cobol_file.read_text(encoding=charset)
+        except UnicodeDecodeError:
+            # The file may be in a different encoding than the parent
+            # (e.g. a cp932 copybook included from a euc-jp main file).
+            # Fall back through common Japanese encodings.
+            raw = cobol_file.read_bytes()
+            _CANDIDATES = ("euc-jp", "cp932", "utf-8", "latin-1")
+            for fallback in _CANDIDATES:
+                if fallback == charset:
+                    continue
+                try:
+                    cobol_file_content = raw.decode(fallback)
+                    charset = fallback
+                    params.charset = fallback  # cascade to nested copybooks
+                    _LOG.info(
+                        "Fallback: reading %s as %s (parent charset was %s).",
+                        cobol_file.name,
+                        fallback,
+                        params.charset if charset != fallback else charset,
+                    )
+                    break
+                except UnicodeDecodeError:
+                    continue
+            else:
+                # Last resort: latin-1 decodes every byte.
+                cobol_file_content = raw.decode("latin-1")
+                charset = "latin-1"
+                params.charset = "latin-1"
         return self.process(cobol_file_content, params)
 
     # --- pipeline steps -----------------------------------------------------

@@ -90,8 +90,12 @@ def detect_source_format(first_lines: List[str]) -> CobolSourceFormatEnum:
 
     1. **FIXED**: line length ≥ 7, columns 1-6 match ``[0-9 ]{6}`` (sequence
        area), and column 7 is in the standard indicator set.
-    2. **TANDEM**: column 1 is in the standard indicator set.
-    3. **Default**: :attr:`CobolSourceFormatEnum.FIXED`.
+    2. **Ambiguous skip**: column 7 is a valid indicator but columns 1-6 are
+       NOT a valid sequence area (e.g. decorative ``*`` banners).  Skip such
+       lines so later lines can provide a stronger signal.
+    3. **TANDEM**: column 1 is in the standard indicator set *and* column 7 is
+       not a valid indicator (otherwise the line is ambiguous — see above).
+    4. **Default**: :attr:`CobolSourceFormatEnum.FIXED`.
 
     Returns a :class:`CobolSourceFormatEnum` member.
     """
@@ -99,13 +103,25 @@ def detect_source_format(first_lines: List[str]) -> CobolSourceFormatEnum:
         stripped = line.rstrip("\n\r")
         if not stripped:
             continue
+
         # FIXED heuristic: 6-char sequence area + indicator at column 7.
         if len(stripped) >= 7:
             seq_area = stripped[:6]
             col7 = stripped[6]
             if _SEQ_AREA_RE.fullmatch(seq_area) and col7 in _VALID_INDICATOR_SET:
                 return CobolSourceFormatEnum.FIXED
-        # TANDEM heuristic: indicator at column 1.
+
+            # Ambiguous: column 7 looks like a valid FIXED indicator but the
+            # sequence area doesn't match (e.g. decorative `*` banners where
+            # the `*` bleeds into column 6).  Skip and let subsequent lines
+            # provide a clearer signal.
+            if col7 in _VALID_INDICATOR_SET:
+                continue
+
+        # TANDEM heuristic: indicator at column 1.  Only reached when the
+        # line does NOT have a valid-looking indicator at column 7, so it
+        # can't be an ambiguous FIXED banner line.
         if stripped[0] in _VALID_INDICATOR_SET:
             return CobolSourceFormatEnum.TANDEM
+
     return CobolSourceFormatEnum.FIXED
