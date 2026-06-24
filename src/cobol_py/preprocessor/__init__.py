@@ -5,3 +5,5 @@ assembled; import submodules directly for internal wiring.
 """
 
 from __future__ import annotations
+
+from .constants import CobolSourceFormatEnum, detect_source_format

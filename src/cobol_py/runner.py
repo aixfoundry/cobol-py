@@ -77,9 +77,12 @@ class CobolParserRunner:
         _LOG.info("Parsing compilation unit %s.", compilation_unit_name)
 
         if format is not None:
-            params = self._create_default_params(format, cobol_file)
+            fmt = format
+            params = self._create_default_params(fmt, cobol_file)
         else:
-            params = self._create_default_params()
+            fmt, enc = self._detect_format(cobol_file)
+            params = self._create_default_params(fmt, cobol_file)
+            params.charset = enc
 
         pre_processed_input = CobolPreprocessorImpl().process_file(cobol_file, params)
         return self._parse_preprocess_input(pre_processed_input, params)
@@ -131,9 +134,12 @@ class CobolParserRunner:
 
         compilation_unit_name = self._get_compilation_unit_name(cobol_file)
         if format is not None:
-            params = self._create_default_params(format, cobol_file)
+            fmt = format
+            params = self._create_default_params(fmt, cobol_file)
         else:
-            params = self._create_default_params()
+            fmt, enc = self._detect_format(cobol_file)
+            params = self._create_default_params(fmt, cobol_file)
+            params.charset = enc
 
         with open(cobol_file, "r", encoding=params.charset) as fh:
             cobol_code = fh.read()
@@ -176,6 +182,30 @@ class CobolParserRunner:
             CobolProcedureStatementVisitor(program).visit(compilation_unit.ctx)
 
     # --- internal -----------------------------------------------------------
+
+    @staticmethod
+    def _detect_format(cobol_file: Union[str, Path]) -> tuple[CobolSourceFormatEnum, str]:
+        """Auto-detect the source format and encoding of *cobol_file* from its content.
+
+        Reads the file, tries common Japanese encodings first, then delegates to
+        :func:`~cobol_py.preprocessor.constants.detect_source_format`.
+
+        Returns a ``(format, encoding)`` tuple.
+        """
+        from .preprocessor.constants import detect_source_format
+
+        path = Path(cobol_file)
+        detected_enc = "utf-8"
+        for enc in ("euc-jp", "cp932", "utf-8", "latin-1"):
+            try:
+                text = path.read_text(encoding=enc)
+                detected_enc = enc
+                break
+            except UnicodeDecodeError:
+                continue
+
+        lines = text.splitlines()[:50]
+        return detect_source_format(lines), detected_enc
 
     def _lex_and_parse(
         self, pre_processed_input: str, params: CobolParserParams

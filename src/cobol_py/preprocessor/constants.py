@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 from enum import Enum
+from typing import List
 
 
 # --- indicator / line-type single characters ---------------------------------
@@ -37,7 +38,9 @@ NEWLINE = "\n"
 
 # --- the indicator field character class -------------------------------------
 
-INDICATOR_FIELD = r"([ABCdD$\t\-/*# ])"
+# Some Japanese COBOL sources use full-width (ideographic) spaces (U+3000) in
+# the indicator column.  Include it alongside the ASCII space.
+INDICATOR_FIELD = r"([ABCdD$\t\-/*# 　])"
 
 
 class CobolSourceFormatEnum(Enum):
@@ -65,3 +68,42 @@ class CobolSourceFormatEnum(Enum):
         # Java compiles eagerly in the enum constructor; do the same.
         self.pattern: re.Pattern[str] = re.compile(regex)
         self.comment_entry_multi_line: bool = comment_entry_multi_line
+
+
+# Valid indicator-area characters for auto-detection heuristics.
+# Mirrors INDICATOR_FIELD but as a plain set for membership tests.
+_VALID_INDICATOR_SET = set("ABCdD$-\t/*# 　　　")  # includes ASCII + full-width spaces
+
+# Sequence numbers in fixed-format COBOL are 6 characters: digits and spaces.
+_SEQ_AREA_RE = re.compile(r"[0-9 ]{6}")
+
+
+def detect_source_format(first_lines: List[str]) -> CobolSourceFormatEnum:
+    """Auto-detect the COBOL source format from the first few lines of a file.
+
+    *first_lines* should be text lines (already decoded, without trailing
+    newlines or with them already stripped).
+
+    Heuristic (evaluated for each line until one matches):
+
+    1. **FIXED**: line length ≥ 7, columns 1-6 match ``[0-9 ]{6}`` (sequence
+       area), and column 7 is in the standard indicator set.
+    2. **TANDEM**: column 1 is in the standard indicator set.
+    3. **Default**: :attr:`CobolSourceFormatEnum.FIXED`.
+
+    Returns a :class:`CobolSourceFormatEnum` member.
+    """
+    for line in first_lines:
+        stripped = line.rstrip("\n\r")
+        if not stripped:
+            continue
+        # FIXED heuristic: 6-char sequence area + indicator at column 7.
+        if len(stripped) >= 7:
+            seq_area = stripped[:6]
+            col7 = stripped[6]
+            if _SEQ_AREA_RE.fullmatch(seq_area) and col7 in _VALID_INDICATOR_SET:
+                return CobolSourceFormatEnum.FIXED
+        # TANDEM heuristic: indicator at column 1.
+        if stripped[0] in _VALID_INDICATOR_SET:
+            return CobolSourceFormatEnum.TANDEM
+    return CobolSourceFormatEnum.FIXED

@@ -32,7 +32,7 @@ from .CobolVisitor import CobolVisitor
 from .error_listener import ThrowingErrorListener
 from .exceptions import CobolParserException, CobolPreprocessorException
 from .params import CobolDialect, CobolParserParams
-from .preprocessor.constants import CobolSourceFormatEnum
+from .preprocessor.constants import CobolSourceFormatEnum, detect_source_format
 from .preprocessor.preprocessor import CobolPreprocessorImpl
 from .runner import CobolParserRunner
 
@@ -56,4 +56,5 @@ __all__ = [
     "CobolVisitor",
     "ThrowingErrorListener",
     "__version__",
+    "detect_source_format",
 ]
