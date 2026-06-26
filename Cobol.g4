@@ -2379,7 +2379,7 @@ abbreviation
 // identifier ----------------------------------
 
 identifier
-   : qualifiedDataName | tableCall | functionCall | specialRegister
+   : tableCall | functionCall | qualifiedDataName | specialRegister
    ;
 
 tableCall

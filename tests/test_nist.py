@@ -33,11 +33,10 @@ NIST_DIR = Path(__file__).resolve().parent / "testdata" / "gov" / "nist"
 ALL_NIST = sorted(NIST_DIR.glob("*.CBL"))
 
 _SUBSET_STRIDE = 15
-# NC207A/NC246A trigger exponential ATN config-set growth in the Python ANTLR
-# runtime; they parse instantly on the JVM/Go.  _ensure_recursion_limit() helps
-# NC207A (28s) but NC246A requires deeper changes (DFA serialisation or an
-# ATN-level patch).  Skip both for now.
-_SKIP_FILES: frozenset[str] = frozenset({"NC207A", "NC246A"})
+# The ANTLR Python runtime's PredictionContext.merge() recurses deeply for
+# NC207A (28 s) and NC246A (~349 s).  runner._ensure_recursion_limit() raises
+# sys.setrecursionlimit to 10 000 so these parse correctly, albeit slowly.
+_SKIP_FILES: frozenset[str] = frozenset()
 
 
 class _CollectingErrorListener(ErrorListener):

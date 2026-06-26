@@ -2700,8 +2700,8 @@ def serializedATN():
         6084,1,0,0,0,6085,6086,1,0,0,0,6086,6093,1,0,0,0,6087,6094,3,1044,
         522,0,6088,6089,5,548,0,0,6089,6090,3,1044,522,0,6090,6091,3,1084,
         542,0,6091,6092,5,555,0,0,6092,6094,1,0,0,0,6093,6087,1,0,0,0,6093,
-        6088,1,0,0,0,6094,1085,1,0,0,0,6095,6100,3,1102,551,0,6096,6100,
-        3,1088,544,0,6097,6100,3,1090,545,0,6098,6100,3,1198,599,0,6099,
+        6088,1,0,0,0,6094,1085,1,0,0,0,6095,6100,3,1088,544,0,6096,6100,
+        3,1090,545,0,6097,6100,3,1102,551,0,6098,6100,3,1198,599,0,6099,
         6095,1,0,0,0,6099,6096,1,0,0,0,6099,6097,1,0,0,0,6099,6098,1,0,0,
         0,6100,1087,1,0,0,0,6101,6117,3,1102,551,0,6102,6103,5,548,0,0,6103,
         6110,3,1098,549,0,6104,6106,5,535,0,0,6105,6104,1,0,0,0,6105,6106,
@@ -50443,16 +50443,16 @@ class CobolParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def qualifiedDataName(self):
-            return self.getTypedRuleContext(CobolParser.QualifiedDataNameContext,0)
-
-
         def tableCall(self):
             return self.getTypedRuleContext(CobolParser.TableCallContext,0)
 
 
         def functionCall(self):
             return self.getTypedRuleContext(CobolParser.FunctionCallContext,0)
+
+
+        def qualifiedDataName(self):
+            return self.getTypedRuleContext(CobolParser.QualifiedDataNameContext,0)
 
 
         def specialRegister(self):
@@ -50490,19 +50490,19 @@ class CobolParser ( Parser ):
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 6095
-                self.qualifiedDataName()
+                self.tableCall()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 6096
-                self.tableCall()
+                self.functionCall()
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 6097
-                self.functionCall()
+                self.qualifiedDataName()
                 pass
 
             elif la_ == 4:

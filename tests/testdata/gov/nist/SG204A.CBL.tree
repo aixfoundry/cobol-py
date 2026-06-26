@@ -1901,30 +1901,34 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-PGM-ID))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-PGM-ID)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord TEST-ID)))))))) . )
+																	(cobolWord TEST-ID))))))))) . )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-PGM-ID))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-PGM-ID)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord ID-AGAIN)))))))) .\n           )
+																	(cobolWord ID-AGAIN))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -1933,10 +1937,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord TEST-RESULTS)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord TEST-RESULTS))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -1989,10 +1994,11 @@
 												(moveToSendingArea
 													(literal "INSPT")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) . )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) . )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -2003,10 +2009,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord INSPECT-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord INSPECT-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord PASS)) .  
@@ -2017,10 +2024,11 @@
 												(moveToSendingArea
 													(literal "PASS ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -2031,10 +2039,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord PASS-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord PASS-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord FAIL)) .  
@@ -2045,10 +2054,11 @@
 												(moveToSendingArea
 													(literal "FAIL*")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -2059,10 +2069,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord DE-LETE)) .  
@@ -2073,10 +2084,11 @@
 												(moveToSendingArea
 													(literal "*****")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -2087,10 +2099,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord DELETE-CNT))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord DELETE-CNT)))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -2098,10 +2111,11 @@
 												(moveToSendingArea
 													(literal "****TEST DELETED****")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord PRINT-DETAIL)) .\n           
@@ -2118,10 +2132,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -2136,39 +2151,44 @@
 															(moveToSendingArea
 																(literal ".")) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PARDOT-X))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PARDOT-X)))))))))
 												(statement
 													(moveStatement MOVE
 														(moveToStatement
 															(moveToSendingArea
 																(identifier
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord REC-CT))))))) TO
+															(identifier
+																(tableCall
 																	(qualifiedDataName
 																		(qualifiedDataNameFormat1
 																			(dataName
-																				(cobolWord REC-CT)))))) TO
-															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord DOTVALUE))))))))))) .\n           )
+																				(cobolWord DOTVALUE)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-RESULTS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-RESULTS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC)))))))) . )
+																	(cobolWord PRINT-REC))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2189,10 +2209,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord P-OR-F)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord P-OR-F))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -2233,10 +2254,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) . )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) . )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -2245,10 +2267,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-X)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord COMPUTED-X))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -2257,10 +2280,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-X)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-X))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -2274,10 +2298,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -2293,10 +2318,11 @@
 																(literal
 																	(figurativeConstant SPACE))) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PAR-NAME))))))))))) .\n           )
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PAR-NAME)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -2305,10 +2331,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord HEAD-ROUTINE)) .\n           
@@ -2318,15 +2345,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-H-1))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-H-1)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2343,15 +2372,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-H-2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-H-2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2368,15 +2399,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-H-3))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-H-3)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2396,15 +2429,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-C-1))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-C-1)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2418,15 +2453,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-C-2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-C-2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2443,15 +2480,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord HYPHEN-LINE))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord HYPHEN-LINE)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2468,15 +2507,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord HYPHEN-LINE))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord HYPHEN-LINE)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2496,15 +2537,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-E-1))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-E-1)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2524,123 +2567,139 @@
 											(addToStatement
 												(addFrom
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-COUNTER)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-COUNTER))))))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-HOLD)))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-HOLD))))))))))
 									(statement
 										(addStatement ADD
 											(addToStatement
 												(addFrom
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord INSPECT-COUNTER)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord INSPECT-COUNTER))))))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-HOLD))))))))) . )
-								(sentence
-									(statement
-										(addStatement ADD
-											(addToStatement
-												(addFrom
-													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord DELETE-CNT)))))) TO
-												(addTo
-													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-HOLD))))))))) .\n            )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-HOLD)))))))))) . )
 								(sentence
 									(statement
 										(addStatement ADD
 											(addToStatement
 												(addFrom
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord PASS-COUNTER)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord DELETE-CNT))))))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-HOLD))))))))) .\n      )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-HOLD)))))))))) .\n            )
+								(sentence
+									(statement
+										(addStatement ADD
+											(addToStatement
+												(addFrom
+													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord PASS-COUNTER))))))) TO
+												(addTo
+													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-HOLD)))))))))) .\n      )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord PASS-COUNTER))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord PASS-COUNTER)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CCVS-E-4-1)))))))) .\n            )
+																	(cobolWord CCVS-E-4-1))))))))) .\n            )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-HOLD))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord ERROR-HOLD)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CCVS-E-4-2)))))))) .\n            )
+																	(cobolWord CCVS-E-4-2))))))))) .\n            )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-E-4))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-E-4)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CCVS-E-2-2)))))))) .\n            )
+																	(cobolWord CCVS-E-2-2))))))))) .\n            )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-E-2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-E-2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD))))))))
+																	(cobolWord DUMMY-RECORD)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -2657,10 +2716,11 @@
 												(moveToSendingArea
 													(literal "TEST(S) FAILED")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord ENDER-DESC)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord ENDER-DESC))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -2674,10 +2734,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord ERROR-COUNTER)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord ERROR-COUNTER))))))))))
 																(relationalOperator IS EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -2692,40 +2753,45 @@
 															(moveToSendingArea
 																(literal "NO ")) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord ERROR-TOTAL)))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord ERROR-TOTAL))))))))))
 											(ifElse ELSE
 												(statement
 													(moveStatement MOVE
 														(moveToStatement
 															(moveToSendingArea
 																(identifier
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord ERROR-COUNTER))))))) TO
+															(identifier
+																(tableCall
 																	(qualifiedDataName
 																		(qualifiedDataNameFormat1
 																			(dataName
-																				(cobolWord ERROR-COUNTER)))))) TO
-															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord ERROR-TOTAL))))))))))) .\n           )
+																				(cobolWord ERROR-TOTAL)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-E-2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-E-2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) .\n           )
+																	(cobolWord DUMMY-RECORD))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2749,10 +2815,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord DELETE-CNT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord DELETE-CNT))))))))))
 																(relationalOperator IS EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -2767,25 +2834,28 @@
 															(moveToSendingArea
 																(literal "NO ")) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord ERROR-TOTAL)))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord ERROR-TOTAL))))))))))
 											(ifElse ELSE
 												(statement
 													(moveStatement MOVE
 														(moveToStatement
 															(moveToSendingArea
 																(identifier
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord DELETE-CNT))))))) TO
+															(identifier
+																(tableCall
 																	(qualifiedDataName
 																		(qualifiedDataNameFormat1
 																			(dataName
-																				(cobolWord DELETE-CNT)))))) TO
-															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord ERROR-TOTAL))))))))))) .\n           )
+																				(cobolWord ERROR-TOTAL)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -2793,25 +2863,28 @@
 												(moveToSendingArea
 													(literal "TEST(S) DELETED     ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord ENDER-DESC)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord ENDER-DESC))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-E-2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-E-2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2832,10 +2905,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord INSPECT-COUNTER)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord INSPECT-COUNTER))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -2850,25 +2924,28 @@
 															(moveToSendingArea
 																(literal "NO ")) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord ERROR-TOTAL)))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord ERROR-TOTAL))))))))))
 											(ifElse ELSE
 												(statement
 													(moveStatement MOVE
 														(moveToStatement
 															(moveToSendingArea
 																(identifier
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord INSPECT-COUNTER))))))) TO
+															(identifier
+																(tableCall
 																	(qualifiedDataName
 																		(qualifiedDataNameFormat1
 																			(dataName
-																				(cobolWord INSPECT-COUNTER)))))) TO
-															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord ERROR-TOTAL))))))))))) .\n            )
+																				(cobolWord ERROR-TOTAL)))))))))))) .\n            )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -2876,25 +2953,28 @@
 												(moveToSendingArea
 													(literal "TEST(S) REQUIRE INSPECTION")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord ENDER-DESC)))))))) .\n            )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord ENDER-DESC))))))))) .\n            )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-E-2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-E-2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2908,15 +2988,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-E-3))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CCVS-E-3)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2937,10 +3019,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord RECORD-COUNT))))))))) .\n      )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord RECORD-COUNT)))))))))) .\n      )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -2972,10 +3055,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord DUMMY-RECORD))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord BLANK-LINE-PRINT)) .\n           
@@ -3002,10 +3086,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COMPUTED-X)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COMPUTED-X))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -3033,10 +3118,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord CORRECT-X)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord CORRECT-X))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -3058,25 +3144,28 @@
 												(moveToSendingArea
 													(literal "NO FURTHER INFORMATION, SEE PROGRAM.")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord INFO-TEXT)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord INFO-TEXT))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord XXINFO))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord XXINFO)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3103,15 +3192,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-COMPUTED))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-COMPUTED)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC))))))))
+																	(cobolWord PRINT-REC)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -3123,15 +3214,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-CORRECT))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-CORRECT)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC))))))))
+																	(cobolWord PRINT-REC)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -3163,10 +3256,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COMPUTED-A)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COMPUTED-A))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -3194,10 +3288,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord CORRECT-A)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord CORRECT-A))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -3221,45 +3316,51 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CORRECT-A))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CORRECT-A)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord XXCORRECT)))))))) . )
+																	(cobolWord XXCORRECT))))))))) . )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord COMPUTED-A))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord COMPUTED-A)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord XXCOMPUTED)))))))) .\n           )
+																	(cobolWord XXCOMPUTED))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord XXINFO))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord XXINFO)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3298,30 +3399,34 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CA))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CA)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord S1-2W-A)))))))) .\n           )
+																	(cobolWord S1-2W-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CB))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CB)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord S2-3W-A)))))))) .\n       ))
+																	(cobolWord S2-3W-A))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord P2-CREATE-F1)) .\n           
@@ -3344,15 +3449,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CA))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CA)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord S2-3W-A)))))))) .\n           )
+																	(cobolWord S2-3W-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3385,15 +3492,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord C0))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord C0)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord SUBSCRIPT-1)))))))) .\n           )
+																	(cobolWord SUBSCRIPT-1))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3413,32 +3522,36 @@
 											(addToStatement
 												(addFrom
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord C1)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord C1))))))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SUBSCRIPT-1))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SUBSCRIPT-1)))))))))) .\n           )
 								(sentence
 									(statement
 										(subtractStatement SUBTRACT
 											(subtractFromStatement
 												(subtractSubtrahend
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord C1)))))) FROM
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord C1))))))) FROM
 												(subtractMinuend
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord S3-4W))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord S3-4W)))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -3456,30 +3569,34 @@
 																		(dataName
 																			(cobolWord SUBSCRIPT-1))))) )))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord S1-2W-B)))))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord S1-2W-B))))))
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord S2-3W-B)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord S2-3W-B))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord R1)))))))) .\n           )
+																	(cobolWord R1))))))))) .\n           )
 								(sentence
 									(statement
 										(writeStatement WRITE
@@ -3589,10 +3706,11 @@
 												(moveToSendingArea
 													(literal "SORT, INPUT PROC")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord FEATURE)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord FEATURE))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord SORT-TEST-1)) .\n           
@@ -3616,10 +3734,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S1-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S1-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -3672,15 +3791,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S1-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S1-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -3688,10 +3809,11 @@
 												(moveToSendingArea
 													(literal "567AA")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3709,10 +3831,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-1 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3746,10 +3869,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S1-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S1-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -3802,15 +3926,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S1-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S1-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -3818,10 +3944,11 @@
 												(moveToSendingArea
 													(literal "567AI")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3839,10 +3966,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-2 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3876,10 +4004,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S1-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S1-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -3932,15 +4061,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S1-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S1-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -3948,10 +4079,11 @@
 												(moveToSendingArea
 													(literal "567AS")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -3969,10 +4101,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-3 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4006,10 +4139,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S1-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S1-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4062,15 +4196,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S1-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S1-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -4078,10 +4214,11 @@
 												(moveToSendingArea
 													(literal "567AZ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4099,10 +4236,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-4 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4147,15 +4285,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord R2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord R2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord W-S3-KEYS)))))))) .\n           )
+																	(cobolWord W-S3-KEYS))))))))) .\n           )
 								(sentence
 									(statement
 										(releaseStatement RELEASE
@@ -4185,10 +4325,11 @@
 												(moveToSendingArea
 													(literal "TERMINAL-1")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -4196,10 +4337,11 @@
 												(moveToSendingArea
 													(literal "END OF FILE PREMATURELY")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4215,10 +4357,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord FEATURE)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord FEATURE))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -4226,10 +4369,11 @@
 												(moveToSendingArea
 													(literal "FOUND, PREVIOUS TEST WAS")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4244,10 +4388,11 @@
 												(moveToSendingArea
 													(literal "LAST SUCCESSFUL TEST.")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4272,10 +4417,11 @@
 												(moveToSendingArea
 													(literal "INSPT")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) . )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) . )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -4286,10 +4432,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord INSPECT-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord INSPECT-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord PASS-1)) .  
@@ -4300,10 +4447,11 @@
 												(moveToSendingArea
 													(literal "PASS ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -4314,10 +4462,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord PASS-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord PASS-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord FAIL-1)) .  
@@ -4328,10 +4477,11 @@
 												(moveToSendingArea
 													(literal "FAIL*")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -4342,10 +4492,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord DE-LETE-1)) .  
@@ -4356,10 +4507,11 @@
 												(moveToSendingArea
 													(literal "*****")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -4370,10 +4522,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord DELETE-CNT))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord DELETE-CNT)))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -4381,10 +4534,11 @@
 												(moveToSendingArea
 													(literal "****TEST DELETED****")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord PRINT-DETAIL-1)) .\n           
@@ -4401,10 +4555,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4419,39 +4574,44 @@
 															(moveToSendingArea
 																(literal ".")) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PARDOT-X))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PARDOT-X)))))))))
 												(statement
 													(moveStatement MOVE
 														(moveToStatement
 															(moveToSendingArea
 																(identifier
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord REC-CT))))))) TO
+															(identifier
+																(tableCall
 																	(qualifiedDataName
 																		(qualifiedDataNameFormat1
 																			(dataName
-																				(cobolWord REC-CT)))))) TO
-															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord DOTVALUE))))))))))) .\n           )
+																				(cobolWord DOTVALUE)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-RESULTS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-RESULTS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC)))))))) . )
+																	(cobolWord PRINT-REC))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4472,10 +4632,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord P-OR-F)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord P-OR-F))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4516,10 +4677,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) . )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) . )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -4528,10 +4690,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-X)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord COMPUTED-X))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -4540,10 +4703,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-X)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-X))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -4557,10 +4721,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4576,10 +4741,11 @@
 																(literal
 																	(figurativeConstant SPACE))) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PAR-NAME))))))))))) .\n           )
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PAR-NAME)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -4588,10 +4754,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord WRITE-LINE-1)) .\n           
@@ -4605,10 +4772,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord RECORD-COUNT))))))))) .\n      )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord RECORD-COUNT)))))))))) .\n      )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4640,10 +4808,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord DUMMY-RECORD))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord BLANK-LINE-PRINT-1)) .\n           
@@ -4670,10 +4839,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COMPUTED-X)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COMPUTED-X))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4701,10 +4871,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord CORRECT-X)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord CORRECT-X))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4726,25 +4897,28 @@
 												(moveToSendingArea
 													(literal "NO FURTHER INFORMATION, SEE PROGRAM.")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord INFO-TEXT)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord INFO-TEXT))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord XXINFO))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord XXINFO)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -4771,15 +4945,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-COMPUTED))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-COMPUTED)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC))))))))
+																	(cobolWord PRINT-REC)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -4791,15 +4967,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-CORRECT))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-CORRECT)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC))))))))
+																	(cobolWord PRINT-REC)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -4831,10 +5009,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COMPUTED-A)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COMPUTED-A))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4862,10 +5041,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord CORRECT-A)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord CORRECT-A))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -4889,45 +5069,51 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CORRECT-A))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CORRECT-A)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord XXCORRECT)))))))) . )
+																	(cobolWord XXCORRECT))))))))) . )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord COMPUTED-A))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord COMPUTED-A)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord XXCOMPUTED)))))))) .\n           )
+																	(cobolWord XXCOMPUTED))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord XXINFO))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord XXINFO)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5029,10 +5215,11 @@
 												(moveToSendingArea
 													(literal "SORT, INPUT PROC")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord FEATURE)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord FEATURE))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord SORT-TEST-5)) .\n           
@@ -5049,15 +5236,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord R3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord R3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord W-S3-KEYS)))))))) .\n           )
+																	(cobolWord W-S3-KEYS))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -5071,10 +5260,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S2-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S2-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -5127,15 +5317,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S2-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S2-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -5143,10 +5335,11 @@
 												(moveToSendingArea
 													(literal "567AZAZ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5164,10 +5357,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-5 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5194,15 +5388,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord R3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord R3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord W-S3-KEYS)))))))) .\n           )
+																	(cobolWord W-S3-KEYS))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -5216,10 +5412,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S2-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S2-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -5272,15 +5469,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S2-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S2-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -5288,10 +5487,11 @@
 												(moveToSendingArea
 													(literal "567ARBR")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5309,10 +5509,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-6 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5339,15 +5540,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord R3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord R3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord W-S3-KEYS)))))))) .\n           )
+																	(cobolWord W-S3-KEYS))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -5361,10 +5564,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S2-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S2-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -5417,15 +5621,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S2-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S2-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -5433,10 +5639,11 @@
 												(moveToSendingArea
 													(literal "567AHBH")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5454,10 +5661,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-7 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5484,15 +5692,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord R3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord R3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord W-S3-KEYS)))))))) .\n           )
+																	(cobolWord W-S3-KEYS))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -5506,10 +5716,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord W-S2-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord W-S2-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -5562,15 +5773,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord W-S2-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord W-S2-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -5578,10 +5791,11 @@
 												(moveToSendingArea
 													(literal "567AABA")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5599,10 +5813,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-8 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5666,10 +5881,11 @@
 												(moveToSendingArea
 													(literal "TERMINAL-2")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -5677,10 +5893,11 @@
 												(moveToSendingArea
 													(literal "END OF FILE PREMATURELY")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5696,10 +5913,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord FEATURE)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord FEATURE))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -5707,10 +5925,11 @@
 												(moveToSendingArea
 													(literal "FOUND, PREVIOUS TEST WAS")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5725,10 +5944,11 @@
 												(moveToSendingArea
 													(literal "LAST SUCCESSFUL TEST")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5753,10 +5973,11 @@
 												(moveToSendingArea
 													(literal "INSPT")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) . )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) . )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -5767,10 +5988,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord INSPECT-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord INSPECT-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord PASS-2)) .  
@@ -5781,10 +6003,11 @@
 												(moveToSendingArea
 													(literal "PASS ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -5795,10 +6018,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord PASS-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord PASS-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord FAIL-2)) .  
@@ -5809,10 +6033,11 @@
 												(moveToSendingArea
 													(literal "FAIL*")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -5823,10 +6048,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord DE-LETE-2)) .  
@@ -5837,10 +6063,11 @@
 												(moveToSendingArea
 													(literal "*****")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -5851,10 +6078,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord DELETE-CNT))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord DELETE-CNT)))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -5862,10 +6090,11 @@
 												(moveToSendingArea
 													(literal "****TEST DELETED****")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord PRINT-DETAIL-2)) .\n           
@@ -5882,10 +6111,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -5900,39 +6130,44 @@
 															(moveToSendingArea
 																(literal ".")) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PARDOT-X))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PARDOT-X)))))))))
 												(statement
 													(moveStatement MOVE
 														(moveToStatement
 															(moveToSendingArea
 																(identifier
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord REC-CT))))))) TO
+															(identifier
+																(tableCall
 																	(qualifiedDataName
 																		(qualifiedDataNameFormat1
 																			(dataName
-																				(cobolWord REC-CT)))))) TO
-															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord DOTVALUE))))))))))) .\n           )
+																				(cobolWord DOTVALUE)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-RESULTS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-RESULTS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC)))))))) . )
+																	(cobolWord PRINT-REC))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -5953,10 +6188,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord P-OR-F)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord P-OR-F))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -5997,10 +6233,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) . )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) . )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -6009,10 +6246,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-X)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord COMPUTED-X))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -6021,10 +6259,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-X)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-X))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -6038,10 +6277,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6057,10 +6297,11 @@
 																(literal
 																	(figurativeConstant SPACE))) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PAR-NAME))))))))))) .\n           )
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PAR-NAME)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -6069,10 +6310,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord WRITE-LINE-2)) .\n           
@@ -6086,10 +6328,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord RECORD-COUNT))))))))) .\n      )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord RECORD-COUNT)))))))))) .\n      )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6121,10 +6364,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord DUMMY-RECORD))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord BLANK-LINE-PRINT-2)) .\n           
@@ -6151,10 +6395,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COMPUTED-X)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COMPUTED-X))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6182,10 +6427,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord CORRECT-X)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord CORRECT-X))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6207,25 +6453,28 @@
 												(moveToSendingArea
 													(literal "NO FURTHER INFORMATION, SEE PROGRAM.")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord INFO-TEXT)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord INFO-TEXT))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord XXINFO))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord XXINFO)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6252,15 +6501,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-COMPUTED))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-COMPUTED)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC))))))))
+																	(cobolWord PRINT-REC)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -6272,15 +6523,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-CORRECT))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-CORRECT)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC))))))))
+																	(cobolWord PRINT-REC)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -6312,10 +6565,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COMPUTED-A)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COMPUTED-A))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6343,10 +6597,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord CORRECT-A)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord CORRECT-A))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6370,45 +6625,51 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CORRECT-A))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord CORRECT-A)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord XXCORRECT)))))))) . )
+																	(cobolWord XXCORRECT))))))))) . )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord COMPUTED-A))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord COMPUTED-A)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord XXCOMPUTED)))))))) .\n           )
+																	(cobolWord XXCOMPUTED))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord XXINFO))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord XXINFO)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DUMMY-RECORD)))))))) . )
+																	(cobolWord DUMMY-RECORD))))))))) . )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6447,10 +6708,11 @@
 												(moveToSendingArea
 													(literal "SORT, OUTPUT PROC")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord FEATURE)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord FEATURE))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord SORT-TEST-9)) .\n           
@@ -6474,10 +6736,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord S3-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord S3-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6530,15 +6793,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord S3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord S3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -6546,10 +6811,11 @@
 												(moveToSendingArea
 													(literal "567AZBZ7001")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6567,10 +6833,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-9 ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6601,10 +6868,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord S3-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord S3-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6657,15 +6925,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord S3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord S3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -6673,10 +6943,11 @@
 												(moveToSendingArea
 													(literal "567AZBZ7026")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6694,10 +6965,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-10")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6731,10 +7003,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord S3-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord S3-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6787,15 +7060,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord S3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord S3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -6803,10 +7078,11 @@
 												(moveToSendingArea
 													(literal "567AQBQ7010")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6824,10 +7100,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-11")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6858,10 +7135,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord S3-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord S3-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -6914,15 +7192,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord S3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord S3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -6930,10 +7210,11 @@
 												(moveToSendingArea
 													(literal "567AQBQ7035")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6951,10 +7232,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-12")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -6988,10 +7270,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord S3-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord S3-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -7044,15 +7327,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord S3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord S3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7060,10 +7345,11 @@
 												(moveToSendingArea
 													(literal "567AGBG7019")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -7081,10 +7367,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-13")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -7118,10 +7405,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord S3-KEYS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord S3-KEYS))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -7174,15 +7462,17 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord S3-KEYS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord S3-KEYS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7190,10 +7480,11 @@
 												(moveToSendingArea
 													(literal "567AAAA7000")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -7211,10 +7502,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-14")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -7257,10 +7549,11 @@
 												(moveToSendingArea
 													(literal "END OF FILE NOT FOUND")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(goToStatement GO TO
@@ -7288,10 +7581,11 @@
 												(moveToSendingArea
 													(literal "SORT-TEST-15")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -7347,10 +7641,11 @@
 												(moveToSendingArea
 													(literal "TERMINAL-3")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PAR-NAME)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord PAR-NAME))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7358,10 +7653,11 @@
 												(moveToSendingArea
 													(literal "END OF FILE PREMATURELY")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -7377,10 +7673,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord FEATURE)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord FEATURE))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7388,10 +7685,11 @@
 												(moveToSendingArea
 													(literal "FOUND, PREVIOUS TEST WAS")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(performStatement PERFORM
@@ -7406,10 +7704,11 @@
 												(moveToSendingArea
 													(literal "LAST SUCCESSFUL TEST.")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK))))))))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK)))))))))
 									(statement
 										(performStatement PERFORM
 											(performProcedureStatement
@@ -7433,10 +7732,11 @@
 												(moveToSendingArea
 													(literal "PASS")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .  )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .  )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -7447,10 +7747,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord PASS-COUNTER))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord PASS-COUNTER)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord FAIL-3)) .\n           
@@ -7464,10 +7765,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord ERROR-COUNTER))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord ERROR-COUNTER)))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7475,10 +7777,11 @@
 												(moveToSendingArea
 													(literal "FAIL*")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord DE-LETE-3)) .\n           
@@ -7490,10 +7793,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7501,10 +7805,11 @@
 												(moveToSendingArea
 													(literal "    ************    ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7512,10 +7817,11 @@
 												(moveToSendingArea
 													(literal "    ************    ")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7523,10 +7829,11 @@
 												(moveToSendingArea
 													(literal "****TEST DELETED****")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n           )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -7537,10 +7844,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord DELETE-CNT))))))))) .\n       ))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord DELETE-CNT)))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord PRINT-DETAIL-3)) .\n           
@@ -7557,10 +7865,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -7575,39 +7884,44 @@
 															(moveToSendingArea
 																(literal ".")) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PARDOT-X))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PARDOT-X)))))))))
 												(statement
 													(moveStatement MOVE
 														(moveToStatement
 															(moveToSendingArea
 																(identifier
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord REC-CT))))))) TO
+															(identifier
+																(tableCall
 																	(qualifiedDataName
 																		(qualifiedDataNameFormat1
 																			(dataName
-																				(cobolWord REC-CT)))))) TO
-															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord DOTVALUE))))))))))) .\n           )
+																				(cobolWord DOTVALUE)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord TEST-RESULTS))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord TEST-RESULTS)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord PRINT-REC)))))))) .\n           )
+																	(cobolWord PRINT-REC))))))))) .\n           )
 								(sentence
 									(statement
 										(writeStatement WRITE
@@ -7629,10 +7943,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord P-OR-F)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord P-OR-F))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7641,10 +7956,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COMPUTED-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord COMPUTED-A))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7653,10 +7969,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CORRECT-A)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CORRECT-A))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -7670,10 +7987,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord REC-CT)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord REC-CT))))))))))
 																(relationalOperator EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -7689,10 +8007,11 @@
 																(literal
 																	(figurativeConstant SPACE))) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord PAR-NAME))))))))))) .\n           )
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord PAR-NAME)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -7701,10 +8020,11 @@
 													(literal
 														(figurativeConstant SPACE))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord RE-MARK)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord RE-MARK))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord EXIT-3)) .\n           

@@ -70,10 +70,11 @@
 										(cdName
 											(cobolWord COMMNAME)) WITH KEY
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord CNAME1))))))) .\n      ))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord CNAME1)))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord CM303M-ENABLE)) .\n           
@@ -83,7 +84,8 @@
 										(cdName
 											(cobolWord COMMNAME)) WITH KEY
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord CNAME1))))))) .\n      ))))))) <EOF>)
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord CNAME1)))))))) .\n      ))))))) <EOF>)

@@ -67,10 +67,11 @@
 							(useDebugClause FOR DEBUGGING ON
 								(useDebugOn ALL REFERENCES OF
 									(identifier
-										(qualifiedDataName
-											(qualifiedDataNameFormat1
-												(dataName
-													(cobolWord FREC)))))))) .\n       paragraphs)
+										(tableCall
+											(qualifiedDataName
+												(qualifiedDataNameFormat1
+													(dataName
+														(cobolWord FREC))))))))) .\n       paragraphs)
 					(procedureDeclarative
 						(procedureSectionHeader
 							(sectionName

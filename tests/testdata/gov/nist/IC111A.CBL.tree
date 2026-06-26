@@ -132,22 +132,25 @@
 						(procedureDivisionByReferencePhrase
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord LS1))))))
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord LS1)))))))
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord GRP-01))))))
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord GRP-01)))))))
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord LS2))))))))) .\n       
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord LS2)))))))))) .\n       
 				(procedureDivisionBody paragraphs
 					(procedureSection
 						(procedureSectionHeader
@@ -164,10 +167,11 @@
 												(moveToSendingArea
 													(literal "IC111A")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DN3)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord DN3))))))))) .\n           )
 								(sentence
 									(statement
 										(addStatement ADD
@@ -178,10 +182,23 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord DN6)))))))))) .\n           )
+								(sentence
+									(statement
+										(moveStatement MOVE
+											(moveToStatement
+												(moveToSendingArea
+													(literal "A")) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord DN6))))))))) .\n           )
+																	(cobolWord LS2))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -189,21 +206,11 @@
 												(moveToSendingArea
 													(literal "A")) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord LS2)))))))) .\n           )
-								(sentence
-									(statement
-										(moveStatement MOVE
-											(moveToStatement
-												(moveToSendingArea
-													(literal "A")) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord LS1)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord LS1))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord EXIT-IC111)) .\n           

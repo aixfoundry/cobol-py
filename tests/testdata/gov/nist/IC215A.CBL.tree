@@ -41,16 +41,18 @@
 						(procedureDivisionByReferencePhrase
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord DN2))))))
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord DN2)))))))
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord DN3))))))))) .\n       
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord DN3)))))))))) .\n       
 				(procedureDivisionBody
 					(paragraphs
 						(paragraph
@@ -65,10 +67,11 @@
 													(numericLiteral
 														(integerLiteral 1)))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord DN2)))))))) .\n       ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord DN2))))))))) .\n       ))
 						(paragraph
 							(paragraphName
 								(cobolWord CANCEL-TEST-1)) .\n           
@@ -86,10 +89,11 @@
 													(numericLiteral
 														(integerLiteral 1)))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord DN3)))))))) .\n       ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord DN3))))))))) .\n       ))
 						(paragraph
 							(paragraphName
 								(cobolWord IC215-EXIT)) .\n           

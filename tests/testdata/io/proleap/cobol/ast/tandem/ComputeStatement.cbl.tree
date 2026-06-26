@@ -13,16 +13,18 @@
 								(computeStatement COMPUTE
 									(computeStore
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord SOMEID1))))))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord SOMEID1)))))))
 									(computeStore
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord SOMEID2))))) ROUNDED) =
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord SOMEID2)))))) ROUNDED) =
 									(arithmeticExpression
 										(multDivs
 											(powers

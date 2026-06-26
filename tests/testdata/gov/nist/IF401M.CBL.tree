@@ -219,10 +219,11 @@
 																(numericLiteral
 																	(integerLiteral 37)))) )))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord WS-ANUM)))))))) .\n      ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord WS-ANUM))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord IF401M-COS)) .\n           
@@ -273,10 +274,11 @@
 														(functionName
 															(cobolWord CURRENT-DATE))))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord TEMP1)))))))) .\n      ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord TEMP1))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord IF401M-DATE-OF-INTEGER)) .\n           

@@ -72,26 +72,29 @@
 													(numericLiteral
 														(integerLiteral 2)))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord IC118-TEMP1)))))))) .\n           )
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord IC118-TEMP1))))))))) .\n           )
 							(sentence
 								(statement
 									(addStatement ADD
 										(addToStatement
 											(addFrom
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord TWO)))))) TO
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord TWO))))))) TO
 											(addTo
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord IC118-TEMP2))))))))) .\n      ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord IC118-TEMP2)))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord USNG-DISPLAY-04)) .\n           

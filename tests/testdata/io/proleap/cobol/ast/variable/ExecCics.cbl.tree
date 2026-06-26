@@ -62,10 +62,11 @@
 												(numericLiteral
 													(integerLiteral 50)))) TO
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord ws-length)))))))) .\n       \n      )
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord ws-length))))))))) .\n       \n      )
 						(sentence
 							(statement
 								(execCicsStatement *>EXECCICS EXEC CICS RECEIVE\n *>EXECCICS INTO(ws-input)\n *>EXECCICS LENGTH(ws-length)\n *>EXECCICS END-EXEC })) .\n       \n         )
@@ -75,15 +76,17 @@
 									(moveToStatement
 										(moveToSendingArea
 											(identifier
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord ws-message-in))))))) TO
+										(identifier
+											(tableCall
 												(qualifiedDataName
 													(qualifiedDataNameFormat1
 														(dataName
-															(cobolWord ws-message-in)))))) TO
-										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord ws-message-out)))))))) .\n       \n      )
+															(cobolWord ws-message-out))))))))) .\n       \n      )
 						(sentence
 							(statement
 								(execCicsStatement *>EXECCICS EXEC CICS SEND\n *>EXECCICS FROM(ws-output)\n *>EXECCICS LENGTH(ws-length)\n *>EXECCICS END-EXEC })) .\n       \n      )

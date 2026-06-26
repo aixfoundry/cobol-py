@@ -21,14 +21,15 @@
 																(powers
 																	(basis
 																		(identifier
-																			(qualifiedDataName
-																				(qualifiedDataNameFormat1
-																					(dataName
-																						(cobolWord SOME-DATA))
-																					(qualifiedInData
-																						(inData IN
-																							(dataName
-																								(cobolWord SOME-OTHER-DATA)))))))))))
+																			(tableCall
+																				(qualifiedDataName
+																					(qualifiedDataNameFormat1
+																						(dataName
+																							(cobolWord SOME-DATA))
+																						(qualifiedInData
+																							(inData IN
+																								(dataName
+																									(cobolWord SOME-OTHER-DATA))))))))))))
 														(relationalOperator NOT =) (
 														(relationCombinedCondition
 															(arithmeticExpression

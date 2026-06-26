@@ -119,28 +119,32 @@
 						(procedureDivisionByReferencePhrase
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord DN1))))))
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord DN1)))))))
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord DN2))))))
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord DN2)))))))
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord DN3))))))
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord DN3)))))))
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord DN4))))))))) .\n       
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord DN4)))))))))) .\n       
 				(procedureDivisionBody paragraphs
 					(procedureSection
 						(procedureSectionHeader
@@ -156,25 +160,13 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord DN1)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord DN1))))))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord WS1)))))))) .\n           )
-								(sentence
-									(statement
-										(addStatement ADD
-											(addToStatement
-												(addFrom
-													(literal
-														(numericLiteral
-															(integerLiteral 1)))) TO
-												(addTo
-													(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
@@ -189,40 +181,60 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord WS2))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord WS1)))))))))) .\n           )
+								(sentence
+									(statement
+										(addStatement ADD
+											(addToStatement
+												(addFrom
+													(literal
+														(numericLiteral
+															(integerLiteral 1)))) TO
+												(addTo
+													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord WS2)))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord WS1))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord WS1)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DN3)))))))) .\n           )
+																	(cobolWord DN3))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord WS2))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord WS2)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord DN4)))))))) .\n       ))
+																	(cobolWord DN4))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord CALL-EXIT-001)) .\n           

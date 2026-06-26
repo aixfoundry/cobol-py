@@ -21,10 +21,11 @@
 																(powers
 																	(basis
 																		(identifier
-																			(qualifiedDataName
-																				(qualifiedDataNameFormat1
-																					(dataName
-																						(cobolWord Obj-Name)))))))))
+																			(tableCall
+																				(qualifiedDataName
+																					(qualifiedDataNameFormat1
+																						(dataName
+																							(cobolWord Obj-Name))))))))))
 														(relationalOperator >)
 														(arithmeticExpression
 															(multDivs
@@ -40,16 +41,18 @@
 														(identifier
 															(specialRegister ADDRESS OF
 																(identifier
-																	(qualifiedDataName
-																		(qualifiedDataNameFormat1
-																			(dataName
-																				(cobolWord PointerA)))))))) TO
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord PointerA))))))))) TO
 													(setToValue
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord PointerB))))))))))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord PointerB)))))))))))
 									(ifElse ELSE
 										(statement
 											(moveStatement MOVE
@@ -57,7 +60,8 @@
 													(moveToSendingArea
 														(literal 'test')) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord testvar))))))))) END-IF)) .\n       \n       )))))) <EOF>)
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord testvar)))))))))) END-IF)) .\n       \n       )))))) <EOF>)

@@ -13,7 +13,8 @@
 								(displayStatement DISPLAY
 									(displayOperand
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord SOME-TEXT-2)))))))) .)))))) <EOF>)
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord SOME-TEXT-2))))))))) .)))))) <EOF>)

@@ -36,7 +36,8 @@
 														(integerLiteral 1)))) TO
 											(addTo
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COUNTER))))))))) .))))))) <EOF>)
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord COUNTER)))))))))) .))))))) <EOF>)

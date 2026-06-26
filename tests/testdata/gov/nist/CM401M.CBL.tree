@@ -118,10 +118,11 @@
 										(cdName
 											(cobolWord COMMNAME)) WITH KEY
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord CNAME1))))))) .\n      ))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord CNAME1)))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord CM401M-ENABLE)) .\n           
@@ -131,10 +132,11 @@
 										(cdName
 											(cobolWord COMMNAME)) WITH KEY
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord CNAME1))))))) .\n      ))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord CNAME1)))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord CM401M-PURGE)) .\n           
@@ -151,16 +153,18 @@
 									(sendStatement SEND
 										(sendStatementSync
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord COMM2)))))
-											(sendFromPhrase FROM
-												(identifier
+												(tableCall
 													(qualifiedDataName
 														(qualifiedDataNameFormat1
 															(dataName
-																(cobolWord CNAME1))))))))) .\n      ))
+																(cobolWord COMM2))))))
+											(sendFromPhrase FROM
+												(identifier
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CNAME1)))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord CM401M-SENDID)) .\n           
@@ -169,22 +173,25 @@
 									(sendStatement SEND
 										(sendStatementSync
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord COMM2)))))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord COMM2))))))
 											(sendFromPhrase FROM
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CNAME1))))))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CNAME1)))))))
 											(sendWithPhrase WITH
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CINT))))))))) .\n      ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CINT)))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord CM401M-SENDESI)) .\n           
@@ -193,16 +200,18 @@
 									(sendStatement SEND
 										(sendStatementSync
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord COMM2)))))
-											(sendFromPhrase FROM
-												(identifier
+												(tableCall
 													(qualifiedDataName
 														(qualifiedDataNameFormat1
 															(dataName
-																(cobolWord CNAME1))))))
+																(cobolWord COMM2))))))
+											(sendFromPhrase FROM
+												(identifier
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CNAME1)))))))
 											(sendWithPhrase WITH ESI)))) .\n      ))
 						(paragraph
 							(paragraphName
@@ -212,9 +221,10 @@
 									(sendStatement SEND
 										(sendStatementSync
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord COMM2)))))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord COMM2))))))
 											(sendWithPhrase WITH EMI)
 											(sendReplacingPhrase REPLACING LINE)))) .\n      ))))))) <EOF>)

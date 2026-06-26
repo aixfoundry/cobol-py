@@ -13,10 +13,11 @@
 								(evaluateStatement EVALUATE
 									(evaluateSelect
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord SOMEVAR1))))))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord SOMEVAR1)))))))
 									(evaluateAlsoSelect ALSO
 										(evaluateSelect
 											(literal
@@ -33,10 +34,11 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord SOMEVAR2)))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord SOMEVAR2))))))))
 																	(multDiv *
 																		(powers
 																			(basis
@@ -46,10 +48,11 @@
 									(evaluateAlsoSelect ALSO
 										(evaluateSelect
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord IT-IS-81)))))))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord IT-IS-81))))))))
 									(evaluateAlsoSelect ALSO
 										(evaluateSelect
 											(literal
@@ -63,18 +66,20 @@
 											(evaluateCondition NOT
 												(evaluateValue
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR3)))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR3))))))))
 											(evaluateAlsoCondition ALSO
 												(evaluateCondition
 													(evaluateValue
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord SOMEVAR4))))))))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord SOMEVAR4)))))))))
 											(evaluateAlsoCondition ALSO
 												(evaluateCondition
 													(evaluateValue
@@ -98,10 +103,11 @@
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord SOMEVAR5)))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord SOMEVAR5))))))))))
 																		(relationalOperator =)
 																		(arithmeticExpression
 																			(multDivs
@@ -122,10 +128,11 @@
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord SOMEVAR6)))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord SOMEVAR6))))))))))
 																		(relationalOperator <)
 																		(arithmeticExpression
 																			(multDivs
@@ -140,20 +147,22 @@
 													(moveToSendingArea
 														(literal "A")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR1))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR1)))))))))
 										(statement
 											(moveStatement MOVE
 												(moveToStatement
 													(moveToSendingArea
 														(literal "B")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR2)))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR2))))))))))
 									(evaluateWhenPhrase
 										(evaluateWhen WHEN
 											(evaluateCondition
@@ -165,10 +174,11 @@
 												(evaluateCondition
 													(evaluateValue
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord SOMEVAR1))))))))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord SOMEVAR1)))))))))
 											(evaluateAlsoCondition ALSO
 												(evaluateCondition
 													(evaluateValue
@@ -212,10 +222,11 @@
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord SOMEVAR1-2)))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord SOMEVAR1-2))))))))))
 																		(relationalOperator =)
 																		(arithmeticExpression
 																			(multDivs
@@ -234,10 +245,11 @@
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord SOMEVAR)))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord SOMEVAR))))))))))
 																		(relationalOperator >)
 																		(arithmeticExpression
 																			(multDivs
@@ -252,20 +264,22 @@
 													(moveToSendingArea
 														(literal "C")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR1))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR1)))))))))
 										(statement
 											(moveStatement MOVE
 												(moveToStatement
 													(moveToSendingArea
 														(literal "D")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR2)))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR2))))))))))
 									(evaluateWhenPhrase
 										(evaluateWhen WHEN
 											(evaluateCondition ANY)
@@ -289,10 +303,11 @@
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord SOMEVAR)))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord SOMEVAR))))))))))
 																		(relationalOperator =)
 																		(arithmeticExpression
 																			(multDivs
@@ -307,20 +322,22 @@
 													(moveToSendingArea
 														(literal "E")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR1))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR1)))))))))
 										(statement
 											(moveStatement MOVE
 												(moveToStatement
 													(moveToSendingArea
 														(literal "F")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR2)))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR2))))))))))
 									(evaluateWhenOther WHEN OTHER
 										(statement
 											(moveStatement MOVE
@@ -328,17 +345,19 @@
 													(moveToSendingArea
 														(literal "G")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR1))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR1)))))))))
 										(statement
 											(moveStatement MOVE
 												(moveToStatement
 													(moveToSendingArea
 														(literal "H")) TO
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEVAR2))))))))) END-EVALUATE)) .)))))) <EOF>)
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEVAR2)))))))))) END-EVALUATE)) .)))))) <EOF>)

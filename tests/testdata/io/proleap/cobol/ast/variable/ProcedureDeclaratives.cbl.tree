@@ -15,16 +15,18 @@
 							(useDebugClause FOR DEBUGGING ON
 								(useDebugOn ALL REFERENCES OF
 									(identifier
-										(qualifiedDataName
-											(qualifiedDataNameFormat1
-												(dataName
-													(cobolWord KEY-1))))))
+										(tableCall
+											(qualifiedDataName
+												(qualifiedDataNameFormat1
+													(dataName
+														(cobolWord KEY-1)))))))
 								(useDebugOn ALL
 									(identifier
-										(qualifiedDataName
-											(qualifiedDataNameFormat1
-												(dataName
-													(cobolWord ID-2)))))))) .\n         
+										(tableCall
+											(qualifiedDataName
+												(qualifiedDataNameFormat1
+													(dataName
+														(cobolWord ID-2))))))))) .\n         
 						(paragraphs
 							(sentence
 								(statement

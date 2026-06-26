@@ -21,10 +21,11 @@
 																(powers
 																	(basis
 																		(identifier
-																			(qualifiedDataName
-																				(qualifiedDataNameFormat1
-																					(dataName
-																						(cobolWord Obj-Name)))))))))
+																			(tableCall
+																				(qualifiedDataName
+																					(qualifiedDataNameFormat1
+																						(dataName
+																							(cobolWord Obj-Name))))))))))
 														(relationalOperator NOT =)
 														(arithmeticExpression
 															(multDivs
@@ -40,21 +41,24 @@
 														(identifier
 															(specialRegister ADDRESS OF
 																(identifier
-																	(qualifiedDataName
-																		(qualifiedDataNameFormat1
-																			(dataName
-																				(cobolWord PointerA)))))))) TO
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord PointerA))))))))) TO
 													(setToValue
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord PointerB))))))))))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord PointerB)))))))))))
 									(ifElse ELSE
 										(statement
 											(initializeStatement INITIALIZE
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord Test1)))))))) END-IF)) .)))))) <EOF>)
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord Test1))))))))) END-IF)) .)))))) <EOF>)

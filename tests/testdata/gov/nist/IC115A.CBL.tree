@@ -616,16 +616,18 @@
 						(procedureDivisionByReferencePhrase
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord GROUP-LINKAGE-VARIABLES))))))
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord GROUP-LINKAGE-VARIABLES)))))))
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord FILE-REC-SQ-FS3))))))))) .\n       
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord FILE-REC-SQ-FS3)))))))))) .\n       
 				(procedureDivisionBody paragraphs
 					(procedureSection
 						(procedureSectionHeader
@@ -655,10 +657,11 @@
 													(paragraphName
 														(cobolWord SECT-IC115-0006))) DEPENDING ON
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CALL-FLAG)))))))) .\n      ))))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CALL-FLAG))))))))) .\n      ))))
 					(procedureSection
 						(procedureSectionHeader
 							(sectionName
@@ -673,10 +676,11 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord FILE-RECORD-INFO-SKELETON)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord FILE-RECORD-INFO-SKELETON))))))) TO
 												(identifier
 													(tableCall
 														(qualifiedDataName
@@ -719,10 +723,11 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord CCVS-PGM-ID)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord CCVS-PGM-ID))))))) TO
 												(identifier
 													(tableCall
 														(qualifiedDataName
@@ -861,10 +866,11 @@
 															(subscript
 																(integerLiteral 1)) )))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord SQ-FS3R1-F-G-120)))))))) .\n           )
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord SQ-FS3R1-F-G-120))))))))) .\n           )
 								(sentence
 									(statement
 										(writeStatement WRITE
@@ -955,10 +961,11 @@
 															(subscript
 																(integerLiteral 1)) )))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord COUNT-OF-RECORDS)))))))) .\n      ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord COUNT-OF-RECORDS))))))))) .\n      ))
 							(paragraph
 								(paragraphName
 									(cobolWord LINK-EXIT-10)) .\n           
@@ -1001,10 +1008,11 @@
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SQ-FS3R1-F-G-120)))))) TO
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SQ-FS3R1-F-G-120))))))) TO
 												(identifier
 													(tableCall
 														(qualifiedDataName
@@ -1023,10 +1031,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord COUNT-OF-RECORDS))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord COUNT-OF-RECORDS)))))))))) .\n           )
 								(sentence
 									(statement
 										(ifStatement IF
@@ -1040,10 +1049,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COUNT-OF-RECORDS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COUNT-OF-RECORDS))))))))))
 																(relationalOperator GREATER THAN)
 																(arithmeticExpression
 																	(multDivs
@@ -1061,10 +1071,11 @@
 																	(numericLiteral
 																		(integerLiteral 1)))) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord ERROR-FLAG))))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord ERROR-FLAG)))))))))
 												(statement
 													(goToStatement GO TO
 														(goToStatementSimple
@@ -1084,10 +1095,11 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord COUNT-OF-RECORDS)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord COUNT-OF-RECORDS))))))))))
 																(relationalOperator NOT EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
@@ -1194,10 +1206,11 @@
 															(integerLiteral 1)))) TO
 												(addTo
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord RECORDS-IN-ERROR))))))))) .\n           )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord RECORDS-IN-ERROR)))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
@@ -1207,10 +1220,11 @@
 														(numericLiteral
 															(integerLiteral 1)))) TO
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord ERROR-FLAG)))))))) .\n       ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord ERROR-FLAG))))))))) .\n       ))
 							(paragraph
 								(paragraphName
 									(cobolWord LINK-CLOSE-11)) .\n           
@@ -1269,25 +1283,28 @@
 																	(numericLiteral
 																		(integerLiteral 1)))) TO
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord EOF-FLAG))))))))))) .\n           )
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord EOF-FLAG)))))))))))) .\n           )
 								(sentence
 									(statement
 										(moveStatement MOVE
 											(moveToStatement
 												(moveToSendingArea
 													(identifier
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SQ-FS3R1-F-G-120))))))) TO
+												(identifier
+													(tableCall
 														(qualifiedDataName
 															(qualifiedDataNameFormat1
 																(dataName
-																	(cobolWord SQ-FS3R1-F-G-120)))))) TO
-												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord FILE-REC-SQ-FS3)))))))) .\n      ))
+																	(cobolWord FILE-REC-SQ-FS3))))))))) .\n      ))
 							(paragraph
 								(paragraphName
 									(cobolWord LINK-EXIT-12)) .\n           

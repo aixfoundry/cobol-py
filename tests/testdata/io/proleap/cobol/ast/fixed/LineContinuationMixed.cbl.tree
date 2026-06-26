@@ -24,18 +24,20 @@
 													(literal '     '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA11))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA11)))))))
 												(displayOperand
 													(literal '          '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA-VALUE1))))))))) END-IF)) .\n                   )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA-VALUE1)))))))))) END-IF)) .\n                   )
 						(sentence
 							(statement
 								(ifStatement IF
@@ -52,18 +54,20 @@
 													(literal '     '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA11))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA11)))))))
 												(displayOperand
 													(literal '          '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA-VALUE1))))))))) END-IF)) .\n       \n               )
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA-VALUE1)))))))))) END-IF)) .\n       \n               )
 						(sentence
 							(statement
 								(ifStatement IF
@@ -86,10 +90,11 @@
 													(literal '     '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA11))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA11)))))))
 												(displayOperand
 													(literal '              '))))
 										(statement
@@ -120,20 +125,22 @@
 													(literal '     '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA11))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA11)))))))
 												(displayOperand
 													(literal '              '))
 												(displayOperand
 													(literal '     '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA-1))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA-1)))))))))
 										(statement
 											(displayStatement DISPLAY
 												(displayOperand
@@ -156,18 +163,20 @@
 													(literal 'some--string              '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA-1))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA-1)))))))
 												(displayOperand
 													(literal '    '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA)))))))))
 										(statement
 											(displayStatement DISPLAY
 												(displayOperand
@@ -190,18 +199,20 @@
 													(literal 'some--string              '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA-1))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA-1)))))))
 												(displayOperand
 													(literal '    '))
 												(displayOperand
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOME-DATA))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOME-DATA)))))))))
 										(statement
 											(displayStatement DISPLAY
 												(displayOperand

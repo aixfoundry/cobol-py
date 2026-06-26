@@ -262,10 +262,11 @@
 														(argument
 															(literal "ABC")) )))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord WS-AN-TEMP)))))))) .\n      ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord WS-AN-TEMP))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord IF403M-SIN)) .\n           
@@ -518,10 +519,11 @@
 														(argument
 															(literal "abc")) )))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord WS-AN-TEMP)))))))) .\n      ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord WS-AN-TEMP))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord IF403M-VARIANCE)) .\n           
@@ -597,10 +599,11 @@
 													(functionCall FUNCTION
 														(functionName WHEN-COMPILED)))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord WS-AN-TEMP)))))))) .\n      ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord WS-AN-TEMP))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord IF403M-END)) .\n       \n      )))))) <EOF>)

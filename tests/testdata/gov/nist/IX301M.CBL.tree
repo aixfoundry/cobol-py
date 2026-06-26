@@ -222,10 +222,11 @@
 											(moveToSendingArea
 												(literal "INVA")) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord STATE)))))))) .\n       \n       ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord STATE))))))))) .\n       \n       ))
 						(paragraph
 							(paragraphName
 								(cobolWord DONE-PARA)) .\n           
@@ -236,7 +237,8 @@
 											(moveToSendingArea
 												(literal "DONE")) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord STATE)))))))) .\n       \n      ))))))) <EOF>)
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord STATE))))))))) .\n       \n      ))))))) <EOF>)

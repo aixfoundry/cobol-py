@@ -100,10 +100,11 @@
 													(callByReferencePhrase BY REFERENCE
 														(callByReference
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord GLOB))))))))))) .\n      ))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord GLOB)))))))))))) .\n      ))
 							(paragraph
 								(paragraphName
 									(cobolWord IC401M-BYCONT)) .\n           
@@ -116,10 +117,11 @@
 													(callByContentPhrase BY CONTENT
 														(callByContent
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord GLOB))))))))))) .\n      ))))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord GLOB)))))))))))) .\n      ))))))
 			(programUnit
 				(identificationDivision IDENTIFICATION DIVISION .\n      
 					(programIdParagraph PROGRAM-ID .\n           
@@ -146,10 +148,11 @@
 							(procedureDivisionByReferencePhrase
 								(procedureDivisionByReference
 									(identifier
-										(qualifiedDataName
-											(qualifiedDataNameFormat1
-												(dataName
-													(cobolWord GLOB-2))))))))) .\n       
+										(tableCall
+											(qualifiedDataName
+												(qualifiedDataNameFormat1
+													(dataName
+														(cobolWord GLOB-2)))))))))) .\n       
 					(procedureDivisionBody
 						(paragraphs
 							(paragraph

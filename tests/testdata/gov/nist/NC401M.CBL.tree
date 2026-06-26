@@ -900,6 +900,17 @@
 										(moveToStatement
 											(moveToSendingArea
 												(identifier
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord GUBBINS))
+																(qualifiedInData
+																	(inData OF
+																		(dataName
+																			(cobolWord FREC))))))))) TO
+											(identifier
+												(tableCall
 													(qualifiedDataName
 														(qualifiedDataNameFormat1
 															(dataName
@@ -907,16 +918,7 @@
 															(qualifiedInData
 																(inData OF
 																	(dataName
-																		(cobolWord FREC)))))))) TO
-											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord GUBBINS))
-														(qualifiedInData
-															(inData OF
-																(dataName
-																	(cobolWord FREC-2)))))))))) .\n      ))
+																		(cobolWord FREC-2))))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-SUBSCR)) .\n           
@@ -961,23 +963,26 @@
 								(statement
 									(multiplyStatement MULTIPLY
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord BOX-A))))) BY
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord BOX-A)))))) BY
 										(multiplyGiving
 											(multiplyGivingOperand
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord BOX-B)))))) GIVING
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord BOX-B))))))) GIVING
 											(multiplyGivingResult
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord BOX-C))))))))) .\n      ))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord BOX-C)))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-CHARBR2)) .\n           
@@ -990,10 +995,11 @@
 													(numericLiteral
 														(integerLiteral 20)))) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord BOX-A)))))))) .\n      ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord BOX-A))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-ARITHEXP)) .\n           
@@ -1010,10 +1016,11 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord BOX-A))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord BOX-A)))))))))
 																(plusMinus +
 																	(multDivs
 																		(powers
@@ -1027,10 +1034,11 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord BOX-B))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord BOX-B)))))))))
 																(plusMinus +
 																	(multDivs
 																		(powers
@@ -1059,10 +1067,11 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord BOX-A))))))))) IS NOT NEGATIVE)))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord BOX-A)))))))))) IS NOT NEGATIVE)))))
 										(ifThen
 											(statement
 												(displayStatement DISPLAY
@@ -1084,20 +1093,22 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord BOX-A)))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord BOX-A))))))))))
 															(relationalOperator IS GREATER THAN)
 															(arithmeticExpression
 																(multDivs
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord BOX-B)))))))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord BOX-B))))))))))))))
 											(andOrCondition AND
 												(combinableCondition NOT
 													(simpleCondition
@@ -1108,20 +1119,22 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord BOX-C)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord BOX-C))))))))))
 																(relationalOperator IS GREATER THAN)
 																(arithmeticExpression
 																	(multDivs
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord BOX-A)))))))))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord BOX-A))))))))))))))))
 										(ifThen THEN
 											(statement
 												(moveStatement MOVE
@@ -1131,10 +1144,11 @@
 																(numericLiteral
 																	(integerLiteral 7)))) TO
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord BOX-B))))))))))) .\n      ))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord BOX-B)))))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-CORRESADD)) .\n           
@@ -1143,16 +1157,18 @@
 									(addStatement ADD
 										(addCorrespondingStatement CORRESPONDING
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord GROUP-1))))) TO
-											(addTo
-												(identifier
+												(tableCall
 													(qualifiedDataName
 														(qualifiedDataNameFormat1
 															(dataName
-																(cobolWord GROUP-2))))))))) .\n      ))
+																(cobolWord GROUP-1)))))) TO
+											(addTo
+												(identifier
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord GROUP-2)))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-CORRESMOVE)) .\n           
@@ -1162,15 +1178,17 @@
 										(moveCorrespondingToStatement CORRESPONDING
 											(moveCorrespondingToSendingArea
 												(identifier
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord GROUP-1))))))) TO
+											(identifier
+												(tableCall
 													(qualifiedDataName
 														(qualifiedDataNameFormat1
 															(dataName
-																(cobolWord GROUP-1)))))) TO
-											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord GROUP-2)))))))) .\n      ))
+																(cobolWord GROUP-2))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-CORRESSUB)) .\n           
@@ -1195,10 +1213,11 @@
 									(computeStatement COMPUTE
 										(computeStore
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord BOX-A)))))) =
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord BOX-A))))))) =
 										(arithmeticExpression
 											(multDivs
 												(powers
@@ -1220,10 +1239,11 @@
 								(statement
 									(acceptStatement ACCEPT
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord DDAY)))))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord DDAY))))))
 										(acceptFromDateStatement FROM DAY-OF-WEEK))) .\n      ))
 						(paragraph
 							(paragraphName
@@ -1243,29 +1263,33 @@
 								(statement
 									(divideStatement DIVIDE
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord BOX-A)))))
-										(divideIntoGivingStatement INTO
-											(identifier
+											(tableCall
 												(qualifiedDataName
 													(qualifiedDataNameFormat1
 														(dataName
-															(cobolWord BOX-B)))))
+															(cobolWord BOX-A))))))
+										(divideIntoGivingStatement INTO
+											(identifier
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord BOX-B))))))
 											(divideGivingPhrase GIVING
 												(divideGiving
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord BOX-C))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord BOX-C)))))))))
 										(divideRemainder REMAINDER
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord BOX-D)))))))) .\n      ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord BOX-D))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-EVAL)) .\n           
@@ -1274,10 +1298,11 @@
 									(evaluateStatement EVALUATE
 										(evaluateSelect
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord BOX-A))))))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord BOX-A)))))))
 										(evaluateWhenPhrase
 											(evaluateWhen WHEN
 												(evaluateCondition
@@ -1291,10 +1316,11 @@
 														(moveToSendingArea
 															(literal "A")) TO
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord VARC)))))))))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord VARC))))))))))
 										(evaluateWhenPhrase
 											(evaluateWhen WHEN
 												(evaluateCondition
@@ -1308,10 +1334,11 @@
 														(moveToSendingArea
 															(literal "B")) TO
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord VARC))))))))))) .\n      ))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord VARC)))))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-GOTO)) .\n           
@@ -1336,20 +1363,22 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord BOX-A)))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord BOX-A))))))))))
 															(relationalOperator IS GREATER THAN)
 															(arithmeticExpression
 																(multDivs
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord BOX-B))))))))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord BOX-B)))))))))))))))
 										(ifThen THEN
 											(statement
 												(moveStatement MOVE
@@ -1357,10 +1386,11 @@
 														(moveToSendingArea
 															(literal "AAAA")) TO
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord VARD)))))))))
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord VARD))))))))))
 										(ifElse ELSE
 											(statement
 												(ifStatement IF
@@ -1374,20 +1404,22 @@
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord BOX-B)))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord BOX-B))))))))))
 																		(relationalOperator IS GREATER THAN)
 																		(arithmeticExpression
 																			(multDivs
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord BOX-C))))))))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord BOX-C)))))))))))))))
 													(ifThen THEN
 														(statement
 															(moveStatement MOVE
@@ -1395,10 +1427,11 @@
 																	(moveToSendingArea
 																		(literal "BBBB")) TO
 																	(identifier
-																		(qualifiedDataName
-																			(qualifiedDataNameFormat1
-																				(dataName
-																					(cobolWord VARD)))))))))
+																		(tableCall
+																			(qualifiedDataName
+																				(qualifiedDataNameFormat1
+																					(dataName
+																						(cobolWord VARD))))))))))
 													(ifElse ELSE
 														(statement
 															(moveStatement MOVE
@@ -1406,10 +1439,11 @@
 																	(moveToSendingArea
 																		(literal "CCCC")) TO
 																	(identifier
-																		(qualifiedDataName
-																			(qualifiedDataNameFormat1
-																				(dataName
-																					(cobolWord VARD)))))))))))))) .\n      ))
+																		(tableCall
+																			(qualifiedDataName
+																				(qualifiedDataNameFormat1
+																					(dataName
+																						(cobolWord VARD))))))))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-INIT)) .\n           
@@ -1417,10 +1451,11 @@
 								(statement
 									(initializeStatement INITIALIZE
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord VARB))))))) .\n      ))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord VARB)))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-INSCT)) .\n           
@@ -1428,10 +1463,11 @@
 								(statement
 									(inspectStatement INSPECT
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord MARYPOPPINS)))))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord MARYPOPPINS))))))
 										(inspectConvertingPhrase CONVERTING
 											(literal "A")
 											(inspectTo TO
@@ -1462,20 +1498,22 @@
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord BOX-B)))))))))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord BOX-B))))))))))
 																		(relationalOperator IS EQUAL TO)
 																		(arithmeticExpression
 																			(multDivs
 																				(powers
 																					(basis
 																						(identifier
-																							(qualifiedDataName
-																								(qualifiedDataNameFormat1
-																									(dataName
-																										(cobolWord BOX-A))))))))))))))))))) .\n      ))
+																							(tableCall
+																								(qualifiedDataName
+																									(qualifiedDataNameFormat1
+																										(dataName
+																											(cobolWord BOX-A)))))))))))))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-PWV)) .\n           
@@ -1494,22 +1532,25 @@
 													(performVaryingClause VARYING
 														(performVaryingPhrase
 															(identifier
-																(qualifiedDataName
-																	(qualifiedDataNameFormat1
-																		(dataName
-																			(cobolWord BOX-A)))))
+																(tableCall
+																	(qualifiedDataName
+																		(qualifiedDataNameFormat1
+																			(dataName
+																				(cobolWord BOX-A))))))
 															(performFrom FROM
 																(identifier
-																	(qualifiedDataName
-																		(qualifiedDataNameFormat1
-																			(dataName
-																				(cobolWord BOX-B))))))
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord BOX-B)))))))
 															(performBy BY
 																(identifier
-																	(qualifiedDataName
-																		(qualifiedDataNameFormat1
-																			(dataName
-																				(cobolWord BOX-C))))))
+																	(tableCall
+																		(qualifiedDataName
+																			(qualifiedDataNameFormat1
+																				(dataName
+																					(cobolWord BOX-C)))))))
 															(performUntil UNTIL
 																(condition
 																	(combinableCondition
@@ -1521,20 +1562,22 @@
 																							(powers
 																								(basis
 																									(identifier
-																										(qualifiedDataName
-																											(qualifiedDataNameFormat1
-																												(dataName
-																													(cobolWord GRANDTOTAL)))))))))
+																										(tableCall
+																											(qualifiedDataName
+																												(qualifiedDataNameFormat1
+																													(dataName
+																														(cobolWord GRANDTOTAL))))))))))
 																					(relationalOperator IS EQUAL TO)
 																					(arithmeticExpression
 																						(multDivs
 																							(powers
 																								(basis
 																									(identifier
-																										(qualifiedDataName
-																											(qualifiedDataNameFormat1
-																												(dataName
-																													(cobolWord VARF)))))))))))))))))))))) .\n      ))
+																										(tableCall
+																											(qualifiedDataName
+																												(qualifiedDataNameFormat1
+																													(dataName
+																														(cobolWord VARF))))))))))))))))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-SEARCH)) .\n           
@@ -1556,20 +1599,22 @@
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord BOX-A)))))))))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord BOX-A))))))))))
 																(relationalOperator IS EQUAL TO)
 																(arithmeticExpression
 																	(multDivs
 																		(powers
 																			(basis
 																				(identifier
-																					(qualifiedDataName
-																						(qualifiedDataNameFormat1
-																							(dataName
-																								(cobolWord BOX-B)))))))))))))) NEXT SENTENCE))) .\n      ))
+																					(tableCall
+																						(qualifiedDataName
+																							(qualifiedDataNameFormat1
+																								(dataName
+																									(cobolWord BOX-B))))))))))))))) NEXT SENTENCE))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-STT)) .\n           
@@ -1579,10 +1624,11 @@
 										(setToStatement
 											(setTo
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord CUST-PAID)))))) TO
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord CUST-PAID))))))) TO
 											(setToValue
 												(literal
 													(booleanLiteral TRUE)))))) .\n      ))
@@ -1595,22 +1641,25 @@
 										(stringSendingPhrase
 											(stringSending
 												(identifier
-													(qualifiedDataName
-														(qualifiedDataNameFormat1
-															(dataName
-																(cobolWord VARD))))))
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord VARD)))))))
 											(stringDelimitedByPhrase DELIMITED BY
 												(identifier
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord VARB))))))))
+										(stringIntoPhrase INTO
+											(identifier
+												(tableCall
 													(qualifiedDataName
 														(qualifiedDataNameFormat1
 															(dataName
-																(cobolWord VARB)))))))
-										(stringIntoPhrase INTO
-											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord VARC)))))))) .\n      ))
+																(cobolWord VARC))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-UST)) .\n           
@@ -1619,17 +1668,19 @@
 									(unstringStatement UNSTRING
 										(unstringSendingPhrase
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord VARD))))))
-										(unstringIntoPhrase INTO
-											(unstringInto
-												(identifier
+												(tableCall
 													(qualifiedDataName
 														(qualifiedDataNameFormat1
 															(dataName
-																(cobolWord VARE))))))))) .\n      ))
+																(cobolWord VARD)))))))
+										(unstringIntoPhrase INTO
+											(unstringInto
+												(identifier
+													(tableCall
+														(qualifiedDataName
+															(qualifiedDataNameFormat1
+																(dataName
+																	(cobolWord VARE)))))))))) .\n      ))
 						(paragraph
 							(paragraphName
 								(cobolWord NC401M-END)) .\n       \n      ))))

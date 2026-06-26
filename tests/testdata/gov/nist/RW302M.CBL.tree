@@ -150,10 +150,11 @@
 											(pictureChars ))))
 									(reportGroupSourceClause SOURCE IS
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord RKEY))))))
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord RKEY)))))))
 									(reportGroupLineNumberClause LINE NUMBER IS
 										(reportGroupLineNumberPlus PLUS
 											(integerLiteral 1)))

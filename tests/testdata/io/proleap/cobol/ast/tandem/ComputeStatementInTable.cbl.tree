@@ -13,27 +13,29 @@
 								(computeStatement COMPUTE
 									(computeStore
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord SOMEID1))
-													(qualifiedInData
-														(inData IN
-															(dataName
-																(cobolWord SOMETBL1)))))))) =
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord SOMEID1))
+														(qualifiedInData
+															(inData IN
+																(dataName
+																	(cobolWord SOMETBL1))))))))) =
 									(arithmeticExpression
 										(multDivs
 											(powers
 												(basis
 													(identifier
-														(qualifiedDataName
-															(qualifiedDataNameFormat1
-																(dataName
-																	(cobolWord SOMEID2))
-																(qualifiedInData
-																	(inData IN
-																		(dataName
-																			(cobolWord SOMETBL2)))))))))
+														(tableCall
+															(qualifiedDataName
+																(qualifiedDataNameFormat1
+																	(dataName
+																		(cobolWord SOMEID2))
+																	(qualifiedInData
+																		(inData IN
+																			(dataName
+																				(cobolWord SOMETBL2))))))))))
 											(multDiv /
 												(powers
 													(basis

@@ -59,10 +59,11 @@
 						(procedureDivisionByReferencePhrase
 							(procedureDivisionByReference
 								(identifier
-									(qualifiedDataName
-										(qualifiedDataNameFormat1
-											(dataName
-												(cobolWord TEST-AREA))))))))) .\n       
+									(tableCall
+										(qualifiedDataName
+											(qualifiedDataNameFormat1
+												(dataName
+													(cobolWord TEST-AREA)))))))))) .\n       
 				(procedureDivisionBody
 					(paragraphs
 						(paragraph
@@ -75,10 +76,11 @@
 											(moveToSendingArea
 												(literal "Y")) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord TEST1)))))))) .\n           )
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord TEST1))))))))) .\n           )
 							(sentence
 								(statement
 									(callStatement CALL
@@ -88,10 +90,11 @@
 												(callByReferencePhrase
 													(callByReference
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord TEST-AREA))))))))))) .\n           )
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord TEST-AREA)))))))))))) .\n           )
 							(sentence
 								(statement
 									(ifStatement IF
@@ -105,10 +108,11 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord TEST2)))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord TEST2))))))))))
 															(relationalOperator =)
 															(arithmeticExpression
 																(multDivs
@@ -129,10 +133,11 @@
 											(moveToSendingArea
 												(literal "N")) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord TEST2)))))))) .\n       ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord TEST2))))))))) .\n       ))
 						(paragraph
 							(paragraphName
 								(cobolWord CALL-TEST-3)) .\n           
@@ -145,10 +150,11 @@
 												(callByReferencePhrase
 													(callByReference
 														(identifier
-															(qualifiedDataName
-																(qualifiedDataNameFormat1
-																	(dataName
-																		(cobolWord TEST-AREA))))))))))) .\n           )
+															(tableCall
+																(qualifiedDataName
+																	(qualifiedDataNameFormat1
+																		(dataName
+																			(cobolWord TEST-AREA)))))))))))) .\n           )
 							(sentence
 								(statement
 									(ifStatement IF
@@ -162,10 +168,11 @@
 																	(powers
 																		(basis
 																			(identifier
-																				(qualifiedDataName
-																					(qualifiedDataNameFormat1
-																						(dataName
-																							(cobolWord TEST3)))))))))
+																				(tableCall
+																					(qualifiedDataName
+																						(qualifiedDataNameFormat1
+																							(dataName
+																								(cobolWord TEST3))))))))))
 															(relationalOperator =)
 															(arithmeticExpression
 																(multDivs
@@ -186,10 +193,11 @@
 											(moveToSendingArea
 												(literal "N")) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord TEST3)))))))) .\n       ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord TEST3))))))))) .\n       ))
 						(paragraph
 							(paragraphName
 								(cobolWord CANCEL-TEST-1)) .\n           
@@ -205,10 +213,11 @@
 											(moveToSendingArea
 												(literal "Y")) TO
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord TEST4)))))))) .\n       ))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord TEST4))))))))) .\n       ))
 						(paragraph
 							(paragraphName
 								(cobolWord IC210-EXIT)) .\n           

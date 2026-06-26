@@ -39,10 +39,11 @@
 										(stringDelimitedByPhrase DELIMITED BY SIZE))
 									(stringIntoPhrase INTO
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord SOMEDATA1)))))) END-STRING)) .\n           )
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord SOMEDATA1))))))) END-STRING)) .\n           )
 						(sentence
 							(statement
 								(stringStatement STRING
@@ -51,14 +52,16 @@
 											(literal 'SOME-STRING')) ,
 										(stringSending
 											(identifier
-												(qualifiedDataName
-													(qualifiedDataNameFormat1
-														(dataName
-															(cobolWord SOME-DATA1))))))
+												(tableCall
+													(qualifiedDataName
+														(qualifiedDataNameFormat1
+															(dataName
+																(cobolWord SOME-DATA1)))))))
 										(stringDelimitedByPhrase DELIMITED BY SIZE))
 									(stringIntoPhrase INTO
 										(identifier
-											(qualifiedDataName
-												(qualifiedDataNameFormat1
-													(dataName
-														(cobolWord SOME-DATA2)))))))) .)))))) <EOF>)
+											(tableCall
+												(qualifiedDataName
+													(qualifiedDataNameFormat1
+														(dataName
+															(cobolWord SOME-DATA2))))))))) .)))))) <EOF>)

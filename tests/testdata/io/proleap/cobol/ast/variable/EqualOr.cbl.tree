@@ -21,10 +21,11 @@
 																(powers
 																	(basis
 																		(identifier
-																			(qualifiedDataName
-																				(qualifiedDataNameFormat1
-																					(dataName
-																						(cobolWord FIELDA)))))))))
+																			(tableCall
+																				(qualifiedDataName
+																					(qualifiedDataNameFormat1
+																						(dataName
+																							(cobolWord FIELDA))))))))))
 														(relationalOperator =) (
 														(relationCombinedCondition
 															(arithmeticExpression
