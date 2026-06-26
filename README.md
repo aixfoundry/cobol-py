@@ -11,9 +11,10 @@ Python, built on [ANTLR4](https://www.antlr.org/).
 
 `cobol-py` reproduces proleap's two-stage design:
 
-1. **Preprocessor** (`CobolPreprocessor.g4`) — a fixed-format line model plus a
-   document walker that expands `COPY` copybooks, applies `REPLACE` pseudo-text,
-   and extracts `EXEC CICS` / `EXEC SQL` / `EXEC SQLIMS` blocks into tagged lines.
+1. **Preprocessor** (`CobolPreprocessor.g4`) — a column-aware line model (FIXED,
+   TANDEM, VARIABLE, FREE) plus a document walker that expands `COPY` copybooks,
+   applies `REPLACE` pseudo-text, and extracts `EXEC CICS` / `EXEC SQL` /
+   `EXEC SQLIMS` blocks into tagged lines.
 2. **Main grammar** (`Cobol.g4`) — parses the preprocessed text into a `startRule`
    AST.
 
@@ -44,7 +45,7 @@ from cobol_py import CobolParserRunner, CobolParserParams, CobolSourceFormatEnum
 
 src = open("examples/example.cbl").read()
 
-# A source format is required — it drives the fixed-format line model.
+# A source format is required — it drives the line layout model.
 params = CobolParserParams(format=CobolSourceFormatEnum.FIXED)
 
 ast = CobolParserRunner().parse(src, params)
@@ -52,14 +53,12 @@ print(ast.toStringTree(recog=ast.parser))   # noqa: the generated StartRuleConte
 ```
 
 Or parse straight from a file (the file's directory becomes the default copybook
-search path):
+search path; the source format is auto-detected from content):
 
 ```python
-from cobol_py import CobolParserRunner, CobolSourceFormatEnum
+from cobol_py import CobolParserRunner
 
-ast = CobolParserRunner().parse_file(
-    "examples/example.cbl", CobolSourceFormatEnum.FIXED
-)
+ast = CobolParserRunner().parse_file("examples/example.cbl")
 ```
 
 ## Source formats
@@ -72,10 +71,23 @@ line reader expects:
 | `FIXED`    | 1–6             | 7         | 8–12    | 13–72      |
 | `VARIABLE` | 1–6             | 7         | 8–12    | 8–end      |
 | `TANDEM`   | —               | 1         | 2–5     | 2–end      |
+| `FREE`     | —               | —         | 1–end   | —          |
 
 `FIXED` is the standard ANSI / IBM reference. Unlike `FIXED`, `VARIABLE` does
 **not** drop a comment area past column 72, so long `AREA B` content survives
 intact.
+
+`FREE` is the **COBOL 2002 free-format** layout — no column restrictions, no
+sequence/indicator areas, no `-` continuation marker. Code can start at any
+position with arbitrary indentation.  Compiler directives (`>>SOURCE`,
+`>>IF`, `>>ELSE`, `>>END-IF`, `>>EVALUATE`, `>>DEFINE`) are absorbed by the
+preprocessor.  `>>D` debug lines have their prefix stripped and code preserved.
+`*>` inline comments are handled by the main grammar.  String continuation
+uses `&` at end-of-line (collapsed into a single logical line).
+
+The format is auto-detected via `detect_source_format()`: the presence of a
+`>>SOURCE FORMAT IS FREE` or `>>SOURCE FREE` directive in the first 50 lines
+triggers FREE mode, falling back through FIXED/TANDEM heuristics.
 
 ## Preprocessor constructs
 
@@ -155,15 +167,15 @@ condition decomposition); every verb already produces its typed node.
 ## Testing
 
 ```bash
-uv run pytest                      # full suite (~197 tests)
+uv run pytest                      # full suite (~218 tests)
 COBOL_PY_NIST_FULL=1 uv run pytest tests/test_nist.py   # full NIST suite (slow)
 ```
 
 | Module | What it checks |
 |--------|----------------|
-| `tests/test_phase1_leaf.py` | leaf types, params, format enum |
-| `tests/test_phase2_line.py` | line sub-pipeline (reader / indicator / writer) |
-| `tests/test_parse.py` | full pipeline on small FIXED/TANDEM/VARIABLE fixtures |
+| `tests/test_phase1_leaf.py` | leaf types, params, format enum (FIXED/TANDEM/VARIABLE/FREE) |
+| `tests/test_phase2_line.py` | line sub-pipeline (reader / indicator / writer), FREE `>>`/`>>D`/`&` handling |
+| `tests/test_parse.py` | full pipeline on small FIXED/TANDEM/VARIABLE/FREE fixtures |
 | `tests/test_ast_tree.py` | parse-tree **golden** comparison vs proleap's `.cbl.tree` files |
 | `tests/test_nist.py` | NIST COBOL-85 conformance (a stride by default; full is opt-in) |
 | `tests/test_asg/*.py` | ASG layer: foundation, data/procedure structure, statements, file verbs, call resolution, phrase-scope nesting |
@@ -210,7 +222,7 @@ src/cobol_py/                  # importable package
   Cobol{Lexer,Parser,Listener,Visitor}.py
   CobolPreprocessor{Lexer,Parser,Listener,Visitor}.py
 tests/
-  fixtures/                    # .cbl/.CPY programs: FIXED/TANDEM/VARIABLE +
+  fixtures/                    # .cbl/.CPY programs: FIXED/TANDEM/VARIABLE/FREE +
                                # COPY + REPLACE + EXEC SQL/CICS
   test_phase1_leaf.py          # leaf types & utils
   test_phase2_line.py          # line sub-pipeline
