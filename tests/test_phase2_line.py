@@ -19,11 +19,12 @@ from cobol_py.preprocessor.line import CobolLine, CobolLineTypeEnum
 from cobol_py.preprocessor.line_indicator_processor import (
     CobolLineIndicatorProcessorImpl,
 )
-from cobol_py.preprocessor.line_reader import CobolLineReaderImpl
+from cobol_py.preprocessor.line_reader import CobolLineReaderImpl, _join_amp_continuation
 from cobol_py.preprocessor.line_writer import CobolLineWriterImpl
 
 FIXED = CobolSourceFormatEnum.FIXED
 TANDEM = CobolSourceFormatEnum.TANDEM
+FREE = CobolSourceFormatEnum.FREE
 
 
 def _params(format=CobolSourceFormatEnum.FIXED, dialect=CobolDialect.MF) -> CobolParserParams:
@@ -109,6 +110,138 @@ def test_reader_split_matches_java_scanner_no_trailing_blank():
     assert len(lines) == 2
     empty = CobolLineReaderImpl().process_lines("", _params())
     assert empty == []
+
+
+# --- free format line reader ---------------------------------------------------
+
+
+def test_reader_free_format_line_is_normal():
+    """FREE format lines have empty indicator → fall through to NORMAL type."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line("DISPLAY 'HELLO'.", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.NORMAL
+    assert line.get_indicator_area() == ""
+    assert line.get_sequence_area() == ""
+    assert line.get_content_area() == "DISP" + "LAY 'HELLO'."
+
+
+def test_reader_free_format_compiler_directive():
+    """Lines starting with '>>' (except >>D) are reclassified as COMPILER_DIRECTIVE."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line(">>SOURCE FORMAT IS FREE", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.COMPILER_DIRECTIVE
+
+
+def test_reader_free_format_directives():
+    """Various >> directive forms (excluding >>D) should be COMPILER_DIRECTIVE."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    directives = [
+        ">>SOURCE FORMAT IS FREE",
+        ">>SOURCE FREE",
+        ">>DEFINE MYVAR AS 1",
+        ">>IF MYVAR > 0",
+        ">>ELSE",
+        ">>END-IF",
+        ">>EVALUATE",
+    ]
+    for d in directives:
+        line = CobolLineReaderImpl().parse_line(d, 0, params)
+        assert line.get_type() == CobolLineTypeEnum.COMPILER_DIRECTIVE, (
+            f"Expected COMPILER_DIRECTIVE for: {d}"
+        )
+
+
+def test_reader_free_format_d_debug_line():
+    """In FREE format, >>D lines are DEBUG (not COMPILER_DIRECTIVE), and the
+    >>D prefix is stripped from content so the parser sees clean code."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line(">>D DISPLAY 'A'", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.DEBUG
+    assert ">>D" not in line.get_content_area()
+    assert "DISPLAY 'A'" in line.get_content_area()
+
+
+def test_reader_free_format_d_debug_with_indentation():
+    """>>D debug lines with leading whitespace should still work."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line("   >>D DISPLAY 'A'", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.DEBUG
+    assert ">>D" not in line.get_content_area()
+    assert "DISPLAY 'A'" in line.get_content_area()
+
+
+def test_reader_free_format_d_debug_standalone():
+    """>>D alone (no trailing code) is valid — the line is empty after
+    stripping the prefix."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line(">>D", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.DEBUG
+    assert line.get_content_area() == ""
+
+
+def test_reader_free_format_indented_directive():
+    """>> directives with leading whitespace should still be detected."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line("   >>SOURCE FORMAT IS FREE", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.COMPILER_DIRECTIVE
+
+
+def test_reader_free_format_normal_line_not_misclassified():
+    """Regular COBOL lines without >> prefix stay NORMAL."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line("    DISPLAY 'A'", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.NORMAL
+    assert "DISPLAY 'A'" in line.get_content_area()
+
+
+def test_reader_free_format_single_greater_than_not_directive():
+    """A single '>' (not '>>') is normal COBOL content, not a directive."""
+    params = _params(format=CobolSourceFormatEnum.FREE)
+    line = CobolLineReaderImpl().parse_line("IF A > B", 0, params)
+    assert line.get_type() == CobolLineTypeEnum.NORMAL
+
+
+# --- & continuation (free format) --------------------------------------------
+
+
+def test_amp_continuation_joins_string_literal():
+    """A trailing & should join with the next line; spaces before & are consumed."""
+    text = 'DISPLAY "Hello &\n      &World"'
+    joined = _join_amp_continuation(text)
+    assert joined == 'DISPLAY "HelloWorld"'
+
+
+def test_amp_continuation_without_leading_amp():
+    """The leading & on the continuation line is optional."""
+    text = "MOVE AFE &\n      TO LEN"
+    joined = _join_amp_continuation(text)
+    # Space before & is consumed per COBOL 2002 spec
+    assert "AFETO LEN" in joined
+    assert "&" not in joined
+
+
+def test_amp_continuation_preserves_amp_inside_content():
+    """A & not at end of line is regular content, not a continuation marker."""
+    text = "CALL 'X' &   *> inline comment\n      CALL 'Y'"
+    joined = _join_amp_continuation(text)
+    assert "&" in joined  # inline & preserved (not at line end)
+
+
+def test_amp_continuation_only_triggers_in_free_format():
+    """process_lines in non-FREE format does NOT join & continuations."""
+    from cobol_py.params import CobolParserParams
+    params = CobolParserParams(format=CobolSourceFormatEnum.FIXED)
+    text = "DISPLAY 'A &\n      B'"
+    lines = CobolLineReaderImpl().process_lines(text, params)
+    # Two separate lines: first has &, second has B
+    assert lines[0].get_content_area() != lines[1].get_content_area()
+
+
+def test_amp_multi_line_continuation():
+    """Multiple consecutive & continuations should chain."""
+    text = 'MOVE "ABC&\n      &DEF&\n      &GHI" TO X'
+    joined = _join_amp_continuation(text)
+    assert 'MOVE "ABCDEFGHI" TO X' == joined
 
 
 # --- indicator processor ----------------------------------------------------

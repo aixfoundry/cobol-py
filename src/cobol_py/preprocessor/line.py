@@ -39,7 +39,7 @@ class CobolLine:
 
     @staticmethod
     def create_blank_sequence_area(format: CobolSourceFormatEnum) -> str:
-        return "" if format == CobolSourceFormatEnum.TANDEM else WS * 6
+        return "" if format in (CobolSourceFormatEnum.TANDEM, CobolSourceFormatEnum.FREE) else WS * 6
 
     @staticmethod
     def _extract_content_area_a(content_area: str) -> str:

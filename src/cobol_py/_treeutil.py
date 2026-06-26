@@ -47,6 +47,8 @@ def format_for(path: Path) -> CobolSourceFormatEnum:
         return CobolSourceFormatEnum.TANDEM
     if "/variable/" in name:
         return CobolSourceFormatEnum.VARIABLE
+    if "/free/" in name:
+        return CobolSourceFormatEnum.FREE
     return CobolSourceFormatEnum.FIXED
 
 

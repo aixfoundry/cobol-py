@@ -78,6 +78,7 @@ def test_format_multiline_flags():
     assert CobolSourceFormatEnum.FIXED.comment_entry_multi_line is True
     assert CobolSourceFormatEnum.TANDEM.comment_entry_multi_line is False
     assert CobolSourceFormatEnum.VARIABLE.comment_entry_multi_line is True
+    assert CobolSourceFormatEnum.FREE.comment_entry_multi_line is False
 
 
 @pytest.mark.parametrize(
@@ -107,6 +108,53 @@ def test_tandem_format_has_empty_sequence_area():
     assert seq == ""
     assert indicator == " "
     assert comment == ""
+
+
+def test_free_format_regex_produces_normal_line():
+    """FREE format captures the entire line as content area B, with empty seq
+    and empty indicator (falls through to NORMAL in _determine_type)."""
+    m = CobolSourceFormatEnum.FREE.pattern.fullmatch("DISPLAY 'HELLO'")
+    assert m is not None
+    seq, indicator, area_a, area_b, comment = m.groups()
+    assert seq == ""
+    assert indicator == ""
+    assert area_a == "DISP"
+    assert area_b == "LAY 'HELLO'"
+    assert comment == ""
+
+
+def test_free_format_regex_handles_empty_line():
+    m = CobolSourceFormatEnum.FREE.pattern.fullmatch("")
+    assert m is not None
+    seq, indicator, area_a, area_b, comment = m.groups()
+    assert seq == ""
+    assert indicator == ""
+    assert area_a == ""
+    assert area_b == ""
+    assert comment == ""
+
+
+def test_free_format_regex_handles_directive_line():
+    """FREE format regex should match >>SOURCe format is FREE as a normal line;
+    the >> override in parse_line() will reclassify it later."""
+    m = CobolSourceFormatEnum.FREE.pattern.fullmatch(">>SOURCE FORMAT IS FREE")
+    assert m is not None
+    seq, indicator, area_a, area_b, comment = m.groups()
+    assert seq == ""
+    assert indicator == ""
+    assert area_a == ">>SO"
+    assert area_b == "URCE FORMAT IS FREE"
+
+
+def test_free_format_regex_handles_indented_code():
+    """FREE format preserves leading whitespace as part of content."""
+    m = CobolSourceFormatEnum.FREE.pattern.fullmatch("    DISPLAY 'X'.")
+    assert m is not None
+    seq, indicator, area_a, area_b, comment = m.groups()
+    assert seq == ""
+    assert indicator == ""
+    assert area_a == "    "  # leading whitespace is in area A
+    assert area_b == "DISPLAY 'X'."
 
 
 # --- preprocessor constants (tags) ------------------------------------------
@@ -231,9 +279,10 @@ def test_get_content_area_concatenates_a_and_b():
     assert line.get_content_area() == '    DISPLAY "X"'
 
 
-def test_blank_sequence_area_is_six_spaces_except_tandem():
+def test_blank_sequence_area_is_six_spaces_except_tandem_and_free():
     assert CobolLine.create_blank_sequence_area(CobolSourceFormatEnum.FIXED) == " " * 6
     assert CobolLine.create_blank_sequence_area(CobolSourceFormatEnum.TANDEM) == ""
+    assert CobolLine.create_blank_sequence_area(CobolSourceFormatEnum.FREE) == ""
 
 
 def test_copy_with_content_area_splits_a_and_b():

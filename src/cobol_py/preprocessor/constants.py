@@ -59,11 +59,16 @@ class CobolSourceFormatEnum(Enum):
     3. content area A
     4. content area B
     5. comment area
+
+    ``FREE`` is a COBOL 2002 free-format layout: no column restrictions,
+    no sequence/indicator areas, ``>>`` prefixed compiler directives,
+    and single-line comment entries.
     """
 
     FIXED = (r"(.{0,6})(?:" + INDICATOR_FIELD + r"(.{0,4})(.{0,61})(.*))?", True)
     TANDEM = (r"()(?:" + INDICATOR_FIELD + r"(.{0,4})(.*)())?", False)
     VARIABLE = (r"(.{0,6})(?:" + INDICATOR_FIELD + r"(.{0,4})(.*)())?", True)
+    FREE = (r"()(?:()(.{0,4})(.*)())?", False)
 
     def __init__(self, regex: str, comment_entry_multi_line: bool) -> None:
         self.regex: str = regex
@@ -88,6 +93,8 @@ def detect_source_format(first_lines: List[str]) -> CobolSourceFormatEnum:
 
     Heuristic (evaluated for each line until one matches):
 
+    0. **FREE**: a line contains ``>>SOURCE FORMAT IS FREE`` or
+       ``>>SOURCE FREE`` (COBOL 2002 free-format directive).
     1. **FIXED**: line length ≥ 7, columns 1-6 match ``[0-9 ]{6}`` (sequence
        area), and column 7 is in the standard indicator set.
     2. **Ambiguous skip**: column 7 is a valid indicator but columns 1-6 are
@@ -101,6 +108,12 @@ def detect_source_format(first_lines: List[str]) -> CobolSourceFormatEnum:
     """
     for line in first_lines:
         stripped = line.rstrip("\n\r")
+        upper = stripped.upper()
+
+        # FREE heuristic: the line contains a free-format directive.
+        if ">>SOURCE FORMAT IS FREE" in upper or ">>SOURCE FREE" in upper:
+            return CobolSourceFormatEnum.FREE
+
         if not stripped:
             continue
 

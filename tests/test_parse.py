@@ -55,6 +55,7 @@ def _parse(name: str, params: CobolParserParams):
         ("exec_cics.cbl", CobolSourceFormatEnum.FIXED),
         ("tandem.cbl", CobolSourceFormatEnum.TANDEM),
         ("variable.cbl", CobolSourceFormatEnum.VARIABLE),
+        ("free.cbl", CobolSourceFormatEnum.FREE),
     ],
 )
 def test_fixture_parses_to_start_rule(name: str, fmt: CobolSourceFormatEnum):
@@ -186,3 +187,26 @@ def test_unparseable_line_raises_with_format_hint():
         CobolPreprocessorImpl().process(
             "0000000 IDENTIFICATION DIVISION.\n", params
         )
+
+
+# --- free format integration ---------------------------------------------------
+
+
+def test_free_format_directive_absorbed():
+    """The >>SOURCE FORMAT IS FREE directive should be emptied by the
+    preprocessor (reclassified as COMPILER_DIRECTIVE) so it does not reach
+    the main grammar parser."""
+    params = CobolParserParams(format=CobolSourceFormatEnum.FREE)
+    preprocessed = _preprocess("free.cbl", params)
+    assert ">>SOURCE" not in preprocessed
+
+
+def test_free_format_content_preserved():
+    """COBOL code in free format should be preserved and parseable."""
+    params = CobolParserParams(format=CobolSourceFormatEnum.FREE)
+    preprocessed = _preprocess("free.cbl", params)
+    assert "IDENTIFICATION" in preprocessed
+    assert "PROGRAM-ID" in preprocessed
+    assert "PROCEDURE" in preprocessed
+    assert "DISPLAY" in preprocessed
+    assert "STOP RUN" in preprocessed
