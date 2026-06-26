@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cobol-py"
-version = "0.1.0"
+version = "0.2.0"
 description = "COBOL parser for Python, porting the proleap-cobol-parser preprocessor + Cobol.g4 pipeline to a startRule AST"
 readme = "README.md"
 license = "MIT"
