@@ -9,13 +9,14 @@ ends at the ``startRule`` AST, matching ``parsePreprocessInput``).
 from __future__ import annotations
 
 import logging
+import sys
 from pathlib import Path
 from typing import Optional, Union
 
 from antlr4 import CommonTokenStream, InputStream
 from antlr4.atn.PredictionMode import PredictionMode
-from antlr4.error.ErrorStrategy import BailErrorStrategy, DefaultErrorStrategy
-from antlr4.error.Errors import ParseCancellationException
+from antlr4.error.ErrorListener import ErrorListener
+from antlr4.error.ErrorStrategy import DefaultErrorStrategy
 
 from .error_listener import ThrowingErrorListener
 from .exceptions import CobolParserException
@@ -28,6 +29,42 @@ from .util.string_utils import capitalize
 from .util.filename_utils import remove_extension
 
 _LOG = logging.getLogger(__name__)
+
+# The ANTLR4 Python runtime's DFA prediction can recurse deeply through
+# PredictionContext.merge() for NIST programs with deep identifier qualification
+# (NC207A, NC246A).  The Java/Go runtimes have no fixed limit; raising Python's
+# limit from the default 1000 lets those programs parse successfully.
+# Value 10000 is sufficient for the entire NIST-85 suite.
+_saved_recursion_limit: int | None = None
+
+
+def _ensure_recursion_limit() -> None:
+    global _saved_recursion_limit
+    if _saved_recursion_limit is None:
+        _saved_recursion_limit = sys.getrecursionlimit()
+        if _saved_recursion_limit < 10_000:
+            sys.setrecursionlimit(10_000)
+            _LOG.debug("Recursion limit raised: %d → 10000", _saved_recursion_limit)
+
+
+def _restore_recursion_limit() -> None:
+    global _saved_recursion_limit
+    if _saved_recursion_limit is not None:
+        sys.setrecursionlimit(_saved_recursion_limit)
+        _saved_recursion_limit = None
+
+
+class _SyntaxErrorCollector(ErrorListener):
+    """Collect syntax errors without throwing.  Used by the SLL fast-path stage
+    so we can return the SLL parse tree directly when it is clean, falling back
+    to full LL only when the grammar ambiguity produced genuine errors.
+    """
+
+    def __init__(self) -> None:
+        self.errors: list[str] = []
+
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        self.errors.append(f"line {line}:{column} {msg}")
 
 
 class CobolParserRunner:
@@ -211,6 +248,7 @@ class CobolParserRunner:
         self, pre_processed_input: str, params: CobolParserParams
     ):
         """Lex and parse preprocessed input, returning ``(ctx, tokens)``."""
+        _ensure_recursion_limit()
         lexer = CobolLexer(InputStream(pre_processed_input))
 
         if not params.ignore_syntax_errors:
@@ -231,14 +269,14 @@ class CobolParserRunner:
     def _start_rule_two_stage(parser, ignore_syntax_errors: bool):
         """Parse with the ANTLR SLL -> LL two-stage strategy.
 
-        Stage 1 runs SLL prediction with a bail strategy and **no** error
-        listeners attached: SLL is approximate and can flag false-positive
-        errors on this large, ambiguous grammar, so a throwing listener here
-        would raise on those and defeat the LL fallback. If SLL bails (a real
-        syntax error or a false positive), stage 2 rewinds and re-parses with
-        full LL, re-arming the error listeners so genuine syntax errors are
-        reported exactly as a plain LL parse would. The parse tree is identical
-        to a plain LL parse.
+        Stage 1 runs SLL prediction with a **default** error strategy and
+        collects any syntax errors instead of bailing on the first prediction
+        conflict.  If SLL produces a clean parse tree (zero errors), that tree
+        is returned immediately — this is the common fast path.
+
+        Stage 2 only fires when SLL reported errors, and rewinds to re-parse
+        with full LL, which properly resolves the dangling-ELSE and subscript
+        ambiguities that sometimes trip up SLL.
 
         A recursion-depth cap is applied to the ATN closure computation to
         prevent stack overflow on deeply-nested qualified data names (see
@@ -246,18 +284,28 @@ class CobolParserRunner:
         """
         from ._antlr_patch import patch_context
 
-        # Stage 1: fast SLL.
+        # Stage 1: fast SLL — collect errors, don't bail.
+        collector = _SyntaxErrorCollector()
         parser.removeErrorListeners()
+        parser.addErrorListener(collector)
         parser._interp.predictionMode = PredictionMode.SLL
-        parser._errHandler = BailErrorStrategy()
-        try:
-            return parser.startRule()
-        except ParseCancellationException:
-            pass
+        parser._errHandler = DefaultErrorStrategy()
+        with patch_context():
+            tree = parser.startRule()
 
-        # Stage 2: full LL, with ATN closure depth protection.
+        # If SLL produced a clean parse, return it immediately.
+        if not collector.errors:
+            return tree
+
+        # Stage 2: full LL fallback (only when SLL had errors).
+        _LOG.debug(
+            "SLL produced %d error(s), falling back to LL: %s",
+            len(collector.errors),
+            "; ".join(collector.errors[:3]),
+        )
         parser.getTokenStream().seek(0)
         parser.reset()
+        parser.removeErrorListeners()
         parser._interp.predictionMode = PredictionMode.LL
         parser._errHandler = DefaultErrorStrategy()
         if not ignore_syntax_errors:
