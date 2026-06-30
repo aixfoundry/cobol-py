@@ -271,6 +271,23 @@ def test_usage_clause_index_pointer(analyze):
     assert ws.get_data_description_entry("WS-PTR").usage_clause.usage_clause_type is UsageClauseType.POINTER
 
 
+def test_usage_clause_address(analyze):
+    """USAGE IS ADDRESS is an IBM Enterprise COBOL extension for pointer-sized data items."""
+    src = (
+        "       IDENTIFICATION DIVISION.\n"
+        "       PROGRAM-ID. T.\n"
+        "       DATA DIVISION.\n"
+        "       WORKING-STORAGE SECTION.\n"
+        "       01  WS-ADDR USAGE IS ADDRESS.\n"
+        "       PROCEDURE DIVISION.\n"
+        "           STOP RUN.\n"
+    )
+    ws = analyze(src).compilation_unit.program_unit.data_division.working_storage_section
+    entry = ws.get_data_description_entry("WS-ADDR")
+    assert entry.usage_clause is not None
+    assert entry.usage_clause.usage_clause_type is UsageClauseType.ADDRESS
+
+
 def test_redefines_clause(analyze):
     src = (
         "       IDENTIFICATION DIVISION.\n"

@@ -66,7 +66,8 @@ def _untagged_exec_sql(ctx) -> str:
 # -- clause enums ------------------------------------------------------------
 
 class UsageClauseType(Enum):
-    """Ports ``UsageClause.UsageClauseType`` (25 canonical COBOL usage values)."""
+    """Ports ``UsageClause.UsageClauseType`` (26 canonical COBOL usage values)."""
+    ADDRESS = "ADDRESS"
     BINARY = "BINARY"
     BINARY_EXTENDED = "BINARY_EXTENDED"
     BINARY_TRUNCATED = "BINARY_TRUNCATED"
@@ -993,6 +994,7 @@ class ValueOfClause(CobolDivisionElement):
 # order (the order they appear in the grammar).
 
 _USAGE_TOKEN_MAP = [
+    ("ADDRESS", UsageClauseType.ADDRESS),
     ("BINARY_TRUNCATED", UsageClauseType.BINARY_TRUNCATED),
     ("BINARY_EXTENDED", UsageClauseType.BINARY_EXTENDED),
     ("BINARY", UsageClauseType.BINARY),
